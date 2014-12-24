@@ -1,0 +1,19 @@
+[{
+    "cat": "politics",
+    "cat_id": "cat_1"
+}, {
+    "cat": "lifestyle",
+    "cat_id": "cat_2"
+}, {
+    "cat": "sports",
+    "cat_id": "cat_3"
+}, {
+    "cat": "events",
+    "cat_id": "cat_4"
+}, {
+    "cat": "entertainment",
+    "cat_id": "cat_5"
+}, {
+	"cat": "science_and_nature",
+	"cat_id": "cat_6"
+}]
