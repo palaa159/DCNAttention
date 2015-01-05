@@ -1,28 +1,48 @@
-// Basic Web Server + API
+/* this node app will hopefully route:
+*/
 
-// We will need 'Express' module
-var express = require('express');
-// Refer our server to 'app'
-// Reference at http://expressjs.com/api.html
-// http://erichonorez.wordpress.com/2013/02/04/a-basic-web-server-with-node-js-and-express/
-var app = express();
+var http = require('http'),
+    path = require('path'),
+    util = require('util'),
+    express = require('express'),
+    fs = require('fs'),
+    colors = require('colors'),
+    _ = require('underscore'),
+    m = require('moment'),
+    bodyParser = require('body-parser');
 
-// very few methods being used here: .use and .get
-app.use(function(req, res, next) {
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	console.log('incoming request from ---> ' + ip);
-	var url = req.originalUrl;
-	console.log('### requesting ---> ' + url);
-	next();
+// end of dependencies
+
+/*
+	Express configs
+*/
+
+var app = express(),
+    port = 3333;
+app.locals.title = 'Digital Content Next: Attention Market';
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('port', process.env.PORT || port);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(bodyParser.json()); // get information from html forms
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+/*
+	Routing configs
+*/
+var router = express.Router();
+require('./routes/router.js')(router, util, bodyParser, m);
+app.use('/', router);
+
+/*
+	init server
+*/
+http.createServer(app).listen(app.get('port'), function() {
+    console.log();
+    console.log('  DCN Server Running  '.white.inverse);
+    var listeningString = '  Listening on port ' + app.get('port') + "  ";
+    console.log(listeningString.cyan.inverse);
 });
-
-app.use('/', express.static(__dirname + '/public'));
-
-app.get('/api', function(req, res) {
-	console.log('api hit');
-	res.setHeader('Content-Type', 'application/json');
-	res.send({msg: 'hello'});
-	res.end();
-});
-
-app.listen(3333); //the port you want to use

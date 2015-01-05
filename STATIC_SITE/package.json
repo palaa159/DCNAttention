@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.9.7"
+    "express": "^4.9.7",
+    "underscore": "~1.7.0",
+    "colors": "~1.0.3",
+    "moment": "~2.8.4",
+    "body-parser": "~1.10.1"
   }
 }
