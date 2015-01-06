@@ -1,0 +1,17 @@
+{
+  "name": "SITE",
+  "version": "0.0.0",
+  "description": "",
+  "main": "._app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "colors": "~1.0.3",
+    "ejs": "~2.0.7",
+    "body-parser": "~1.10.1",
+    "express": "~4.10.7"
+  }
+}

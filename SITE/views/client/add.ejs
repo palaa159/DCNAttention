@@ -1,0 +1,50 @@
+<% include ../includes/header %>
+
+<div class="container">
+	<div class="row">
+		<div class="sixteen columns">
+			<h4>Add content (secret page)</h4>
+			<button class="btn_add">Add more</button>
+		</div>
+	</div>
+</div>
+
+<div class="container populate_area">
+	<div class="row hidden" id="template">
+		<div class="four columns">
+			<input type="text" placeholder="Link" class="ipt_link" name="link">
+		</div>
+		<div class="four columns">
+			<input type="text" placeholder="Headline" class="ipt_headline" name="headline">
+		</div>
+		<div class="three columns">
+			<input type="text" placeholder="Image URL" class="ipt_image_url" name="image_url">
+		</div>
+		<div class="two columns">
+			<select class="ipt_company"></select>
+		</div>
+		<div class="two columns">
+			<select class="ipt_category"></select>
+		</div>
+		<div class="one columns">
+			<button class="btn_delete">x</button>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="sixteen columns">
+		<button class="btn_submit">Submit to parse</button>
+	</div>
+</div>
+
+<% include ../includes/footer %>
+<% include ../includes/default_scripts %>
+
+<!-- Other scripts start here (if any) -->
+
+
+<script src="../js/add.js"></script>
+
+
+<% include ../includes/end %>
