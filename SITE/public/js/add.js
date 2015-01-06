@@ -98,6 +98,8 @@ var attachEvents = function() {
             db.set('image_url', image_url);
             db.set('company', company);
             db.set('category', category);
+            db.set('social_val', 0);
+            db.set('face_val', 0);
             
             listToPost.push(db);
         });

@@ -4,7 +4,9 @@ var http = require('http'),
     express = require('express'),
     fs = require('fs'),
     colors = require('colors'),
-    bodyParser = require('body-parser');
+    async = require('async'),
+    bodyParser = require('body-parser'),
+    parse = require('./modules/parse.js');
 
 // end of dependencies
 
@@ -54,12 +56,48 @@ app
         console.log('--> Hitting Big screen display');
         res.render('client/big.ejs');
     })
-    .get('/add', function(req, res) {
+    .get('/util/add', function(req, res) {
         console.log('--> Hitting Add content');
         res.render('client/add.ejs');
     });
 
-//
+// FOR OFX FACETRACKER
+var CONTENT_DATABASE = 'content_dummy';
+app
+    .get('/of/getcontents', function(req, res) {
+        // async 
+        async.parallel({
+            contents: function(callback) {
+                parse.getObjects(CONTENT_DATABASE, callback);
+                // callback(null, 1);
+            },
+            categories: function(callback) {
+                parse.getObjects('categories', callback);
+                // callback(null, 2);
+            }
+        }, function(err, results) {
+            var cats = results.categories;
+            var contents = results.contents;
+            contents.forEach(function(content) {
+                cats.forEach(function(cat) {
+                    if(content.category === cat.title) {
+                        content.category = {
+                            cat_id: cat.cat_id,
+                            title: cat.title
+                        };
+                    }
+                });
+            });
+            res.send(contents);
+        });
+    })
+    .post('/of/updatecontent', function(req, res) {
+        // get objectId and updated value
+        var data = req.body;
+        parse.updateObject(CONTENT_DATABASE, data, res);
+    });
+
+// FOR SOCIAL VALUATION
 
 
 /*
