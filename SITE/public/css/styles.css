@@ -3,3 +3,25 @@
 .hidden {
 	display: none;
 }
+
+/* Global */
+* {
+	font-family: 'Open Sans', sans-serif !important;
+}
+
+/* Nav */
+.nav {
+	height: 36px;
+	margin-top: 10px;
+	border-bottom: 1px solid #22146d;
+}
+
+.nav > li {
+	display: inline;
+	margin-right: 20px;
+}
+
+.nav > li > a {
+	color: #22146d;
+	text-decoration: none;
+}
