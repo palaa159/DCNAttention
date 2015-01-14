@@ -50,7 +50,7 @@ var init = function(results) {
         $('.ipt_company').append(toAdd);
     });
     results.categories.forEach(function(item) {
-        var toAdd = $('<option value="' + item.title + '">' + item.title + '</option>');
+        var toAdd = $('<option data-title="' + item.title + '" value="' + item.cat_id + '">' + item.title + '</option>');
         // console.log(toAdd);
         $('.ipt_category').append(toAdd);
     });
@@ -76,7 +76,7 @@ var attachEvents = function() {
         var listToPost = [];
 
         $.each($('.item'), function(i, v) {
-            var link, headline, image_url, company, category;
+            var link, headline, image_url, company, cat_id, cat_title;
             $.each(($(v).find('div')), function(i, v) {
                 if (i === 0) { // link
                     link = $(v).children('input').val();
@@ -88,7 +88,8 @@ var attachEvents = function() {
                 } else if (i === 3) {
                     company = $(v).children('select').val();
                 } else if (i === 4) {
-                    category = $(v).children('select').val();
+                    cat_id = $(v).children('select').val();
+                    cat_title = $(v).children('select').attr('data-title');
                 }
             });
 
@@ -97,10 +98,13 @@ var attachEvents = function() {
             db.set('headline', headline);
             db.set('image_url', image_url);
             db.set('company', company);
-            db.set('category', category);
+            db.set('category', cat_title);
+            db.set('cat_id', cat_id);
             db.set('social_val', 0);
             db.set('face_val', 0);
-            
+            db.set('social_val_history', []);
+            db.set('face_val_history', []);
+
             listToPost.push(db);
         });
 

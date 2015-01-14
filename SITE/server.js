@@ -11,7 +11,7 @@ var http = require('http'),
 // end of dependencies
 
 /*
-	Express configs
+    Express configs
 */
 
 var app = express(),
@@ -29,7 +29,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 /*
-	Routing configs
+    Routing configs
 */
 app.use(function(req, res, next) {
     console.log('--------------'.white);
@@ -78,17 +78,24 @@ app
         }, function(err, results) {
             var cats = results.categories;
             var contents = results.contents;
-            contents.forEach(function(content) {
-                cats.forEach(function(cat) {
-                    if(content.category === cat.title) {
-                        content.category = {
-                            cat_id: cat.cat_id,
-                            title: cat.title
-                        };
-                    }
-                });
-            });
             res.send(contents);
+        });
+    })
+    .get('/of/autopilot', function(req, res) {
+        async.parallel({
+            contents: function(callback) {
+                parse.getObjects(CONTENT_DATABASE, callback);
+                // callback(null, 1);
+            },
+            categories: function(callback) {
+                parse.getObjects('categories', callback);
+                // callback(null, 2);
+            }
+        }, function(err, results) {
+            var cats = results.categories;
+            var contents = results.contents;
+            // res.send(contents);
+            fake_valuate(contents, res);
         });
     })
     .post('/of/updatecontent', function(req, res) {
@@ -99,9 +106,96 @@ app
 
 // FOR SOCIAL VALUATION
 
+/* Fake valuate content
+    
+    loop category
+    pick a pair
+    add some value to it
+    push to db
+    interval of 15 sec
+
+*/
+var id = 0;
+var id_to_title;
+
+function fake_valuate(contents, res) {
+    // console.log(contents);
+    // random a cat_id 1-7
+    if (id === 7) {
+        id = 1;
+    } else {
+        id++;
+    }
+    console.log('Picking id: ' + id);
+    // pick 2 in contents to compete
+    // get cat_id of id
+    var cat_contents = [];
+    contents.forEach(function(content) {
+        if (content.cat_id === id) {
+            id_to_title = content.category;
+            cat_contents.push(content);
+        }
+    });
+    console.log('content in cat length: ' + cat_contents.length);
+    // console.log(cat_contents);
+    // pick 2
+    var tmp_range = [];
+    for (var i = 0; i < cat_contents.length; i++) {
+        // console.log(i);
+        tmp_range.push(i);
+        // console.log(tmp_range);
+    }
+    console.log('tmp_range = ');
+    console.log(tmp_range);
+    var rand_content_1 = tmp_range[Math.floor(Math.random() * tmp_range.length)];
+    // remove
+    tmp_range.splice(tmp_range.indexOf(rand_content_1), 1);
+    var rand_content_2 = tmp_range[Math.floor(Math.random() * tmp_range.length)];
+
+    console.log('Pairing completed');
+    console.log(rand_content_1, rand_content_2);
+    cat_contents[rand_content_1].face_val_history.push({
+        ts: new Date().getTime(),
+        val: (((Math.random() * 2) + 1) / 3).toFixed(2)
+    });
+    cat_contents[rand_content_2].face_val_history.push({
+        ts: new Date().getTime(),
+        val: (((Math.random() * 2) + 1) / 3).toFixed(2)
+    });
+    cat_contents[rand_content_1].social_val_history.push({
+        ts: new Date().getTime(),
+        val: (((Math.random() * 5) + 1) / 3).toFixed(2)
+    });
+    cat_contents[rand_content_2].social_val_history.push({
+        ts: new Date().getTime(),
+        val: (((Math.random() * 5) + 1) / 3).toFixed(2)
+    });
+    var toUpdate_1 = {
+        objectId: cat_contents[rand_content_1].objectId,
+        data: {
+            face_val_history: cat_contents[rand_content_1].face_val_history,
+            social_val_history: cat_contents[rand_content_1].social_val_history,
+            face_val: calculateVal(cat_contents[rand_content_1].face_val_history),
+            social_val: calculateVal(cat_contents[rand_content_1].social_val_history)
+        }
+    };
+    var toUpdate_2 = {
+        objectId: cat_contents[rand_content_2].objectId,
+        data: {
+            face_val_history: cat_contents[rand_content_2].face_val_history,
+            social_val_history: cat_contents[rand_content_2].social_val_history,
+            face_val: calculateVal(cat_contents[rand_content_2].face_val_history),
+            social_val: calculateVal(cat_contents[rand_content_2].social_val_history)
+        }
+    };
+    var toUpdate = [toUpdate_1, toUpdate_2];
+    parse.updateObjectAutopilot('content_dummy', toUpdate, res, id_to_title);
+}
+
+// fake_valuate();
 
 /*
-	init server
+    init server
 */
 http.createServer(app).listen(app.get('port'), function() {
     console.log();
@@ -109,3 +203,12 @@ http.createServer(app).listen(app.get('port'), function() {
     var listeningString = '  Listening on port ' + app.get('port') + "  ";
     console.log(listeningString.cyan.inverse);
 });
+
+// Helpers
+function calculateVal(arr) {
+    var totVal = 0;
+    arr.forEach(function(item) {
+        totVal += parseFloat(item.val);
+    });
+    return totVal;
+}

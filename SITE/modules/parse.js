@@ -28,5 +28,16 @@ module.exports = {
                 res.send(body.face_val);
             }
         });
+    },
+    updateObjectAutopilot: function(classname, array, res_s, cat_title) {
+        console.log(array);
+        kaiseki.updateObjects(classname, array, function(err, res, body, success) {
+            console.log(err);
+            console.log(body);
+            // res_s.status(404);
+            res_s.header('Content-Type', 'text/plain');
+            res_s.send('updating ' + cat_title + '\n' + JSON.stringify(array));
+            res_s.end();
+        });
     }
 };
