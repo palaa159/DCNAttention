@@ -39,10 +39,11 @@ private:
     string displayCompany;
     string displayCategory;
     string displayObjectId;
+    int shownCount;
 
     
     ofImage displayImage;
-    
+    ofImage eyeLogo;
     
     int numFaces;
     

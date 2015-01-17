@@ -25,10 +25,12 @@ Display::Display(){
     timerSize = 100;
     timerVal = 15;
     Tweenzor::init();
-    timerLoc.set(ofGetWidth()-150, ofGetHeight()-150);
+    timerLoc.set(ofGetWidth()-175, ofGetHeight()-150);
     timerPos = 270.001f;
     
     roundOn = false;
+    eyeLogo.loadImage("img/eye_white.png");
+    eyeLogo.resize(eyeLogo.getWidth()*.45f, eyeLogo.getHeight()*.45f);
 }
 
 
@@ -81,7 +83,8 @@ void Display::draw(){
         
         int leftMargin = 60;
         int topMargin = ofGetHeight()-300;
-        int valuesLeftMargin = ofGetWidth()/2 + 50;
+        int valuesLeftMargin = ofGetWidth()/2 + 250;
+        int valuesRightMargin = ofGetWidth() - 550;
         
         ofSetColor(0, 150);
         ofFill();
@@ -91,19 +94,22 @@ void Display::draw(){
         ofLine(0, topMargin, ofGetWidth(), topMargin);
         
         ofSetColor(payRed);
-//        labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
-        labelsFont.drawString("Faces", valuesLeftMargin, topMargin+50);
-        labelsFont.drawString("Face Value", valuesLeftMargin+190, topMargin+50);
-        //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
+        labelsFont.drawString("Face Value", valuesRightMargin, topMargin+50);
+        //labelsFont.drawString("Faces", valuesRightMargin, topMargin+200);
+
 
         ofSetColor(255);
-        companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+60);
-        headlineFont.drawString(displayHeadline, leftMargin, topMargin+220);
-        valueFont.drawString(ofToString(numFaces), valuesLeftMargin, topMargin+125);
-        valueFont.drawString("$"+ofToString(displayFaceVal), valuesLeftMargin+140, topMargin+125);
+        companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
+        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
+        valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
 
+
+        eyeLogo.draw(valuesRightMargin, topMargin+170);
+        valueFont.drawString(ofToString(numFaces), valuesRightMargin+eyeLogo.getWidth()+40, topMargin+220);
+        
+        //labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
+        //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
         //valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
-
         //valueFont.drawString("current Social Value: "+displaySocialVal, 50, 80);
         
         ofSetColor(payLightGray);
@@ -148,6 +154,14 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     displayCompany = leftScreen.getCompany();
     diplayTotalValue = leftScreen.getTotalValue(); //float
     displayObjectId = thisPair[0]["objectId"].asString();
+    shownCount = thisPair[0]["shown"].asInt();
+    
+    
+    int lineBreakIdx = 28;
+    if(displayHeadline.size() > lineBreakIdx){
+        //split the string
+        displayHeadline.insert(lineBreakIdx, "\n");
+    }
     
     
     timestamp = int(ofGetElapsedTimef());
@@ -178,10 +192,11 @@ void Display::onRoundComplete(float* arg) {
 
     //Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
+    float faceDiff = displayFaceVal - leftScreen.getFaceValue();
     
-
-    string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+"}";
-    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
+    shownCount++;
+    string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+",\"shown\":"+ofToString(shownCount)+"}";
+    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(faceDiff)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
     string completeUpdate =
     "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";    
     
@@ -197,24 +212,24 @@ void Display::initFonts(){
     ofTrueTypeFont::setGlobalDpi(72);
     
     
-    headlineFont.loadFont("fonts/MyriadPro-Bold.otf", 64, true, true, true);
-//    headlineFont.setLineHeight(18.0f);
+    headlineFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);
+    headlineFont.setLineHeight(80.0f);
     headlineFont.setSpaceSize(0.6f);
     headlineFont.setLetterSpacing(1.0);
     
-    companyFont.loadFont("fonts/MyriadPro-BoldCond.otf", 54, true, true, true);
+    companyFont.loadFont("fonts/Lato-Semibold.ttf", 40, true, true, true);
     companyFont.setSpaceSize(0.7f);
     companyFont.setLetterSpacing(1.0);
     
-    timerFont.loadFont("fonts/MyriadPro-Bold.otf", 96, true, true, true);
+    timerFont.loadFont("fonts/Lato-Bold.ttf", 96, true, true, true);
     timerFont.setLineHeight(18.0f);
     timerFont.setLetterSpacing(1.0);
     
-    valueFont.loadFont("fonts/MyriadPro-Bold.otf", 96, true, true, true);
+    valueFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);
     valueFont.setLineHeight(18.0f);
     valueFont.setLetterSpacing(1.0);
     
-    labelsFont.loadFont("fonts/MyriadPro-BoldCond.otf", 42, true, true, true);
+    labelsFont.loadFont("fonts/Lato-Medium.ttf", 42, true, true, true);
     labelsFont.setLineHeight(18.0f);
     labelsFont.setLetterSpacing(1.0);
 }
