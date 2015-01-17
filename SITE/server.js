@@ -37,6 +37,10 @@ var restdebug = function(msg) {
     util.log('REST Debug: '.bold.cyan + ' ' + (msg).white);
 };
 
+var appdebug = function(msg) {
+    util.log('APP Debug: '.bold.magenta + ' ' + (msg).white);
+};
+
 /*
     Routing configs
 */
@@ -60,9 +64,9 @@ app
         console.log('--> Hitting Mobile stock market');
         res.render('client/market.ejs');
     })
-    .get('/big', function(req, res) {
+    .get('/datavis', function(req, res) {
         console.log('--> Hitting Big screen display');
-        res.render('client/big.ejs');
+        res.render('client/datavis.ejs');
     })
     .get('/util/add', function(req, res) {
         console.log('--> Hitting Add content');
@@ -150,7 +154,7 @@ function init() {
 }
 
 function updateSocVal(bulk_id) {
-    console.log('updating ' + bulk_id);
+    appdebug('updating ' + bulk_id);
     // get all data
     var url = 'http://plus.sharedcount.com/bulk?apikey=55a4d6fb1ce6d387f94943a7b9b9c8550016990e&bulk_id=' + bulk_id;
     http.get(url, function(res) {
@@ -163,10 +167,11 @@ function updateSocVal(bulk_id) {
             var tmp = JSON.parse(result);
             // console.log(tmp);
             parse.updateSocVal(CONTENT_DATABASE, tmp);
+            appdebug('Scraped Social values and updated to Parse');
         });
 
     }).on('error', function(e) {
-        console.log("Got error: " + e.message);
+        appdebug("Got error: " + e.message);
     });
 }
 
@@ -174,7 +179,7 @@ function getBulkId(res) {
     parse.getObjectBulk(CONTENT_DATABASE, function(data) {
         // console.log('data'.red + data); // --> text
         var data_count = (data.match(/\n/g) || []).length;
-        console.log(('URL counts: ' + data_count).bold.white);
+        restdebug(('URL counts: ' + data_count).bold.white);
         // get bulk id
         var options = {
             hostname: 'plus.sharedcount.com',
@@ -189,14 +194,13 @@ function getBulkId(res) {
                 // res.json(JSON.parse(chunk));
                 // bulk request 
                 bulk_id = JSON.parse(chunk).bulk_id;
-                console.log('bulk id:'.white);
-                console.log((bulk_id).red);
+                appdebug('bulk id: '.white + (bulk_id).red);
                 if (res) {
                     res.send(bulk_id + ' UPDATED');
                 }
                 setTimeout(function() {
                     updateSocVal(bulk_id);
-                }, 10 * 1000);
+                }, 5 * 1000);
             });
         });
         req.on('error', function(e) {
