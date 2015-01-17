@@ -11,7 +11,7 @@
 #include "ofMain.h"
 #include "ofxCv.h"
 
-#define USE_VIDEO 1 //set to '0' for camera
+#define USE_VIDEO 0 //set to '0' for camera
 
 class Camera {
 
@@ -21,6 +21,7 @@ public:
     void draw();
     float getFaceVal();
     void listDevices();
+    int getNumFaces();
 
     
 private:

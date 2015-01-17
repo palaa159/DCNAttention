@@ -10,10 +10,10 @@ void ofApp::setup() {
     
     
     display = *new Display();
-//    cam = *new Camera();
+    cam = *new Camera();
 
     //*** immediately init local data files ***//
-    // -- query /api/getcontents, compare with local files
+    // query /api/getcontents, compare with local files
     dataConnect.pullData();
     
     CURR_CAT = 0;
@@ -26,10 +26,10 @@ void ofApp::update() {
     ofSetWindowTitle("fps: "+ ofToString(ofGetFrameRate()));
     
 
-//    int numFaces = cam.update();
-    int numFaces = 1;
+    int numFaces = cam.update();
+//    int numFaces = 1;
 
-    display.update(numFaces);
+    display.update(cam.getNumFaces());
     
     
     
@@ -43,10 +43,11 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
  
+    display.draw();
+    
     if(CAM_DEBUG){
-//        cam.draw();
+        cam.draw();
     }
-    else display.draw();
 }
 
 
@@ -113,9 +114,9 @@ void ofApp::nextRound(){
         
         display.startRound(thisPair);
         
-    //    cout<< "THIS ROUND OBJECTS: "<<endl;
-    //    cout << "\t left screen: "<<thisPair[0]["objectId"].asString()<<endl;
-    //    cout << "\t right screen: "<<thisPair[1]["objectId"].asString()<<endl;
+        // cout<< "THIS ROUND OBJECTS: "<<endl;
+        //cout << "\t left screen: "<<thisPair[0]["objectId"].asString()<<endl;
+        //cout << "\t right screen: "<<thisPair[1]["objectId"].asString()<<endl;
         // print entire objects
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;

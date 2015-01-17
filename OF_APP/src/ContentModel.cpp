@@ -6,18 +6,18 @@
 //
 //
 
-#include "Content.h"
+#include "ContentModel.h"
 
-Content::Content(){
+ContentModel::ContentModel(){
     
 }
 
 
 //--------------------------------------------------------------
-void Content::init(ofxJSONElement object){
+void ContentModel::init(ofxJSONElement object){
 
     thisObject = object;
-    cout << "\n--------- Content::init object ---------\n";
+    cout << "\n--------- ContentModel::init object ---------\n";
     cout << " - objectId:" << object["objectId"].asString() <<endl;
     cout << " - cat_id:" << object["cat_id"].asString() <<endl;
     cout << " - category:" << object["category"].asString() <<endl;
@@ -39,50 +39,50 @@ void Content::init(ofxJSONElement object){
 
 
 //--------------------------------------------------------------
-void Content::update( float faceVal ){
+void ContentModel::update( float faceVal ){
 //    faceValue = faceVal;
 //    cout << "content update faceVal: "<<faceVal<<endl;
 }
 
 
 //--------------------------------------------------------------
-string Content::getFaceValue(){
+float ContentModel::getFaceValue(){
     float thisData = thisObject["face_val"].asFloat();
-    return ofToString(thisData);
+    return thisData;
 }
 
 //--------------------------------------------------------------
-string Content::getSocialValue(){
+float ContentModel::getSocialValue(){
     float thisData = thisObject["social_val"].asFloat();
-    return ofToString(thisData);
+    return thisData;
 }
 
 //--------------------------------------------------------------
-string Content::getHeadline(){
+string ContentModel::getHeadline(){
     string thisData = thisObject["headline"].asString();
     return thisData;
 }
 
 //--------------------------------------------------------------
-string Content::getImgLocalPath(){
+string ContentModel::getImgLocalPath(){
     string thisData = thisObject["local_path"].asString();
     return thisData;
 }
 
 //--------------------------------------------------------------
-string Content::getCategoryName(){
+string ContentModel::getCategoryName(){
     string thisData = thisObject["category"].asString();
     return thisData;
 }
 
 //--------------------------------------------------------------
-string Content::getCompany(){
+string ContentModel::getCompany(){
     string thisData = thisObject["company"].asString();
     return thisData;
 }
 
 //--------------------------------------------------------------
-float Content::getTotalValue(){
+float ContentModel::getTotalValue(){
     float thisData = thisObject["social_val"].asFloat() + thisObject["face_val"].asFloat();
     return thisData;
 }

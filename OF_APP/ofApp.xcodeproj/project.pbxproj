@@ -25,7 +25,7 @@
 		E2E2CD071A66462E006F9592 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E2CD051A66462E006F9592 /* jsoncpp.cpp */; };
 		E2E2CFBC1A66FD49006F9592 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E2CFBA1A66FD49006F9592 /* Data.cpp */; };
 		E2F383B81A5983F60073EE90 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2F383B61A5983F60073EE90 /* Display.cpp */; };
-		E2F383BC1A5988960073EE90 /* Content.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2F383BA1A5988960073EE90 /* Content.cpp */; };
+		E2F383BC1A5988960073EE90 /* ContentModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2F383BA1A5988960073EE90 /* ContentModel.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
 		E45BE97C0E8CC7DD009D7055 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9720E8CC7DD009D7055 /* ApplicationServices.framework */; };
@@ -194,8 +194,8 @@
 		E2E2CFBB1A66FD49006F9592 /* Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Data.h; sourceTree = "<group>"; };
 		E2F383B61A5983F60073EE90 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
 		E2F383B71A5983F60073EE90 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
-		E2F383BA1A5988960073EE90 /* Content.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Content.cpp; sourceTree = "<group>"; };
-		E2F383BB1A5988960073EE90 /* Content.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Content.h; sourceTree = "<group>"; };
+		E2F383BA1A5988960073EE90 /* ContentModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentModel.cpp; sourceTree = "<group>"; };
+		E2F383BB1A5988960073EE90 /* ContentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentModel.h; sourceTree = "<group>"; };
 		E354468911BA093791076DD7 /* gpumat.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpumat.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/gpumat.hpp; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4385429A1E63ACEDC39A612 /* operations.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = operations.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/operations.hpp; sourceTree = SOURCE_ROOT; };
@@ -736,8 +736,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-				E2F383BA1A5988960073EE90 /* Content.cpp */,
-				E2F383BB1A5988960073EE90 /* Content.h */,
+				E2F383BA1A5988960073EE90 /* ContentModel.cpp */,
+				E2F383BB1A5988960073EE90 /* ContentModel.h */,
 				E2F383B61A5983F60073EE90 /* Display.cpp */,
 				E2F383B71A5983F60073EE90 /* Display.h */,
 				E21F17141A5967E700C7830A /* Camera.cpp */,
@@ -865,7 +865,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2E2CD071A66462E006F9592 /* jsoncpp.cpp in Sources */,
-				E2F383BC1A5988960073EE90 /* Content.cpp in Sources */,
+				E2F383BC1A5988960073EE90 /* ContentModel.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,

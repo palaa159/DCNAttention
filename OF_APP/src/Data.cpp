@@ -104,12 +104,28 @@ ofxJSONElement Data::getCategory(int cat){
 //--------------------------------------------------------------
 bool Data::pushData(string objectId, string updateObject){
     
-    string cmd = "curl -X PUT \
+//    cout << "updating parse. objectId: "<<objectId<<endl;
+//    cout << "\tupdate object: "<<updateObject<<endl;
+//    
+//    string cmd = "curl -X PUT \
+//    -H \"X-Parse-Application-Id: QKfYTUm0IwXbry5b5Mm4pUlrd3jizA8L6pkCmfwa\" \
+//    -H \"X-Parse-REST-API-Key: cGN5GZgtOYuf2Ktcm3VQd1NqDLGl7e1t1OaszbNB\" \
+//    -H \"Content-Type: application/json\" \
+//    -d '"+updateObject+"' \
+//    https://api.parse.com/1/classes/content_dummy_new/"+objectId;
+//    
+//    ofSystem( cmd );
+    
+    
+    cout << "updating parse. objectId: "<<objectId<<endl;
+    cout << "\tupdate object: "<<updateObject<<endl;
+    
+    string cmd = "curl -X POST \
     -H \"X-Parse-Application-Id: QKfYTUm0IwXbry5b5Mm4pUlrd3jizA8L6pkCmfwa\" \
     -H \"X-Parse-REST-API-Key: cGN5GZgtOYuf2Ktcm3VQd1NqDLGl7e1t1OaszbNB\" \
     -H \"Content-Type: application/json\" \
     -d '"+updateObject+"' \
-    https://api.parse.com/1/classes/content_dummy/"+objectId;
+    https://api.parse.com/1/batch";
     
     ofSystem( cmd );
 }

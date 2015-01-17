@@ -4,7 +4,7 @@
 #include "ofMain.h"
 #include "Camera.h"
 #include "Display.h"
-#include "Content.h"
+#include "ContentModel.h"
 #include "Data.h"
 
 
@@ -29,13 +29,12 @@ public:
 
     Data dataConnect;
     
-    vector<Content> allContent;
     int currContentIdx;
     
     Display display;
 
-//    Camera cam;
-    bool CAM_DEBUG = false;
+    Camera cam;
+    bool CAM_DEBUG = true;
     
     bool GO_MODE = false;
     

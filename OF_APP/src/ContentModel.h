@@ -11,17 +11,17 @@
 #include "ofMain.h"
 #include "ofxJSON.h"
 
-class Content {
+class ContentModel {
     
 public:
-    Content();
+    ContentModel();
 
     void update(float faceVal);
     
     void init(ofxJSONElement object);
     
-    string getFaceValue();
-    string getSocialValue();
+    float getFaceValue();
+    float getSocialValue();
     string getHeadline();
     string getImgLocalPath();
     string getCategoryName();

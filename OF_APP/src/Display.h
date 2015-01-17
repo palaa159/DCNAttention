@@ -9,7 +9,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "Content.h"
+#include "ContentModel.h"
 #include "ofxTweenzor.h"
 #include "ofxJSON.h"
 
@@ -31,12 +31,14 @@ private:
     ofTrueTypeFont	valueFont;
     ofTrueTypeFont	labelsFont;
     
-    string displayFaceVal;
-    string displaySocialVal;
+    float displayFaceVal;
+    float displaySocialVal;
+    float diplayTotalValue;
     string displayHeadline;
     string displayCompany;
     string displayCategory;
-    float totalValue;
+    string displayObjectId;
+
     
     ofImage displayImage;
     
@@ -56,7 +58,7 @@ private:
     ofColor payLightGray;
     ofColor payDarkGray;
     
-    Content leftScreen;
-    Content rightScreen;
+    ContentModel leftScreen;
+    ContentModel rightScreen;
 
 };

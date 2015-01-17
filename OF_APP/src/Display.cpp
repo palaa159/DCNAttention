@@ -54,6 +54,10 @@ void Display::update(int nFaces){
     
     
     numFaces = nFaces;
+    if(numFaces > 0){
+        displayFaceVal += 0.01*numFaces;
+        diplayTotalValue += 0.01*numFaces;
+    }
 }
 
 
@@ -86,10 +90,10 @@ void Display::draw(){
 
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+60);
-        headlineFont.drawString(displayHeadline, leftMargin, topMargin+200);
+        headlineFont.drawString(displayHeadline, leftMargin, topMargin+220);
         valueFont.drawString(ofToString(numFaces), valuesLeftMargin, topMargin+125);
-        valueFont.drawString(displayFaceVal, valuesLeftMargin+140, topMargin+125);
-        valueFont.drawString(ofToString(totalValue), valuesLeftMargin+400, topMargin+125);
+        valueFont.drawString(ofToString(displayFaceVal), valuesLeftMargin+140, topMargin+125);
+        valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
 
         //valueFont.drawString("current Social Value: "+displaySocialVal, 50, 80);
         
@@ -108,7 +112,7 @@ void Display::draw(){
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-23, timerLoc.y+30);
     } else {
         ofSetColor(0);
-        headlineFont.drawString("press space to begin", ofGetWidth()/2-100, ofGetHeight()/2);
+        headlineFont.drawString("press space to begin", ofGetWidth()/2-400, ofGetHeight()/2+300);
     }
 }
 
@@ -133,7 +137,8 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     displayCategory = leftScreen.getCategoryName();
     displayHeadline = leftScreen.getHeadline();
     displayCompany = leftScreen.getCompany();
-    totalValue = leftScreen.getTotalValue(); //float
+    diplayTotalValue = leftScreen.getTotalValue(); //float
+    displayObjectId = thisPair[0]["objectId"].asString();
     
     
     timestamp = int(ofGetElapsedTimef());
@@ -163,6 +168,18 @@ void Display::onRoundComplete(float* arg) {
 
     //Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
+    
+
+    
+    string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+"}";
+    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":"+ofToString(displaySocialVal)+",\"ts\":"+ofToString(ofGetUnixTime())+"}]}}";
+    string completeUpdate =
+    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
+    
+    
+    
+    
+    ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
     ((ofApp*)ofGetAppPtr())->nextRound();
 }
 

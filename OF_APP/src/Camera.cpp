@@ -81,15 +81,15 @@ void Camera::draw(){
 
     //if(grabber.isInitialized()){
         
-        grabber.draw(0, 0);
+        grabber.draw(0, 0, grabber.getWidth()/2, grabber.getHeight()/2);
         
         for(int i = 0; i < finder.size(); i++) {
             ofRectangle object = finder.getObjectSmoothed(i);
             sunglasses.setAnchorPercent(.5, .5);
-            float scaleAmount = .85 * object.width / sunglasses.getWidth();
+            float scaleAmount = .85 * (object.width / sunglasses.getWidth())/2;
             
             ofPushMatrix();
-            ofTranslate(object.x + object.width / 2., object.y + object.height * .42);
+            ofTranslate((object.x + object.width / 2.)/2, (object.y + object.height * .42)/2);
             ofScale(scaleAmount, scaleAmount);
             sunglasses.draw(0, 0);
             ofPopMatrix();
@@ -102,6 +102,11 @@ void Camera::draw(){
         }
         
     //}
+}
+
+//--------------------------------------------------------------
+int Camera::getNumFaces(){
+    return finder.size();
 }
 
 //--------------------------------------------------------------
