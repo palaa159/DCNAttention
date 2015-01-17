@@ -39,7 +39,7 @@ Camera::Camera(){
 
 #if USE_VIDEO
     grabber.loadMovie("test_brady.mov");
-    grabber.setVolume(0.f);
+    grabber.setVolume(0.5f);
     grabber.play();
 #else
     ofSetLogLevel(OF_LOG_VERBOSE);
@@ -80,7 +80,6 @@ void Camera::draw(){
     ofSetColor(255);
 
     //if(grabber.isInitialized()){
-        
         grabber.draw(0, 0, grabber.getWidth()/2, grabber.getHeight()/2);
         
         for(int i = 0; i < finder.size(); i++) {

@@ -33,6 +33,7 @@ private:
     
     float displayFaceVal;
     float displaySocialVal;
+    float refSocialVal;
     float diplayTotalValue;
     string displayHeadline;
     string displayCompany;

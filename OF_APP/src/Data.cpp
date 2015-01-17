@@ -137,15 +137,15 @@ bool Data::pushData(string objectId, string updateObject){
 void Data::sendShowing(string leftObjId, string rightObjId, string catId){
 
     
-    std::string url = "http://attention.market/api/shown?left="+leftObjId+"&right="+rightObjId+"&cat="+catId;
-    cout << "SEND SHOWING GET: "<<url<<endl;
+    std::string url = "http://attention.market/api/showing?left="+leftObjId+"&right="+rightObjId+"&cat="+catId;
+    cout << "SEND SHOWING GET REQUEST: "<<url<<endl;
 
-    if (json.open(url)) {
-        ofLogNotice("Data::sendShowing resp: \n") << json.getRawString(true);
-        parseData(json);
-    } else {
-        ofLogNotice("Data::sendShowing fail") << "****  !!! Failed to parse JSON !!!! *****\n\n";
-    }
+//    if (json.open(url)) {
+//        ofLogNotice("Data::sendShowing resp: \n" + json.getRawString(true));
+//        //parseData(json);
+//    } else {
+//        ofLogNotice("Data::sendShowing fail ****  !!! Failed to parse JSON !!!! *****\n\n");
+//    }
 
     // another strategy if needed
 //     ofHttpRequest req = ofHttpRequest(url, "GET", true);

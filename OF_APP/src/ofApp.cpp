@@ -86,7 +86,7 @@ void ofApp::nextRound(){
         ofxJSONElement category = dataConnect.getCategory(CURR_CAT);
         cout << "LENGTH: "<<category.size() << endl;
         int lowestShowCt = category[0]["shown"].asInt(); //start with shownCt of first obj
-        
+        cout << "first lowestShowCt: "<< lowestShowCt << endl;
         vector <ofxJSONElement> thisPair;
         int objNum = 0;
         

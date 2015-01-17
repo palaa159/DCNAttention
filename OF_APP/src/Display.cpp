@@ -170,13 +170,10 @@ void Display::onRoundComplete(float* arg) {
     Tweenzor::removeTween(&timerPos);
     
 
-    
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+"}";
-    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":"+ofToString(displaySocialVal)+",\"ts\":"+ofToString(ofGetUnixTime())+"}]}}";
+    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":"+ofToString(displaySocialVal)+",\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
     string completeUpdate =
-    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
-    
-    
+    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";    
     
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
