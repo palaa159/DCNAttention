@@ -116,6 +116,9 @@ app
         // socket io to Gabriel
         io.sockets.emit('showing', dataToGab);
         iodebug('Data passed to SocketIO clients.');
+        res.json({
+            '200': 'OK'
+        });
     })
     .post('/api/updatecontent', function(req, res) {
         // get objectId and updated value
