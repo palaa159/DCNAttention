@@ -35,21 +35,21 @@ app.main = (function() {
 
 		var allCategories;
 		var categoriesColors = [
-			{	r: 255,		g: 255,		b: 0	},
-			{	r: 0,		g: 255,		b: 0	},
-			{	r: 0,		g: 0,		b: 255	},
-			{	r: 255,		g: 255,		b: 0	},
-			{	r: 0,		g: 255,		b: 255	},
-			{	r: 255,		g: 0,		b: 255	},
-			{	r: 120,		g: 120,		b: 40	}
+			{	r: 80,		g: 200,		b: 245	},
+			{	r: 240,		g: 105,		b: 35	},
+			{	r: 0,		g: 140,		b: 220	},
+			{	r: 240,		g: 75,		b: 160	},
+			{	r: 255,		g: 180,		b: 20	},
+			{	r: 0,		g: 210,		b: 125	},
+			{	r: 255,		g: 80,		b: 120	}
 		];
 		// var allCompanies;
 		var social_counts = ['twitter_counts', 'fb_counts', 'google_counts', 'linkedin_counts', 'pinterest_counts'];
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
 
 		// Load all data
-		// d3.json("dummy_data/getcontents.json", function(error, json) {
-		d3.json('http://attention.market/api/getcontents', function(error, json) {
+		d3.json("dummy_data/getcontents.json", function(error, json) {
+		// d3.json('http://attention.market/api/getcontents', function(error, json) {
 		  if (error) return console.warn(error);
 		  
 		  // Filling out our 'globals' — lists of categories and companies
@@ -376,7 +376,7 @@ app.main = (function() {
 			svg.append('text')
 		  		.attr('x', 0)
 		  		.attr('y', 20)
-				.text(dataset[0].category.toUpperCase())
+				.text(dataset[0].category)
 		  		.attr('class', 'heading2');
 
 			// Chart
@@ -436,7 +436,7 @@ app.main = (function() {
 			var svgSize = getCSS('top5');			
 
 			// Visualization attributes
-			var margin = {top: 60, right: 0, bottom: 0, left: 0};
+			var margin = {top: 45, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -461,12 +461,12 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('TOP 5 PUBLISHERS')
+					.text('Top 5')
 			  		.attr('class', 'heading2');
 
 			// Legend
 			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 45)');
+						    .attr('transform', 'translate(0, 40)');
 
 			legend.append('circle')
 			  		.attr('cx', 6)
@@ -475,19 +475,19 @@ app.main = (function() {
 			  		.attr('fill', 'rgba(180, 180, 180, 1)');
 
 			legend.append('text')
-			  		.attr('x', 16)
+			  		.attr('x', 14)
 			  		.attr('y', 0)
 					.text('SOCIAL')
 			  		.attr('class', 'heading4');
 
 			legend.append('circle')
-			  		.attr('cx', 80)
+			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
 			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
 
 			legend.append('text')
-			  		.attr('x', 90)
+			  		.attr('x', 72)
 			  		.attr('y', 0)
 					.text('FACE')
 			  		.attr('class', 'heading4');			  					  		
@@ -553,7 +553,7 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory');
 
 			// Visualization attributes
-			var margin = {top: 80, right: 0, bottom: 0, left: 0};
+			var margin = {top: 70, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -578,37 +578,37 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('TOP PUBLISHERS')
+					.text('Top by')
 			  		.attr('class', 'heading2')
 			  		.append('tspan')
 			  		.attr('x', 0)
 			  		.attr('y', 40)			  		
-			  		.text('BY CATEGORY');
+			  		.text('Category');
 
 			// Legend
 			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 65)');
+						    .attr('transform', 'translate(0, 60)');
 
 			legend.append('circle')
 			  		.attr('cx', 6)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(0, 0, 0, 1)');
+			  		.attr('fill', 'rgba(180, 180, 180, 1)');
 
 			legend.append('text')
-			  		.attr('x', 16)
+			  		.attr('x', 14)
 			  		.attr('y', 0)
 					.text('SOCIAL')
 			  		.attr('class', 'heading4');
 
 			legend.append('circle')
-			  		.attr('cx', 80)
+			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(0, 0, 0, 0.5)');			  		
+			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
 
 			legend.append('text')
-			  		.attr('x', 90)
+			  		.attr('x', 72)
 			  		.attr('y', 0)
 					.text('FACE')
 			  		.attr('class', 'heading4');			  					  		
@@ -729,7 +729,7 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('SOCIAL ENGAGEMENT BY CATEGORY')
+					.text('Social Engagement by Category')
 			  		.attr('class', 'heading2');
 
 		    var allCharts = svg.append('g')
