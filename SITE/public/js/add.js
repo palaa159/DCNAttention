@@ -70,7 +70,7 @@ var attachEvents = function() {
         // saveAll
         var today = (new Date().getMonth() + 1).toString() + (new Date().getDate()).toString();
         console.log(today);
-        var DB = Parse.Object.extend('content_' + 'dummy');
+        var DB = Parse.Object.extend('content_' + 'dummy_new');
 
         // let's make a list to post
         var listToPost = [];
@@ -89,7 +89,9 @@ var attachEvents = function() {
                     company = $(v).children('select').val();
                 } else if (i === 4) {
                     cat_id = $(v).children('select').val();
-                    cat_title = $(v).children('select').attr('data-title');
+                    cat_title = $(v).children('select').find('option:selected').attr('data-title');
+                    console.log(cat_id);
+                    console.log(cat_title);
                 }
             });
 
@@ -99,23 +101,35 @@ var attachEvents = function() {
             db.set('image_url', image_url);
             db.set('company', company);
             db.set('category', cat_title);
-            db.set('cat_id', cat_id);
-            db.set('social_val', 0);
+            db.set('cat_id', parseInt(cat_id));
+            db.set('shown', 0);
+            db.set('fb_counts', 0);
+            db.set('twitter_counts', 0);
+            db.set('linkedin_counts', 0);
+            db.set('google_counts', 0);
+            db.set('pinterest_counts', 0);
+            db.set('val_history', [{
+                ts: new Date().getTime(),
+                face_val: 0,
+                social_val: 0
+            }]);
             db.set('face_val', 0);
-            db.set('social_val_history', []);
-            db.set('face_val_history', []);
+            db.set('social_val', 0);
+            // not cumulative
 
             listToPost.push(db);
         });
 
-        Parse.Object.saveAll(listToPost, {
-            success: function() {
-                alert('yeah');
-                $('input').val('');
-            },
-            error: function() {
-                alert('nah');
-            }
-        });
+        // Parse.Object.saveAll(listToPost, {
+        //     success: function() {
+        //         alert('yeah');
+        //         $('input').val('');
+        //         location.reload();
+        //     },
+        //     error: function(err) {
+        //         console.log(err);
+        //         alert('nah');
+        //     }
+        // });
     });
 };

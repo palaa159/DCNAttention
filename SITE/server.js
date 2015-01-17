@@ -1,3 +1,6 @@
+var CONTENT_DATABASE = 'content_dummy_new';
+var bulk_id = 'e1a160357d5c7b4f30ba3639354c9e1f57360f55';
+
 var http = require('http'),
     path = require('path'),
     util = require('util'),
@@ -6,7 +9,9 @@ var http = require('http'),
     colors = require('colors'),
     async = require('async'),
     bodyParser = require('body-parser'),
-    parse = require('./modules/parse.js');
+    parse = require('./modules/parse.js'),
+    autopilot = require('./modules/autopilot'),
+    schedule = require('node-schedule');
 
 // end of dependencies
 
@@ -32,6 +37,9 @@ app.use(bodyParser.urlencoded({
     Routing configs
 */
 app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
     console.log('--------------'.white);
     console.log('METHOD: '.white.bold + req.method + ', '.white.bold + req.url);
     // console.log('vvv'.white);
@@ -62,43 +70,56 @@ app
     });
 
 // FOR OFX FACETRACKER
-var CONTENT_DATABASE = 'content_dummy';
 app
-    .get('/of/getcontents', function(req, res) {
+    .get('/api/getcontents', function(req, res) {
+        // console.log(req.query)
         // async 
         async.parallel({
             contents: function(callback) {
                 parse.getObjects(CONTENT_DATABASE, callback);
                 // callback(null, 1);
-            },
-            categories: function(callback) {
-                parse.getObjects('categories', callback);
-                // callback(null, 2);
             }
         }, function(err, results) {
-            var cats = results.categories;
+            // var cats = results.categories;
             var contents = results.contents;
-            res.send(contents);
+            res.json(contents);
         });
     })
-    .get('/of/autopilot', function(req, res) {
+    .get('/api/getContentsByCatId', function(req, res) {
+        var cat = req.query.id;
+        parse.getObjectsByCat(CONTENT_DATABASE, cat, function(d) {
+            res.json(d);
+        });
+    })
+    .get('/api/getMediaPublishers', function(req, res) {
+        parse.getMediaPublishers('media_companies', function(d) {
+            res.json(d);
+        });
+    })
+    .get('/api/autopilot', function(req, res) {
         async.parallel({
             contents: function(callback) {
                 parse.getObjects(CONTENT_DATABASE, callback);
                 // callback(null, 1);
-            },
-            categories: function(callback) {
-                parse.getObjects('categories', callback);
-                // callback(null, 2);
             }
         }, function(err, results) {
-            var cats = results.categories;
             var contents = results.contents;
             // res.send(contents);
-            fake_valuate(contents, res);
+            autopilot.fake_valuate(parse, CONTENT_DATABASE, contents, res);
         });
     })
-    .post('/of/updatecontent', function(req, res) {
+    .get('/api/getBulkId', function(req, res) {
+        getBulkId(res);
+    })
+    .get('/api/updateSocVal', function(req, res) {
+        updateSocVal(bulk_id);
+        res.send('updated');
+    })
+    .get('/api/showing', function(req, res) {
+        var dataToGab = req.query;
+        // socket io to Gabriel
+    })
+    .post('/api/updatecontent', function(req, res) {
         // get objectId and updated value
         var data = req.body;
         parse.updateObject(CONTENT_DATABASE, data, res);
@@ -106,93 +127,88 @@ app
 
 // FOR SOCIAL VALUATION
 
-/* Fake valuate content
-    
-    loop category
-    pick a pair
-    add some value to it
-    push to db
-    interval of 15 sec
+// http://plus.sharedcount.com/bulk?bulk_id=b890b7126b0b61c07aff2d1f30961106c2a11f92&apikey=55a4d6fb1ce6d387f94943a7b9b9c8550016990e
 
-*/
-var id = 0;
-var id_to_title;
+/////
+/////
+/////
+/////
+// FUNCTIONS
+//
 
-function fake_valuate(contents, res) {
-    // console.log(contents);
-    // random a cat_id 1-7
-    if (id === 7) {
-        id = 1;
-    } else {
-        id++;
-    }
-    console.log('Picking id: ' + id);
-    // pick 2 in contents to compete
-    // get cat_id of id
-    var cat_contents = [];
-    contents.forEach(function(content) {
-        if (content.cat_id === id) {
-            id_to_title = content.category;
-            cat_contents.push(content);
-        }
+function init() {
+    getBulkId();
+    var j = schedule.scheduleJob('0,30 * * * *', function() {
+        updateSocVal(bulk_id);
     });
-    console.log('content in cat length: ' + cat_contents.length);
-    // console.log(cat_contents);
-    // pick 2
-    var tmp_range = [];
-    for (var i = 0; i < cat_contents.length; i++) {
-        // console.log(i);
-        tmp_range.push(i);
-        // console.log(tmp_range);
-    }
-    console.log('tmp_range = ');
-    console.log(tmp_range);
-    var rand_content_1 = tmp_range[Math.floor(Math.random() * tmp_range.length)];
-    // remove
-    tmp_range.splice(tmp_range.indexOf(rand_content_1), 1);
-    var rand_content_2 = tmp_range[Math.floor(Math.random() * tmp_range.length)];
-
-    console.log('Pairing completed');
-    console.log(rand_content_1, rand_content_2);
-    cat_contents[rand_content_1].face_val_history.push({
-        ts: new Date().getTime(),
-        val: (((Math.random() * 2) + 1) / 3).toFixed(2)
-    });
-    cat_contents[rand_content_2].face_val_history.push({
-        ts: new Date().getTime(),
-        val: (((Math.random() * 2) + 1) / 3).toFixed(2)
-    });
-    cat_contents[rand_content_1].social_val_history.push({
-        ts: new Date().getTime(),
-        val: (((Math.random() * 5) + 1) / 3).toFixed(2)
-    });
-    cat_contents[rand_content_2].social_val_history.push({
-        ts: new Date().getTime(),
-        val: (((Math.random() * 5) + 1) / 3).toFixed(2)
-    });
-    var toUpdate_1 = {
-        objectId: cat_contents[rand_content_1].objectId,
-        data: {
-            face_val_history: cat_contents[rand_content_1].face_val_history,
-            social_val_history: cat_contents[rand_content_1].social_val_history,
-            face_val: calculateVal(cat_contents[rand_content_1].face_val_history),
-            social_val: calculateVal(cat_contents[rand_content_1].social_val_history)
-        }
-    };
-    var toUpdate_2 = {
-        objectId: cat_contents[rand_content_2].objectId,
-        data: {
-            face_val_history: cat_contents[rand_content_2].face_val_history,
-            social_val_history: cat_contents[rand_content_2].social_val_history,
-            face_val: calculateVal(cat_contents[rand_content_2].face_val_history),
-            social_val: calculateVal(cat_contents[rand_content_2].social_val_history)
-        }
-    };
-    var toUpdate = [toUpdate_1, toUpdate_2];
-    parse.updateObjectAutopilot('content_dummy', toUpdate, res, id_to_title);
 }
 
-// fake_valuate();
+function updateSocVal(bulk_id) {
+    console.log('updating ' + bulk_id);
+    // get all data
+    var url = 'http://plus.sharedcount.com/bulk?apikey=55a4d6fb1ce6d387f94943a7b9b9c8550016990e&bulk_id=' + bulk_id;
+    http.get(url, function(res) {
+        // console.log("Got response: " + res.statusCode);
+        var result = '';
+        res.on('data', function(d) {
+            result += d.toString();
+        });
+        res.on('end', function() {
+            var tmp = JSON.parse(result);
+            // console.log(tmp);
+            parse.updateSocVal(CONTENT_DATABASE, tmp);
+        });
+
+    }).on('error', function(e) {
+        console.log("Got error: " + e.message);
+    });
+}
+
+function getBulkId(res) {
+    parse.getObjectBulk(CONTENT_DATABASE, function(data) {
+        // console.log('data'.red + data); // --> text
+        var data_count = (data.match(/\n/g) || []).length;
+        console.log(('URL counts: ' + data_count).bold.white);
+        // get bulk id
+        var options = {
+            hostname: 'plus.sharedcount.com',
+            path: '/bulk?apikey=55a4d6fb1ce6d387f94943a7b9b9c8550016990e',
+            method: 'POST'
+        };
+        var req = http.request(options, function(res_post) {
+            // console.log('STATUS: ' + res_post.statusCode);
+            // console.log('HEADERS: ' + JSON.stringify(res_post.headers));
+            res_post.setEncoding('utf8');
+            res_post.on('data', function(chunk) {
+                // res.json(JSON.parse(chunk));
+                // bulk request 
+                bulk_id = JSON.parse(chunk).bulk_id;
+                console.log('bulk id:'.white);
+                console.log((bulk_id).red);
+                if (res) {
+                    res.send(bulk_id + ' UPDATED');
+                }
+                setTimeout(function() {
+                    updateSocVal(bulk_id);
+                }, 10 * 1000);
+            });
+        });
+        req.on('error', function(e) {
+            console.log('problem with request: ' + e.message);
+        });
+        req.write(data);
+        req.end();
+    });
+}
+
+// Helpers
+function calculateVal(arr, which) {
+    var totVal = 0;
+    arr.forEach(function(item) {
+        totVal += parseFloat(item[which]);
+    });
+    return totVal;
+}
 
 /*
     init server
@@ -202,13 +218,5 @@ http.createServer(app).listen(app.get('port'), function() {
     console.log('  DCN Server Running  '.white.inverse);
     var listeningString = '  Listening on port ' + app.get('port') + "  ";
     console.log(listeningString.cyan.inverse);
+    init();
 });
-
-// Helpers
-function calculateVal(arr) {
-    var totVal = 0;
-    arr.forEach(function(item) {
-        totVal += parseFloat(item.val);
-    });
-    return totVal;
-}
