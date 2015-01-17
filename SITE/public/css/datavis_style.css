@@ -8,6 +8,25 @@ margin = 6% (2 * gutter)
 	font-family: 'Lato', sans-serif !important;
 }
 
+#logo{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	text-align: center;
+}
+
+#logo img{
+	max-width: 16%;
+}
+
+#topChart{
+	top: 6%;
+	left: 6%;
+	width: 88%;
+	height: 10%;
+}
+
 #mainChart{
 	top: 19%;
 	left: 6%;

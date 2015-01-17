@@ -60,6 +60,7 @@ app.main = (function() {
 		  allCategories = getAllCategories(json);
 		  // allCompanies = getAllCompanies(json);
 
+		  processTopChart(json, cat, drawTopChart);
 		  processMainChart(json, cat, drawMainChart);
 		  processTop5(json , drawTop5);
 		  processTopByCategory(json, drawTopByCategory);
@@ -68,6 +69,25 @@ app.main = (function() {
 
 
 		/*---------- DATA PROCESSING ----------*/
+
+		function processTopChart(data, category, callback){
+
+			// Filter current category
+			var filteredData = _.filter(data, function(obj){
+				return obj.cat_id == category;
+			});
+			// console.log(filteredData);
+
+			var newData = mergeCompanies(filteredData);
+			// console.log(newData);
+
+			var currentContenders = _.filter(newData, function(element, index, list){
+				return element.highlight == true;
+			});
+			console.log(currentContenders);
+
+			// callback(newData);
+		}
 
 		// CHART: Main (current category)
 		function processMainChart(data, category, callback){
@@ -310,7 +330,34 @@ app.main = (function() {
 
 		/*--------------- DRAW ----------------*/
 
-		// Draws the main chart
+		function drawTopChart(dataset){
+
+			console.log(dataset);
+
+			/*----- LAYOUT -----*/
+			var svgSize = getCSS('mainChart');
+
+			// Visualization attributes
+			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var width  = svgSize.width - margin.left - margin.right;
+			var height = svgSize.height - margin.top - margin.bottom;
+
+			var xScale = d3.time.scale()
+							.domain(d3.extent(fullTimeRange, function(d, i) {
+								// console.log(d.ts);
+								// console.log(i);
+								return d.ts;
+							}))
+							.range([0, width]);
+
+			var yScale = d3.scale.linear()
+						   .domain([0, d3.max(dataset, function(d, i){
+															return d.social_val + d.face_val;
+														})])
+						   .range([height, 0]);			
+
+		}
+
 		function drawMainChart(dataset){
 
 			// console.log(dataset);
