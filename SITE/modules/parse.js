@@ -7,11 +7,11 @@ var kaiseki = new Kaiseki(APP_ID, REST_KEY);
 
 /* RATINGS
  */
-var RATE_FB = 1,
-    RATE_TWIT = 1,
-    RATE_PIN = 1,
-    RATE_LINKED = 1,
-    RATE_GOOG = 1;
+var RATE_FB = 0.01,
+    RATE_TWIT = 0.01,
+    RATE_PIN = 0.01,
+    RATE_LINKED = 0.01,
+    RATE_GOOG = 0.01;
 
 
 module.exports = {
@@ -65,7 +65,7 @@ module.exports = {
     updateSocVal: function(classname, data) {
         kaiseki.getObjects(classname, function(err, res, body, success) {
             if (success) {
-                console.log('Updating Social Value');
+                // console.log('Updating Social Value');
                 // console.log(body); // []
                 var tmpArray = [];
                 var tmpData = data.data;
@@ -86,7 +86,7 @@ module.exports = {
                                     google_counts: parseInt(tmpData[k].GooglePlusOne) || 0,
                                     pinterest_counts: parseInt(tmpData[k].Pinterest) || 0,
                                     linkedin_counts: parseInt(tmpData[k].LinkedIn) || 0,
-                                    val_history: processValHistory(item.val_history, allSocVal), // current - last
+                                    val_history: processValHistory(item.val_history, allSocVal, item.social_val), // current - last
                                     social_val: allSocVal || 0
                                 }
 
@@ -97,9 +97,9 @@ module.exports = {
                 // Update to Parse
                 // console.log(tmpArray);
                 kaiseki.updateObjects(classname, tmpArray, function(err, res, body, success) {
-                    console.log(err);
-                    console.log(body);
-                    console.log(success);
+                    // console.log(err);
+                    // console.log(body);
+                    // console.log(success);
                 });
             }
         });
@@ -127,12 +127,15 @@ module.exports = {
 };
 
 // Helpers
-function processValHistory(beforearray, now_val) {
-    beforearray.push({
+function processValHistory(arraybefore, now_val, social_val) {
+    arraybefore.push({
         ts: new Date().getTime(),
         // non-cumulative
         face_val: 0,
-        social_val: now_val - beforearray[beforearray.length - 1].social_val
+        // BELOW IS WRONG
+        // SEARCH FOR LAST ARRAY THAT IS NOT 0
+        // AND WHY THERE ARE -1s?????
+        social_val: (now_val - social_val) || social_val
     });
-    return beforearray;
+    return arraybefore;
 }

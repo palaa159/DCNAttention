@@ -33,6 +33,14 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+var restdebug = function(msg) {
+    util.log('REST Debug: '.bold.cyan + ' ' + (msg).white);
+};
+
+var appdebug = function(msg) {
+    util.log('APP Debug: '.bold.magenta + ' ' + (msg).white);
+};
+
 /*
     Routing configs
 */
@@ -52,18 +60,14 @@ app
         console.log('--> Hitting homepage');
         res.render('client/home.ejs');
     })
-    .get('/stock', function(req, res) {
+    .get('/market', function(req, res) {
         console.log('--> Hitting Mobile stock market');
-        res.render('client/stock.ejs');
+        res.render('client/market.ejs');
     })
-    .get('/about', function(req, res) {
-        console.log('--> Hitting About');
-        res.render('client/about.ejs');
-    })
-    .get('/big', function(req, res) {
-        console.log('--> Hitting Big screen display');
-        res.render('client/big.ejs');
-    })
+    // .get('/datavis', function(req, res) {
+    //     console.log('--> Hitting Big screen display');
+    //     res.render('client/datavis.ejs');
+    // })
     .get('/util/add', function(req, res) {
         console.log('--> Hitting Add content');
         res.render('client/add.ejs');
@@ -118,6 +122,12 @@ app
     .get('/api/showing', function(req, res) {
         var dataToGab = req.query;
         // socket io to Gabriel
+        io.sockets.emit('showing', dataToGab);
+        iodebug('Data passed to SocketIO clients.');
+        res.json({
+            '200': 'OK'
+        });
+        restdebug('Respond to client with {"200": "OK"}');
     })
     .post('/api/updatecontent', function(req, res) {
         // get objectId and updated value
@@ -144,7 +154,7 @@ function init() {
 }
 
 function updateSocVal(bulk_id) {
-    console.log('updating ' + bulk_id);
+    appdebug('updating ' + bulk_id);
     // get all data
     var url = 'http://plus.sharedcount.com/bulk?apikey=55a4d6fb1ce6d387f94943a7b9b9c8550016990e&bulk_id=' + bulk_id;
     http.get(url, function(res) {
@@ -157,10 +167,11 @@ function updateSocVal(bulk_id) {
             var tmp = JSON.parse(result);
             // console.log(tmp);
             parse.updateSocVal(CONTENT_DATABASE, tmp);
+            appdebug('Scraped Social values and updated to Parse');
         });
 
     }).on('error', function(e) {
-        console.log("Got error: " + e.message);
+        appdebug("Got error: " + e.message);
     });
 }
 
@@ -168,7 +179,7 @@ function getBulkId(res) {
     parse.getObjectBulk(CONTENT_DATABASE, function(data) {
         // console.log('data'.red + data); // --> text
         var data_count = (data.match(/\n/g) || []).length;
-        console.log(('URL counts: ' + data_count).bold.white);
+        restdebug(('URL counts: ' + data_count).bold.white);
         // get bulk id
         var options = {
             hostname: 'plus.sharedcount.com',
@@ -183,14 +194,13 @@ function getBulkId(res) {
                 // res.json(JSON.parse(chunk));
                 // bulk request 
                 bulk_id = JSON.parse(chunk).bulk_id;
-                console.log('bulk id:'.white);
-                console.log((bulk_id).red);
+                appdebug('bulk id: '.white + (bulk_id).red);
                 if (res) {
                     res.send(bulk_id + ' UPDATED');
                 }
                 setTimeout(function() {
                     updateSocVal(bulk_id);
-                }, 10 * 1000);
+                }, 5 * 1000);
             });
         });
         req.on('error', function(e) {
@@ -213,10 +223,20 @@ function calculateVal(arr, which) {
 /*
     init server
 */
-http.createServer(app).listen(app.get('port'), function() {
+var server = http.createServer(app).listen(app.get('port'), function() {
     console.log();
     console.log('  DCN Server Running  '.white.inverse);
     var listeningString = '  Listening on port ' + app.get('port') + "  ";
     console.log(listeningString.cyan.inverse);
     init();
+});
+
+// Socket.io
+
+var io = require('socket.io').listen(server);
+var iodebug = function(msg) {
+    util.log('SocketIO Debug'.yellow.bold + ': ' + (msg).white);
+};
+io.sockets.on('connection', function(socket) {
+    iodebug('A client ' + socket.id + ' has connected.');
 });

@@ -1,0 +1,31 @@
+<!-- includes -->
+<% include ../includes/header %>
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="sixteen columns">
+				<h1>Market Chart goes here</h1>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+<% include ../includes/footer %>
+<% include ../includes/default_scripts %>
+
+<!-- Other scripts start here (if any) -->
+
+
+<script src="js/site.js"></script>
+<!-- socket.io -->
+<script>
+	var socket = io();
+	socket.on('showing', function(d) {
+		console.log('Data showing received.');
+	});
+</script>
+
+
+<% include ../includes/end %>
