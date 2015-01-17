@@ -127,12 +127,15 @@ module.exports = {
 };
 
 // Helpers
-function processValHistory(beforearray, now_val) {
-    beforearray.push({
+function processValHistory(arraybefore, now_val) {
+    arraybefore.push({
         ts: new Date().getTime(),
         // non-cumulative
         face_val: 0,
-        social_val: now_val - beforearray[beforearray.length - 1].social_val
+        // BELOW IS WRONG
+        // SEARCH FOR LAST ARRAY THAT IS NOT 0
+        // AND WHY THERE ARE -1s?????
+        social_val: now_val - arraybefore[arraybefore.length - 1].social_val
     });
-    return beforearray;
+    return arraybefore;
 }

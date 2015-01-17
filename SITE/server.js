@@ -52,13 +52,9 @@ app
         console.log('--> Hitting homepage');
         res.render('client/home.ejs');
     })
-    .get('/stock', function(req, res) {
+    .get('/market', function(req, res) {
         console.log('--> Hitting Mobile stock market');
-        res.render('client/stock.ejs');
-    })
-    .get('/about', function(req, res) {
-        console.log('--> Hitting About');
-        res.render('client/about.ejs');
+        res.render('client/market.ejs');
     })
     .get('/big', function(req, res) {
         console.log('--> Hitting Big screen display');
@@ -118,6 +114,8 @@ app
     .get('/api/showing', function(req, res) {
         var dataToGab = req.query;
         // socket io to Gabriel
+        io.sockets.emit('showing', dataToGab);
+        iodebug('Data passed to SocketIO clients.');
     })
     .post('/api/updatecontent', function(req, res) {
         // get objectId and updated value
@@ -213,10 +211,20 @@ function calculateVal(arr, which) {
 /*
     init server
 */
-http.createServer(app).listen(app.get('port'), function() {
+var server = http.createServer(app).listen(app.get('port'), function() {
     console.log();
     console.log('  DCN Server Running  '.white.inverse);
     var listeningString = '  Listening on port ' + app.get('port') + "  ";
     console.log(listeningString.cyan.inverse);
     init();
+});
+
+// Socket.io
+
+var io = require('socket.io').listen(server);
+var iodebug = function(msg) {
+    util.log('SocketIO Debug'.yellow.bold + ': ' + (msg).white);
+};
+io.sockets.on('connection', function(socket) {
+    iodebug('A client ' + socket.id + ' has connected.');
 });

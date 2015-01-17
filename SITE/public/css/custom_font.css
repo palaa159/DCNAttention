@@ -3,13 +3,13 @@
 
 
 @font-face {
-    font-family: 'phosphatesolidmedium';
-    src: url('ufonts.com_phosphatesolid-webfont.eot');
-    src: url('ufonts.com_phosphatesolid-webfont.eot?#iefix') format('embedded-opentype'),
-         url('ufonts.com_phosphatesolid-webfont.woff2') format('woff2'),
-         url('ufonts.com_phosphatesolid-webfont.woff') format('woff'),
-         url('ufonts.com_phosphatesolid-webfont.ttf') format('truetype'),
-         url('ufonts.com_phosphatesolid-webfont.svg#phosphatesolidmedium') format('svg');
+    font-family: 'phosphate';
+    src: url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.eot');
+    src: url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.eot?#iefix') format('embedded-opentype'),
+         url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.woff2') format('woff2'),
+         url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.woff') format('woff'),
+         url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.ttf') format('truetype'),
+         url('http://attention.market/css/ufonts.com_phosphatesolid-webfont.svg#phosphatesolidmedium') format('svg');
     font-weight: normal;
     font-style: normal;
 
