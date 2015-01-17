@@ -64,10 +64,10 @@ app
         console.log('--> Hitting Mobile stock market');
         res.render('client/market.ejs');
     })
-    .get('/datavis', function(req, res) {
-        console.log('--> Hitting Big screen display');
-        res.render('client/datavis.ejs');
-    })
+    // .get('/datavis', function(req, res) {
+    //     console.log('--> Hitting Big screen display');
+    //     res.render('client/datavis.ejs');
+    // })
     .get('/util/add', function(req, res) {
         console.log('--> Hitting Add content');
         res.render('client/add.ejs');
