@@ -1,0 +1,87 @@
+/* your style begins here */
+
+/*---------- SVG styles ----------------
+column = 10%
+gutter = 3%
+margin = 6% (2 * gutter)
+--------------------------------------*/
+
+#mainChart{
+	top: 18%;
+	left: 5%;
+	width: 75%;
+	height: 50%;
+}
+
+#top5{
+	top: 18%;
+	left: 83%;
+	width: 11%;
+	height: 25%;
+}
+
+#topByCategory{
+	top: 41%;
+	left: 83%;
+	width: 11%;
+	height: 50%;
+}
+
+#socialEngagement{
+	top: 68%;
+	left: 5%;
+	width: 75%;
+	height: 25%;
+}
+
+/*---------- SVG styles ----------------
+main color:	rgb(80, 55, 150) (purple)
+aux color:	rgb(115, 205, 225) (cyan)
+--------------------------------------*/
+svg{
+	position: absolute;
+}
+
+text{
+	font-family: Arial, Helvetica, sans-serif; 
+	fill: rgb(80, 55, 150);
+}
+
+text.heading2{
+	font-size: 21px;
+}
+
+text.heading3{
+	font-size: 13px;
+	font-weight: bold;
+}
+
+text.heading4{
+	/*font-weight: bold;*/
+	font-size: 11px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: rgb(80, 55, 150);
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis text{
+  font-size: 9px;
+}
+
+.x.axis text {
+  font-size: 11px;
+}
+
+.line {
+  fill: none;
+/*  stroke: rgba(0, 255, 255, 0.5);
+  stroke-width: 1.5px;*/
+}

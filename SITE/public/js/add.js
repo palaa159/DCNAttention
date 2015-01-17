@@ -111,8 +111,7 @@ var attachEvents = function() {
             db.set('val_history', [{
                 ts: new Date().getTime(),
                 face_val: 0,
-                social_val: 0,
-                ref_social_val: 0
+                social_val: 0
             }]);
             db.set('face_val', 0);
             db.set('social_val', 0);
