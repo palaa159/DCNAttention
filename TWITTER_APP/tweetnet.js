@@ -51,7 +51,7 @@ twitterStreamClient.on('tweet', function(tweet) {
     }
 });
 
-twitterStreamClient.start(['payattention', 'dcn', 'dcnlive']);
+twitterStreamClient.start(['dcnlive']);
 
 // test
 // sendMail({
