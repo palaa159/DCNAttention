@@ -139,15 +139,18 @@ void Data::sendShowing(string leftObjId, string rightObjId, string catId){
     
     std::string url = "http://attention.market/api/shown?left="+leftObjId+"&right="+rightObjId+"&cat="+catId;
     cout << "SEND SHOWING GET: "<<url<<endl;
-    
+
     if (json.open(url)) {
         ofLogNotice("Data::sendShowing resp: \n") << json.getRawString(true);
         parseData(json);
     } else {
         ofLogNotice("Data::sendShowing fail") << "****  !!! Failed to parse JSON !!!! *****\n\n";
     }
+
     // another strategy if needed
-    // ofHttpResponse req1 = ofHttpRequest("http://requestb.in/1d0tdyo1", "request", true);
+//     ofHttpRequest req = ofHttpRequest(url, "GET", true);
+//    ofHttpResponse res = ofLoadURLAsync(url);
+//    cout << res.data << endl;
     // ofHttpResponse resp = ofLoadURLAsync("url.txt");
     // cout<<resp.data<<endl;
 }

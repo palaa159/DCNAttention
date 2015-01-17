@@ -64,9 +64,6 @@ void ofApp::keyPressed(int key){
         case 'd':
             dataConnect.pullData();
             break;
-        case 'u':
-            dataConnect.pushData("T7Jkff8MZ1","{\"social_val\":102}");
-            break;
         case ' ':
             if(!GO_MODE){
                 GO_MODE = true;
