@@ -86,7 +86,7 @@ module.exports = {
                                     google_counts: parseInt(tmpData[k].GooglePlusOne) || 0,
                                     pinterest_counts: parseInt(tmpData[k].Pinterest) || 0,
                                     linkedin_counts: parseInt(tmpData[k].LinkedIn) || 0,
-                                    val_history: processValHistory(item.val_history, allSocVal), // current - last
+                                    val_history: processValHistory(item.val_history, allSocVal, item.social_val), // current - last
                                     social_val: allSocVal || 0
                                 }
 
@@ -127,7 +127,7 @@ module.exports = {
 };
 
 // Helpers
-function processValHistory(arraybefore, now_val) {
+function processValHistory(arraybefore, now_val, social_val) {
     arraybefore.push({
         ts: new Date().getTime(),
         // non-cumulative
@@ -135,7 +135,7 @@ function processValHistory(arraybefore, now_val) {
         // BELOW IS WRONG
         // SEARCH FOR LAST ARRAY THAT IS NOT 0
         // AND WHY THERE ARE -1s?????
-        social_val: now_val - arraybefore[arraybefore.length - 1].social_val
+        social_val: (now_val - social_val) || 0
     });
     return arraybefore;
 }

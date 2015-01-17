@@ -33,6 +33,10 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+var restdebug = function(msg) {
+    util.log('REST Debug: '.bold.cyan + ' ' + (msg).white);
+};
+
 /*
     Routing configs
 */
@@ -119,6 +123,7 @@ app
         res.json({
             '200': 'OK'
         });
+        restdebug('Respond to client with {"200": "OK"}');
     })
     .post('/api/updatecontent', function(req, res) {
         // get objectId and updated value
