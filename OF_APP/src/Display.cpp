@@ -43,21 +43,27 @@ void Display::update(int nFaces){
 //    displaySocialVal = thisContent.getSocialValue();
     Tweenzor::update( ofGetElapsedTimeMillis() );
     timerPos = ofWrap(timerPos, 0, 360);
+    numFaces = nFaces;
     if(roundOn){
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
         if(thisSec != lastSec) {
             timerVal -= 1;
             lastSec = thisSec;
+            if(numFaces>0){
+                displayFaceVal += 0.0382*numFaces;
+                displayFaceVal = roundf(displayFaceVal * 100) / 100;
+                //diplayTotalValue += 0.0382*numFaces;
+            }
             //cout << "timerVal "<<timerVal<<endl;
         }
     }
     
     
-    numFaces = nFaces;
-    if(numFaces > 0){
-        displayFaceVal += 0.01*numFaces;
-        diplayTotalValue += 0.01*numFaces;
-    }
+    //numFaces = nFaces;
+    //if(numFaces > 0){
+    //    displayFaceVal += 0.01*numFaces;
+    //    diplayTotalValue += 0.01*numFaces;
+    //}
 }
 
 
@@ -66,7 +72,9 @@ void Display::draw(){
     
     if(displayImage.isAllocated()){
         if(displayImage.getWidth() < 1000){
-            displayImage.resize(displayImage.getWidth()*2, displayImage.getHeight()*2);
+            //displayImage.resize(displayImage.getWidth()*2, displayImage.getHeight()*2);
+            float sizeFactor = ofGetWidth()/displayImage.getWidth();
+            displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
         }
         //float imgY = (displayImage.getHeight()<1080)? (1080-displayImage.getHeight()) : displayImage.getHeight();
         displayImage.draw(ofGetWidth()/2 - displayImage.getWidth()/2, 10);
@@ -83,16 +91,17 @@ void Display::draw(){
         ofLine(0, topMargin, ofGetWidth(), topMargin);
         
         ofSetColor(payRed);
-        labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
+//        labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
         labelsFont.drawString("Faces", valuesLeftMargin, topMargin+50);
-        labelsFont.drawString("Face Value", valuesLeftMargin+140, topMargin+50);
+        labelsFont.drawString("Face Value", valuesLeftMargin+190, topMargin+50);
         //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
 
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+60);
         headlineFont.drawString(displayHeadline, leftMargin, topMargin+220);
         valueFont.drawString(ofToString(numFaces), valuesLeftMargin, topMargin+125);
-        valueFont.drawString(ofToString(displayFaceVal), valuesLeftMargin+140, topMargin+125);
+        valueFont.drawString("$"+ofToString(displayFaceVal), valuesLeftMargin+140, topMargin+125);
+
         //valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
 
         //valueFont.drawString("current Social Value: "+displaySocialVal, 50, 80);
@@ -164,6 +173,7 @@ void Display::onRoundComplete(float* arg) {
     timerVal = 0;
     
     cout << ">>>>> ROUND COMPLETE <<<<<<" << endl;
+    cout << "=========================================="<<endl;
     //cout << "Display::onComplete : arg = " << *arg << endl;
 
     //Tweenzor::resetAllTweens();
@@ -177,7 +187,8 @@ void Display::onRoundComplete(float* arg) {
     
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
-    ((ofApp*)ofGetAppPtr())->nextRound();
+    ((ofApp*)ofGetAppPtr())->dataConnect.pullData();
+    //((ofApp*)ofGetAppPtr())->nextRound(); //now down from pullData()
 }
 
 //--------------------------------------------------------------

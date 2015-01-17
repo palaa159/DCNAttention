@@ -24,6 +24,10 @@ int Data::pullData(){
         // print entire json object, raw
         //ofLogNotice("Data::pullData \n") << json.getRawString(true);
         parseData(json);
+        
+        //if(((ofApp*)ofGetAppPtr())->GO_MODE){
+        ((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
+        //}
         return NUM_CATEGORIES;
     } else {
         ofLogNotice("ofApp::setup") << "****  !!! Failed to parse JSON !!!! *****\n\n";
@@ -96,7 +100,9 @@ bool Data::parseData(ofxJSONElement data){
 //--------------------------------------------------------------
 ofxJSONElement Data::getCategory(int cat){
     ofxJSONElement thisCategory;
-    thisCategory.open("content/cat_"+ofToString(cat+1)+".json");
+//    thisCategory.open("content/cat_"+ofToString(cat+1)+".json");
+    thisCategory.openLocal("content/cat_"+ofToString(cat+1)+".json");
+    //cout << "\n\n----- GET CATEGORY GOT:::: \n"<<thisCategory.getRawString()<<endl;
     return thisCategory;
 }
 
@@ -140,12 +146,12 @@ void Data::sendShowing(string leftObjId, string rightObjId, string catId){
     std::string url = "http://attention.market/api/showing?left="+leftObjId+"&right="+rightObjId+"&cat="+catId;
     cout << "SEND SHOWING GET REQUEST: "<<url<<endl;
 
-//    if (json.open(url)) {
-//        ofLogNotice("Data::sendShowing resp: \n" + json.getRawString(true));
-//        //parseData(json);
-//    } else {
-//        ofLogNotice("Data::sendShowing fail ****  !!! Failed to parse JSON !!!! *****\n\n");
-//    }
+    if (json.open(url)) {
+        ofLogNotice("Data::sendShowing resp: \n" + json.getRawString(true));
+        //parseData(json);
+    } else {
+        ofLogNotice("Data::sendShowing fail ****  !!! Failed to parse JSON !!!! *****\n\n");
+    }
 
     // another strategy if needed
 //     ofHttpRequest req = ofHttpRequest(url, "GET", true);

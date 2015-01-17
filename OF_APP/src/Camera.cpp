@@ -15,31 +15,36 @@ using namespace cv;
 Camera::Camera(){
     
     finder.setup("haarcascade_frontalface_alt2.xml");
-    finder.setPreset(ObjectFinder::Sensitive);
+//    finder.setPreset(ObjectFinder::Sensitive);
 //    finder.setPreset(ObjectFinder::Accurate);
 //    finder.setPreset(ObjectFinder::Fast);
+    
 //    finder.getTracker().setSmoothingRate(.3); // play with this
+
+//    finder.setMultiScaleFactor(1.2); //BETTER
+//    finder.setMultiScaleFactor(1.1); //GOOD!
+    
+    finder.setPreset(ObjectFinder::Sensitive);
     finder.setRescale(.5);
     finder.setMinNeighbors(1);
-    finder.setMultiScaleFactor(1.2);
-//    finder.setMultiScaleFactor(1.1); //GOOD!
+    finder.setMultiScaleFactor(1.2); //BETTER
     finder.setMinSizeScale(.1);
     finder.setMaxSizeScale(.4);
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
     
 //    **** FAST:
-//    setRescale(.25);
-//    setMinNeighbors(2);
-//    setMultiScaleFactor(1.2);
-//    setMinSizeScale(.25);
-//    setMaxSizeScale(.75);
-//    setCannyPruning(true);
-//    setFindBiggestObject(false);
+//    finder.setRescale(.25);
+//    finder.setMinNeighbors(2);
+//    finder.setMultiScaleFactor(1.2);
+//    finder.setMinSizeScale(.25);
+//    finder.setMaxSizeScale(.75);
+//    finder.setCannyPruning(true);
+//    finder.setFindBiggestObject(false);
 
 #if USE_VIDEO
     grabber.loadMovie("test_brady.mov");
-    grabber.setVolume(0.5f);
+    grabber.setVolume(0.f);
     grabber.play();
 #else
     ofSetLogLevel(OF_LOG_VERBOSE);
