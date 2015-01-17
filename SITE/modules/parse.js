@@ -123,6 +123,33 @@ module.exports = {
             res_s.send('updating ' + cat_title + '\n' + JSON.stringify(array));
             res_s.end();
         });
+    },
+    resetHistory: function(classname, res_s) {
+        kaiseki.getObjects(classname, function(err, res, body, success) {
+            if(success) {
+                var tmpArray = [];
+                body.forEach(function(item) {
+                    tmpArray.push({
+                        objectId: item.objectId,
+                        data: {
+                            val_history: [],
+                            face_val: 0,
+                            social_val: 0,
+                            fb_counts: 0,
+                            twitter_counts: 0,
+                            linkedin_counts: 0,
+                            pinterest_counts: 0,
+                            google_counts: 0,
+                            shown: 0
+                        }
+                    });
+                });
+                // update objects
+                kaiseki.updateObjects(classname, tmpArray, function(err, res, body, success) {
+                    res_s.json(body);
+                });
+            }
+        });
     }
 };
 
@@ -135,7 +162,7 @@ function processValHistory(arraybefore, now_val, social_val) {
         // BELOW IS WRONG
         // SEARCH FOR LAST ARRAY THAT IS NOT 0
         // AND WHY THERE ARE -1s?????
-        social_val: (now_val - social_val) || social_val
+        social_val: (arraybefore.length != 0) ? (now_val - social_val) : social_val
     });
     return arraybefore;
 }

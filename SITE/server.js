@@ -112,6 +112,9 @@ app
             autopilot.fake_valuate(parse, CONTENT_DATABASE, contents, res);
         });
     })
+    .get('/api/resetHistory', function(req, res) {
+        parse.resetHistory(CONTENT_DATABASE, res);
+    })
     .get('/api/getBulkId', function(req, res) {
         getBulkId(res);
     })
@@ -124,6 +127,15 @@ app
         // socket io to Gabriel
         io.sockets.emit('showing', dataToGab);
         iodebug('Data passed to SocketIO clients.');
+        res.json({
+            '200': 'OK'
+        });
+        restdebug('Respond to client with {"200": "OK"}');
+    })
+    .get('/api/updateface', function(req, res) {
+        var dataFromJoe = req.query;
+        // id = objectId, val = face value
+        //
         res.json({
             '200': 'OK'
         });
