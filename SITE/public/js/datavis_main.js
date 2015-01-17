@@ -10,9 +10,13 @@ app.main = (function() {
 
 		/*----- 'GLOBAL' VARS -----*/
 		// Layout
-		var grid = {
-			width: window.innerWidth/9,
-			height: window.innerHeight/8
+		var column = {
+			width: window.innerWidth/10,
+			height: window.innerHeight/10
+		};
+		var gutter = {
+			width: window.innerWidth * 0.03,
+			height: window.innerHeight * 0.03
 		};
 
 		var cat, left, right;
@@ -35,13 +39,13 @@ app.main = (function() {
 
 		var allCategories;
 		var categoriesColors = [
-			{	r: 255,		g: 255,		b: 0	},
-			{	r: 0,		g: 255,		b: 0	},
-			{	r: 0,		g: 0,		b: 255	},
-			{	r: 255,		g: 255,		b: 0	},
-			{	r: 0,		g: 255,		b: 255	},
-			{	r: 255,		g: 0,		b: 255	},
-			{	r: 120,		g: 120,		b: 40	}
+			{	r: 80,		g: 200,		b: 245	},
+			{	r: 240,		g: 105,		b: 35	},
+			{	r: 0,		g: 140,		b: 220	},
+			{	r: 240,		g: 75,		b: 160	},
+			{	r: 255,		g: 180,		b: 20	},
+			{	r: 0,		g: 210,		b: 125	},
+			{	r: 255,		g: 80,		b: 120	}
 		];
 		// var allCompanies;
 		var social_counts = ['twitter_counts', 'fb_counts', 'google_counts', 'linkedin_counts', 'pinterest_counts'];
@@ -56,6 +60,7 @@ app.main = (function() {
 		  allCategories = getAllCategories(json);
 		  // allCompanies = getAllCompanies(json);
 
+		  processTopChart(json, cat, drawTopChart);
 		  processMainChart(json, cat, drawMainChart);
 		  processTop5(json , drawTop5);
 		  processTopByCategory(json, drawTopByCategory);
@@ -64,6 +69,25 @@ app.main = (function() {
 
 
 		/*---------- DATA PROCESSING ----------*/
+
+		function processTopChart(data, category, callback){
+
+			// Filter current category
+			var filteredData = _.filter(data, function(obj){
+				return obj.cat_id == category;
+			});
+			// console.log(filteredData);
+
+			var newData = mergeCompanies(filteredData);
+			// console.log(newData);
+
+			var currentContenders = _.filter(newData, function(element, index, list){
+				return element.highlight == true;
+			});
+			console.log(currentContenders);
+
+			// callback(newData);
+		}
 
 		// CHART: Main (current category)
 		function processMainChart(data, category, callback){
@@ -306,7 +330,34 @@ app.main = (function() {
 
 		/*--------------- DRAW ----------------*/
 
-		// Draws the main chart
+		function drawTopChart(dataset){
+
+			console.log(dataset);
+
+			/*----- LAYOUT -----*/
+			var svgSize = getCSS('mainChart');
+
+			// Visualization attributes
+			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var width  = svgSize.width - margin.left - margin.right;
+			var height = svgSize.height - margin.top - margin.bottom;
+
+			var xScale = d3.time.scale()
+							.domain(d3.extent(fullTimeRange, function(d, i) {
+								// console.log(d.ts);
+								// console.log(i);
+								return d.ts;
+							}))
+							.range([0, width]);
+
+			var yScale = d3.scale.linear()
+						   .domain([0, d3.max(dataset, function(d, i){
+															return d.social_val + d.face_val;
+														})])
+						   .range([height, 0]);			
+
+		}
+
 		function drawMainChart(dataset){
 
 			// console.log(dataset);
@@ -343,7 +394,7 @@ app.main = (function() {
 			var svgSize = getCSS('mainChart');
 
 			// Visualization attributes
-			var margin = {top: 60, right: 110, bottom: 30, left: 30};
+			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -376,7 +427,7 @@ app.main = (function() {
 			svg.append('text')
 		  		.attr('x', 0)
 		  		.attr('y', 20)
-				.text(dataset[0].category.toUpperCase())
+				.text(dataset[0].category)
 		  		.attr('class', 'heading2');
 
 			// Chart
@@ -427,6 +478,29 @@ app.main = (function() {
 				      })
 				      .attr("d", function(d) { return line(d.val_history); });
 
+			// Labels
+		    var labels = svg.append('g')
+			    			.attr('transform', 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')');			
+
+			labels.selectAll('text')
+					.data(dataset)
+					.enter()
+					.append('text')
+					.attr('x', 0)
+					.attr('y', function(d, i){
+						return i * 16;
+					})
+					.text(function(d, i){
+						return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
+					})
+					.attr('class', function(d, i){
+						if(d.highlight){
+							return 'heading3';
+						}else{
+							return 'heading4';
+						}
+					});
+
 		}
 
 		// Draws the top 5 block
@@ -436,7 +510,7 @@ app.main = (function() {
 			var svgSize = getCSS('top5');			
 
 			// Visualization attributes
-			var margin = {top: 60, right: 0, bottom: 0, left: 0};
+			var margin = {top: 45, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -461,12 +535,12 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('TOP 5 PUBLISHERS')
+					.text('Top 5')
 			  		.attr('class', 'heading2');
 
 			// Legend
 			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 45)');
+						    .attr('transform', 'translate(0, 40)');
 
 			legend.append('circle')
 			  		.attr('cx', 6)
@@ -475,19 +549,19 @@ app.main = (function() {
 			  		.attr('fill', 'rgba(180, 180, 180, 1)');
 
 			legend.append('text')
-			  		.attr('x', 16)
+			  		.attr('x', 14)
 			  		.attr('y', 0)
 					.text('SOCIAL')
 			  		.attr('class', 'heading4');
 
 			legend.append('circle')
-			  		.attr('cx', 80)
+			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
 			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
 
 			legend.append('text')
-			  		.attr('x', 90)
+			  		.attr('x', 72)
 			  		.attr('y', 0)
 					.text('FACE')
 			  		.attr('class', 'heading4');			  					  		
@@ -532,7 +606,7 @@ app.main = (function() {
 			  		.attr('x', 0)
 			  		.attr('y', 10)
 					.text(function(d, i){
-						return d.company;
+						return capText(d.company);
 					})
 			  		.attr('class', 'heading3');
 
@@ -541,7 +615,7 @@ app.main = (function() {
 			  		.attr('x', 2)
 			  		.attr('y', 23)
 					.text(function(d, i){
-						return NumberToCurrency(d.social_val + d.face_val);
+						return numToCurrency(d.social_val + d.face_val);
 					})
 			  		.attr('class', 'heading4');			  		
 		}
@@ -553,7 +627,7 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory');
 
 			// Visualization attributes
-			var margin = {top: 80, right: 0, bottom: 0, left: 0};
+			var margin = {top: 70, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -578,37 +652,37 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('TOP PUBLISHERS')
+					.text('Top by')
 			  		.attr('class', 'heading2')
 			  		.append('tspan')
 			  		.attr('x', 0)
 			  		.attr('y', 40)			  		
-			  		.text('BY CATEGORY');
+			  		.text('Category');
 
 			// Legend
 			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 65)');
+						    .attr('transform', 'translate(0, 60)');
 
 			legend.append('circle')
 			  		.attr('cx', 6)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(0, 0, 0, 1)');
+			  		.attr('fill', 'rgba(180, 180, 180, 1)');
 
 			legend.append('text')
-			  		.attr('x', 16)
+			  		.attr('x', 14)
 			  		.attr('y', 0)
 					.text('SOCIAL')
 			  		.attr('class', 'heading4');
 
 			legend.append('circle')
-			  		.attr('cx', 80)
+			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(0, 0, 0, 0.5)');			  		
+			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
 
 			legend.append('text')
-			  		.attr('x', 90)
+			  		.attr('x', 72)
 			  		.attr('y', 0)
 					.text('FACE')
 			  		.attr('class', 'heading4');			  					  		
@@ -666,7 +740,7 @@ app.main = (function() {
 			  		.attr('x', 0)
 			  		.attr('y', 23)
 					.text(function(d, i){
-						return d.company;
+						return capText(d.company);
 					})
 			  		.attr('class', 'heading3');
 
@@ -675,7 +749,7 @@ app.main = (function() {
 			  		.attr('x', 2)
 			  		.attr('y', 36)
 					.text(function(d, i){
-						return NumberToCurrency(d.social_val + d.face_val);
+						return numToCurrency(d.social_val + d.face_val);
 					})
 			  		.attr('class', 'heading4');
 		}
@@ -696,8 +770,8 @@ app.main = (function() {
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: 10, bottom: 0, left: 30};
-			var chartWidth  = width/6 - chartMargin.left - chartMargin.right;
+			var chartMargin = {top: 30, right: gutter.width/2, bottom: 0, left: gutter.width};
+			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
 			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
 
 			var yScale = d3.scale.ordinal()
@@ -729,7 +803,7 @@ app.main = (function() {
 			svg.append('text')
 			  		.attr('x', 0)
 			  		.attr('y', 20)
-					.text('SOCIAL ENGAGEMENT BY CATEGORY')
+					.text('Social Engagement by Category')
 			  		.attr('class', 'heading2');
 
 		    var allCharts = svg.append('g')
@@ -739,10 +813,11 @@ app.main = (function() {
 								.data(dataset[1].values)
 								.enter()
 								.append('text')
-								.attr('x', 0)
+								.attr('x', column.width)
 								.attr('y', function(d, i){
 									return chartMargin.top + textOffset + yScale(i);
 								})
+								.attr('text-anchor', 'end')
 								.text(function(d, i){
 									return d.category;
 								})
@@ -816,7 +891,7 @@ app.main = (function() {
 			return svgSize;
 		}
 
-		function NumberToCurrency(num){
+		function numToCurrency(num){
 			num = parseFloat(Math.round(num * 100) / 100).toFixed(2);
 			num = '$' + num;
 			return num;
@@ -825,6 +900,14 @@ app.main = (function() {
 		function parseRgba(color, a){
 			var myRgbColor = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + a +')';
 			return myRgbColor;
+		}
+
+		function capText(txt){
+			if(txt.length > 20){
+				txt = txt.slice(0, 20);
+				txt += '...'
+			}
+			return txt;
 		}
 	};
 

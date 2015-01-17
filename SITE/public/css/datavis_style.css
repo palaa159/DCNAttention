@@ -1,37 +1,58 @@
-/* your style begins here */
-
 /*---------- SVG styles ----------------
 column = 10%
 gutter = 3%
 margin = 6% (2 * gutter)
 --------------------------------------*/
 
+* {
+	font-family: 'Lato', sans-serif !important;
+}
+
+#logo{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	text-align: center;
+}
+
+#logo img{
+	max-width: 16%;
+}
+
+#topChart{
+	top: 6%;
+	left: 6%;
+	width: 88%;
+	height: 10%;
+}
+
 #mainChart{
-	top: 18%;
-	left: 5%;
+	top: 19%;
+	left: 6%;
 	width: 75%;
 	height: 50%;
 }
 
 #top5{
-	top: 18%;
-	left: 83%;
-	width: 11%;
-	height: 25%;
+	top: 19%;
+	left: 84%;
+	width: 10%;
+	height: 23%;
 }
 
 #topByCategory{
-	top: 41%;
-	left: 83%;
-	width: 11%;
-	height: 50%;
+	top: 45%;
+	left: 84%;
+	width: 10%;
+	height: 49%;
 }
 
 #socialEngagement{
-	top: 68%;
-	left: 5%;
+	top: 71%;
+	left: 6%;
 	width: 75%;
-	height: 25%;
+	height: 23%;
 }
 
 /*---------- SVG styles ----------------
@@ -48,7 +69,9 @@ text{
 }
 
 text.heading2{
-	font-size: 21px;
+	/*font-size: 21px;*/
+	font-size: 1.5em;
+	font-weight: bold;
 }
 
 text.heading3{
