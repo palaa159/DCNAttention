@@ -10,9 +10,13 @@ app.main = (function() {
 
 		/*----- 'GLOBAL' VARS -----*/
 		// Layout
-		var grid = {
-			width: window.innerWidth/9,
-			height: window.innerHeight/8
+		var column = {
+			width: window.innerWidth/10,
+			height: window.innerHeight/10
+		};
+		var gutter = {
+			width: window.innerWidth * 0.03,
+			height: window.innerHeight * 0.03
 		};
 
 		var cat, left, right;
@@ -48,8 +52,8 @@ app.main = (function() {
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
 
 		// Load all data
-		d3.json("dummy_data/getcontents.json", function(error, json) {
-		// d3.json('http://attention.market/api/getcontents', function(error, json) {
+		// d3.json("dummy_data/getcontents.json", function(error, json) {
+		d3.json('http://attention.market/api/getcontents', function(error, json) {
 		  if (error) return console.warn(error);
 		  
 		  // Filling out our 'globals' — lists of categories and companies
@@ -343,7 +347,7 @@ app.main = (function() {
 			var svgSize = getCSS('mainChart');
 
 			// Visualization attributes
-			var margin = {top: 60, right: 110, bottom: 30, left: 30};
+			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width/2};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -696,8 +700,8 @@ app.main = (function() {
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: 10, bottom: 0, left: 30};
-			var chartWidth  = width/6 - chartMargin.left - chartMargin.right;
+			var chartMargin = {top: 30, right: gutter.width/2, bottom: 0, left: gutter.width};
+			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
 			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
 
 			var yScale = d3.scale.ordinal()
@@ -739,10 +743,11 @@ app.main = (function() {
 								.data(dataset[1].values)
 								.enter()
 								.append('text')
-								.attr('x', 0)
+								.attr('x', column.width)
 								.attr('y', function(d, i){
 									return chartMargin.top + textOffset + yScale(i);
 								})
+								.attr('text-anchor', 'end')
 								.text(function(d, i){
 									return d.category;
 								})
