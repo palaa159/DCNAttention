@@ -86,14 +86,14 @@ void Display::draw(){
         labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
         labelsFont.drawString("Faces", valuesLeftMargin, topMargin+50);
         labelsFont.drawString("Face Value", valuesLeftMargin+140, topMargin+50);
-        labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
+        //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
 
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+60);
         headlineFont.drawString(displayHeadline, leftMargin, topMargin+220);
         valueFont.drawString(ofToString(numFaces), valuesLeftMargin, topMargin+125);
         valueFont.drawString(ofToString(displayFaceVal), valuesLeftMargin+140, topMargin+125);
-        valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
+        //valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
 
         //valueFont.drawString("current Social Value: "+displaySocialVal, 50, 80);
         
@@ -171,7 +171,7 @@ void Display::onRoundComplete(float* arg) {
     
 
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+"}";
-    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":"+ofToString(displaySocialVal)+",\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
+    string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(displayFaceVal)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
     string completeUpdate =
     "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";    
     
