@@ -35,6 +35,7 @@ public:
     int pullData();
     bool parseData(ofxJSONElement data);
     void sendShowing(string leftObjId, string rightObjId, string catId);
+    void sendFace(string objId, int faceVal);
 //    bool pullCategory(int cat);
 //    void parseCategory(ofxJSONElement data);
     
@@ -42,6 +43,8 @@ public:
     
     ofxJSONElement json;
     Category categories[NUM_CATEGORIES];
+    
+    void urlResponse(ofHttpResponse & response);
     
     
 private:

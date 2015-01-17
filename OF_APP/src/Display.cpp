@@ -122,7 +122,9 @@ void Display::draw(){
         ofSetColor(payDarkGray);
         ofCircle(timerLoc, timerSize-20);
         ofSetColor(255);
-
+        
+        if(timerVal>15)timerVal=15; //lil' hack
+        if(timerVal<0)timerVal=0;
         if(timerVal>9)timerFont.drawString(ofToString(timerVal), timerLoc.x-53, timerLoc.y+30);
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-23, timerLoc.y+30);
     } else {
@@ -164,16 +166,18 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     }
     
     
+//    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
+    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_LINEAR);
+    Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
+    Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
+    
     timestamp = int(ofGetElapsedTimef());
+    //cout << timestamp << endl;
     lastSec = 0;
-    cout << timestamp << endl;
     timerVal = 15;
     timerPos = 0.f;
     // _property,  a_begin,  a_end,  a_delay,  a_duration, int a_easeType, float a_p, float a_a) {
-    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
-    
-    Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
-    Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
+
     roundOn = true;
 }
 

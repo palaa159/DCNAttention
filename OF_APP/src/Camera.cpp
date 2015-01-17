@@ -25,13 +25,24 @@ Camera::Camera(){
 //    finder.setMultiScaleFactor(1.1); //GOOD!
     
     finder.setPreset(ObjectFinder::Sensitive);
-    finder.setRescale(.5);
-    finder.setMinNeighbors(1);
-    finder.setMultiScaleFactor(1.2); //BETTER
-    finder.setMinSizeScale(.1);
-    finder.setMaxSizeScale(.4);
+    finder.setRescale(.9f);
+    finder.setMinNeighbors(2);
+    finder.setMultiScaleFactor(1.3f); //BETTER
+    finder.setMinSizeScale(.08f);
+    finder.setMaxSizeScale(.3f);
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
+    
+    //*** STANDARD TO BEAT
+//    finder.setPreset(ObjectFinder::Sensitive);
+//    finder.setRescale(.5f);
+//    finder.setMinNeighbors(1);
+//    finder.setMultiScaleFactor(1.2f); //BETTER
+//    finder.setMinSizeScale(.08f);
+//    finder.setMaxSizeScale(.3f);
+//    finder.setCannyPruning(false);
+//    finder.setFindBiggestObject(false);
+    
     
 //    **** FAST:
 //    finder.setRescale(.25);

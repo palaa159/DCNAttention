@@ -10,7 +10,7 @@
 #include "ofApp.h"
 
 Data::Data(){
-    
+    ofRegisterURLNotification(this);
     
 }
 
@@ -146,12 +146,15 @@ void Data::sendShowing(string leftObjId, string rightObjId, string catId){
     std::string url = "http://attention.market/api/showing?left="+leftObjId+"&right="+rightObjId+"&cat="+catId;
     cout << "SEND SHOWING GET REQUEST: "<<url<<endl;
 
-    if (json.open(url)) {
-        ofLogNotice("Data::sendShowing resp: \n" + json.getRawString(true));
-        //parseData(json);
-    } else {
-        ofLogNotice("Data::sendShowing fail ****  !!! Failed to parse JSON !!!! *****\n\n");
-    }
+    int id = ofLoadURLAsync(url);
+//    ofHttpResponse resp = ofLoadURLAsync(url);
+//    cout << "ofLoadURL response: "<<resp.data << endl;
+//    if (json.open(url)) {
+//        ofLogNotice("Data::sendShowing resp: \n" + json.getRawString(true));
+//        //parseData(json);
+//    } else {
+//        ofLogNotice("Data::sendShowing fail ****  !!! Failed to parse JSON !!!! *****\n\n");
+//    }
 
     // another strategy if needed
 //     ofHttpRequest req = ofHttpRequest(url, "GET", true);
@@ -161,8 +164,23 @@ void Data::sendShowing(string leftObjId, string rightObjId, string catId){
     // cout<<resp.data<<endl;
 }
 
+//--------------------------------------------------------------
+void Data::sendFace(string objId, int faceVal){
+    std::string url = "http://attention.market/api/updateface?id="+objId+"&val="+ofToString(faceVal);
+    cout << "SEND FACE UPDATE GET REQUEST: "<<url<<endl;
+    
+    int id = ofLoadURLAsync(url);
+}
 
-
+//--------------------------------------------------------------
+void Data::urlResponse(ofHttpResponse & response) {
+    cout << "ofLoadURL response: "<<response.data << endl;
+//    if (response.status==200 && response.request.name == "async_req") {
+//        img.loadImage(response.data);
+//    } else {
+//        cout << response.status << " " << response.error << endl;
+//    }
+}
 
 //*****************************************//
 //****** NOT CURRENTLY USED/NEEDED ********//
