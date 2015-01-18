@@ -19,7 +19,7 @@ Display::Display(){
     initFonts();
     
     payRed.set(245, 58, 135);
-    payLightGray.set(140, 140, 140);
+    payLightGray.set(200, 200, 200);
     payDarkGray.set(50, 50, 50);
     
     timerSize = 100;
@@ -79,7 +79,7 @@ void Display::draw(){
             displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
         }
         //float imgY = (displayImage.getHeight()<1080)? (1080-displayImage.getHeight()) : displayImage.getHeight();
-        displayImage.draw(ofGetWidth()/2 - displayImage.getWidth()/2, 10);
+        displayImage.draw(ofGetWidth()/2 - displayImage.getWidth()/2, 0);
         
         int leftMargin = 60;
         int topMargin = ofGetHeight()-300;
@@ -129,7 +129,7 @@ void Display::draw(){
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-23, timerLoc.y+30);
     } else {
         ofSetColor(0);
-        headlineFont.drawString("press space to begin", ofGetWidth()/2-400, ofGetHeight()/2+300);
+        headlineFont.drawString("waiting for content to download...", ofGetWidth()/2-400, ofGetHeight()/2+300);
     }
 }
 
@@ -206,7 +206,8 @@ void Display::onRoundComplete(float* arg) {
     
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
-    ((ofApp*)ofGetAppPtr())->dataConnect.pullData();
+    if(((ofApp*)ofGetAppPtr())->GO_MODE)
+        ((ofApp*)ofGetAppPtr())->dataConnect.pullData();
     //((ofApp*)ofGetAppPtr())->nextRound(); //now down from pullData()
 }
 

@@ -36,8 +36,8 @@ public:
     bool parseData(ofxJSONElement data);
     void sendShowing(string leftObjId, string rightObjId, string catId);
     void sendFace(string objId, int faceVal);
-//    bool pullCategory(int cat);
-//    void parseCategory(ofxJSONElement data);
+    
+    int downloadCounter;
     
     ofxJSONElement getCategory(int catId);
     

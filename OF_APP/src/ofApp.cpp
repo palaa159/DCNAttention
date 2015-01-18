@@ -101,11 +101,13 @@ void ofApp::nextRound(){
                 if(thisPair.size()>=2) break;
             }
         }
-        
+        cout << "finished first pass"<<endl;
         if(thisPair.size() < 2){ //we only had one obj with the lowest show ct
-            objNum = int(ofWrap(objNum+1, 0, category.size())); //TODO: find a better way to get the next one
-            thisPair[1] = category[objNum];
+            objNum = int(ofWrap(objNum+1, 0, category.size()-1)); //TODO: find a better way to get the next one
+            cout<<"adding objNum: "<<objNum<<endl;
+            thisPair.push_back(category[objNum]);
         }
+
         
         dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         

@@ -11,7 +11,7 @@
 
 Data::Data(){
     ofRegisterURLNotification(this);
-    
+    downloadCounter = 0;
 }
 
 
@@ -25,9 +25,8 @@ int Data::pullData(){
         //ofLogNotice("Data::pullData \n") << json.getRawString(true);
         parseData(json);
         
-        //if(((ofApp*)ofGetAppPtr())->GO_MODE){
-        ((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
-        //}
+        //((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
+        
         return NUM_CATEGORIES;
     } else {
         ofLogNotice("ofApp::setup") << "****  !!! Failed to parse JSON !!!! *****\n\n";
@@ -82,6 +81,7 @@ bool Data::parseData(ofxJSONElement data){
             if(dir.exists()){
                 cout << "cat: "<<categories[i].objects[j]["cat_id"].asString() << "\tobjId: "<<categories[i].objects[j]["objectId"].asString() << "\tcount: " << totalCt << "\talready have file" << "\timage_url: "<< categories[i].objects[j]["image_url"].asString() << endl;
             } else {
+                downloadCounter++;
                 cout << totalCt << ":\tDOWNLOADING: "+path << "\timage_url: "<< categories[i].objects[j]["image_url"].asString() << endl;
                 ofSaveURLAsync(categories[i].objects[j]["image_url"].asString(), path);
                 //ofSaveURLTo(categories[i].objects[j]["image_url"].asString(), path);
@@ -92,7 +92,10 @@ bool Data::parseData(ofxJSONElement data){
         thisCategoryFile.save(thisCategoryJsonFilePath,true);
     }
     cout << "\n----------------------------\n\ttotal object count: "<< totalCt<< "\n----------------------------"<<endl;
-    
+    if(downloadCounter == 0){
+        ((ofApp*)ofGetAppPtr())->GO_MODE = true; //start her up!
+        ((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
+    }
     return true;
 }
 
@@ -109,20 +112,7 @@ ofxJSONElement Data::getCategory(int cat){
 
 //--------------------------------------------------------------
 bool Data::pushData(string objectId, string updateObject){
-    
-//    cout << "updating parse. objectId: "<<objectId<<endl;
-//    cout << "\tupdate object: "<<updateObject<<endl;
-//    
-//    string cmd = "curl -X PUT \
-//    -H \"X-Parse-Application-Id: QKfYTUm0IwXbry5b5Mm4pUlrd3jizA8L6pkCmfwa\" \
-//    -H \"X-Parse-REST-API-Key: cGN5GZgtOYuf2Ktcm3VQd1NqDLGl7e1t1OaszbNB\" \
-//    -H \"Content-Type: application/json\" \
-//    -d '"+updateObject+"' \
-//    https://api.parse.com/1/classes/content_dummy_new/"+objectId;
-//    
-//    ofSystem( cmd );
-    
-    
+ 
     cout << "updating parse. objectId: "<<objectId<<endl;
     cout << "\tupdate object: "<<updateObject<<endl;
     
@@ -134,6 +124,14 @@ bool Data::pushData(string objectId, string updateObject){
     https://api.parse.com/1/batch";
     
     ofSystem( cmd );
+    
+    //    string cmd = "curl -X PUT \
+    //    -H \"X-Parse-Application-Id: QKfYTUm0IwXbry5b5Mm4pUlrd3jizA8L6pkCmfwa\" \
+    //    -H \"X-Parse-REST-API-Key: cGN5GZgtOYuf2Ktcm3VQd1NqDLGl7e1t1OaszbNB\" \
+    //    -H \"Content-Type: application/json\" \
+    //    -d '"+updateObject+"' \
+    //    https://api.parse.com/1/classes/content_dummy_new/"+objectId;
+    //    ofSystem( cmd );
 }
 
 
@@ -174,7 +172,23 @@ void Data::sendFace(string objId, int faceVal){
 
 //--------------------------------------------------------------
 void Data::urlResponse(ofHttpResponse & response) {
-    cout << "ofLoadURL response: "<<response.data << endl;
+
+    if(response.status==200){
+        cout << "ofLoadURL response: "<< response.data << "   status: "<< response.status << "\tid: "<<response.request.getID()<< "\tname: "<<response.request.name <<endl;
+    } else {
+        cout << "REQUEST ERROR: ofLoadURL response: "<< response.data << "   status: "<< response.status << "\tname: "<<response.request.name <<"****!!!"<<endl;
+        cout  <<"****!!!"<<endl;
+    }
+    
+    if(downloadCounter>0){
+        downloadCounter--;
+        if(downloadCounter == 0){
+            cout<<"all necessary downloads complete. app is ready."<<endl;
+            ((ofApp*)ofGetAppPtr())->GO_MODE = true;
+            ((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
+        }
+    }
+    
 //    if (response.status==200 && response.request.name == "async_req") {
 //        img.loadImage(response.data);
 //    } else {
