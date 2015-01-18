@@ -22,14 +22,14 @@ app.main = (function() {
 		var cat, left, right;
 
 		// Connecting to socket.io
-		var socket = io("http://attention.market:80");
-		socket.on('showing', function(data){
-			console.log(data);
-			// left = data.left;
-			// right = data.right;
-			// cat = data.cat;
-			console.log('connected');
-		});
+		// var socket = io("http://attention.market:80");
+		// socket.on('showing', function(data){
+		// 	console.log(data);
+		// 	left = data.left;
+		// 	right = data.right;
+		// 	cat = data.cat;
+		// 	console.log('connected');
+		// });
 
 		// Getting the current contenders and category at: /api/showing?left=objectId&right=objectId&cat=catId
 		// Faking it so far!
@@ -63,10 +63,15 @@ app.main = (function() {
 		  // allCompanies = getAllCompanies(json);
 
 		  processTopChart(json, drawTopChart);
-		  processMainChart(json, drawMainChart);
+		  processMainChart(json, drawMainChart, false);
 		  processTop5(json , drawTop5);
 		  processTopByCategory(json, drawTopByCategory);
 		  processSocialEngagement(json, drawSocialEngagement);
+
+		  $('body').bind('click', function(){
+		  	cat = '1';
+		  	processMainChart(json, drawMainChart, true);
+		  });
 		});
 
 
@@ -92,7 +97,7 @@ app.main = (function() {
 		}
 
 		// CHART: Main (current category)
-		function processMainChart(data, callback){
+		function processMainChart(data, callback, update){
 
 			// Filter current category
 			var filteredData = _.filter(data, function(obj){
@@ -109,7 +114,21 @@ app.main = (function() {
 			});
 			sortedData.reverse();
 
-			callback(sortedData);
+			// Some more data processing before drawing the chart
+			// Adding a last element to each val_history array,
+			// with the current timestamp (so all lines extend till the current time)
+			var fullTimeline = _.each(sortedData, function(element, index, list){
+				var d = new Date();
+				currentTimestamp = d.getTime();
+				var newHistory = {
+					face_val: element.val_history[element.val_history.length - 1].face_val,
+					social_val: element.val_history[element.val_history.length - 1].social_val,
+					ts: currentTimestamp
+				}
+				element.val_history.push(newHistory);
+			});			
+
+			callback(fullTimeline, update);
 		}
 		
 		// CHART: Top 5 Publishers
@@ -464,26 +483,11 @@ app.main = (function() {
 					.attr('class', 'heading2');	
 		}
 
-		function drawMainChart(dataset){
+		function drawMainChart(dataset, update){
 
 			// console.log(dataset);
 
 			/*----- DATA -----*/
-			// Some more data processing before drawing the chart
-
-			// Adding a last element to each val_history array,
-			// with the current timestamp
-			_.each(dataset, function(element, index, list){
-				var d = new Date();
-				currentTimestamp = d.getTime();
-				var newHistory = {
-					face_val: element.val_history[element.val_history.length - 1].face_val,
-					social_val: element.val_history[element.val_history.length - 1].social_val,
-					ts: currentTimestamp
-				}
-				element.val_history.push(newHistory);
-			});
-
 			// Combining all val_histories into one, to get the full time extent
 			var fullTimeRange = [];
 			for(var i = 0; i < dataset.length; i++){
@@ -522,94 +526,158 @@ app.main = (function() {
 						    .x(function(d, i) { return xScale(d.ts); })
 						    .y(function(d) { return yScale(d.social_val + d.face_val); });
 
-			// Canvas
-			var svg = d3.select('body')
-						.append('svg')
-						.attr('id', 'mainChart')
-						.attr('width', width + margin.left + margin.right)
-					    .attr('height', height + margin.top + margin.bottom);
-
-			// Title
-			svg.append('text')
-		  		.attr('x', 0)
-		  		.attr('y', 20)
-				.text(dataset[0].category)
-		  		.attr('class', 'heading2');
-
-			// Chart
-		    var chart = svg.append('g')
-						    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');			
-
 			// X Scale
 			var xAxis = d3.svg.axis()
 							    .scale(xScale)
 							    .orient("bottom");
-			  
-			  chart.append("g")
-			      .attr("class", "x axis")
-			      .attr("transform", "translate(0," + height + ")")
-			      .call(xAxis);
 
 			// Y Scale
 			var yAxis = d3.svg.axis()
 							    .scale(yScale)
 							    .orient("left");
 
-			  chart.append("g")
-				    .attr("class", "y axis")
-				    .call(yAxis)
-				    .append("text")
-				    .attr("transform", "rotate(-90)")
-				    .attr("y", 6)
-				    .attr("dy", ".71em")
-				    .style("text-anchor", "end")
-				    .text("Valuation ($)");
+			var svg, chart, company, labels;
 
-		  	// Lines
-			var company = chart.selectAll(".company")
-				      		.data(dataset)
-						    .enter()
-						    .append("g")
-						    .attr("class", "company");
+			// Create
+			if(!update){
 
-			  company.append("path")
-				      .attr("class", "line")
-				      .attr('stroke', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
-				      .attr('stroke-width', function(d, i){
-				      		var stroke = 1;
-				      		if(d.highlight){
-				      			stroke = 4;
-				      		}
-				      		return stroke;
-				      })
-				      .attr("d", function(d) { return line(d.val_history); });
+				// Canvas
+				svg = d3.select('body')
+							.append('svg')
+							.attr('id', 'mainChart')
+							.attr('width', width + margin.left + margin.right)
+						    .attr('height', height + margin.top + margin.bottom);
 
-			// Labels
-		    var labels = svg.append('g')
-			    			.attr('transform', 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')');			
+				// Title
+				svg.append('text')
+			  		.attr('x', 0)
+			  		.attr('y', 20)
+					.text(dataset[0].category)
+			  		.attr('class', 'heading2')
+			  		.attr('id', 'title');
 
-			labels.selectAll('text')
-					.data(dataset)
-					.enter()
-					.append('text')
-					.attr('x', 0)
-					.attr('y', function(d, i){
-						return i * 16;
-					})
-					.text(function(d, i){
-						return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
-					})
-					.attr('class', function(d, i){
-						if(d.highlight){
-							return 'heading3';
-						}else{
-							return 'heading4';
-						}
-					});
+				// Chart
+			    chart = svg.append('g')
+							.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+							.attr('id', 'chart');
+				  
+				  // X axys
+				  chart.append("g")
+				      .attr("class", "x axis")
+				      .attr("transform", "translate(0," + height + ")")
+				      .call(xAxis);
+
+				  // Y axys
+				  chart.append("g")
+					    .attr("class", "y axis")
+					    .call(yAxis)
+					    .append("text")
+					    .attr("transform", "rotate(-90)")
+					    .attr("y", 6)
+					    .attr("dy", ".71em")
+					    .style("text-anchor", "end")
+					    .text("Valuation ($)");
+
+			  	// Lines
+				company = chart.selectAll(".line")
+					      		.data(dataset)
+							    .enter()
+								.append("path")
+								.attr("class", "line")
+								.attr('stroke', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+								.attr('stroke-width', function(d, i){
+										var stroke = 1;
+										if(d.highlight){
+											stroke = 4;
+										}
+										return stroke;
+								})
+								.attr("d", function(d) { return line(d.val_history); });
+
+				// Labels
+			    labels = svg.append('g')
+				    		.attr('transform', 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')')
+				    		.attr('id', 'labels');			
+
+				labels.selectAll('text')
+						.data(dataset)
+						.enter()
+						.append('text')
+						.attr('x', 0)
+						.attr('y', function(d, i){
+							return i * 16;
+						})
+						.text(function(d, i){
+							return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
+						})
+						.attr('class', function(d, i){
+							if(d.highlight){
+								return 'heading3';
+							}else{
+								return 'heading4';
+							}
+						});
+			// Update
+			}else{
+			
+				console.log('update');
+				// console.log(dataset);
+
+			    // Select the section we want to apply our changes to
+			    svg = d3.select("#mainChart")
+			             .transition();
+
+			    // Make the changes
+		        svg.select(".x.axis") // change the x axis
+		            .duration(750)
+		            .call(xAxis);
+
+		        svg.select(".y.axis") // change the y axis
+		            .duration(750)
+		            .call(yAxis);
+
+		        // Shrinking lines and removing them
+		        chart = svg.select('#chart');	
+
+				company = chart.selectAll('.line')
+								.duration(750)
+								.attr('d', function(d, i){
+									// Shrinking lines to 0
+									_.each(d.val_history, function(element, index, list){
+										element.social_val = 0;
+										element.face_val = 0;
+									});
+									return line(d.val_history);
+								})
+								.each('end', function(d, i){
+									d3.select(this).remove();
+
+									// The last one calls a new chart
+									if (i == company.length - 1) {
+										drawMainChart(dataset, false);
+									};
+								});
+
+				// Fading out labels and title
+				labels = svg.select('#labels');
+
+				labels.selectAll('text')
+						.duration(750)
+						.style('opacity', 0.0)
+						.each('end', function(){
+							d3.select(this).remove();
+						});
+
+				title = svg.select('#title')
+							.duration(750)
+							.style('opacity', 0.0)
+							.each('end', function(){
+								d3.select(this).remove();
+							});						
+			}
 
 		}
 
-		// Draws the top 5 block
 		function drawTop5(dataset){
 
 			// Canvas properties
@@ -979,7 +1047,7 @@ app.main = (function() {
 		}
 
 
-		/*-------- AUXILIAR FUNCTIONS ---------*/
+		/*-------- AUXILIAR (DRAW) FUNCTIONS ---------*/
 
 		function getCSS(id){
 			
@@ -1015,6 +1083,7 @@ app.main = (function() {
 			}
 			return txt;
 		}
+
 	};
 
 	return {
