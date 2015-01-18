@@ -73,12 +73,9 @@ void Display::update(int nFaces){
 void Display::draw(){
     
     if(displayImage.isAllocated()){
-        if(displayImage.getWidth() < 1000){
-            //displayImage.resize(displayImage.getWidth()*2, displayImage.getHeight()*2);
-            float sizeFactor = ofGetWidth()/displayImage.getWidth();
-            displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
-        }
-        //float imgY = (displayImage.getHeight()<1080)? (1080-displayImage.getHeight()) : displayImage.getHeight();
+        //float sizeFactor = ofGetWidth()/displayImage.getWidth();
+        //displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
+
         displayImage.draw(ofGetWidth()/2 - displayImage.getWidth()/2, 0);
         
         int leftMargin = 60;
@@ -158,6 +155,8 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     displayObjectId = thisPair[0]["objectId"].asString();
     shownCount = thisPair[0]["shown"].asInt();
     
+    float sizeFactor = ofGetWidth()/displayImage.getWidth();
+    displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
     
     int lineBreakIdx = 28;
     if(displayHeadline.size() > lineBreakIdx){
