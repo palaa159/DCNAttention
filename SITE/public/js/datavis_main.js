@@ -35,7 +35,7 @@ app.main = (function() {
 		// Faking it so far!
 		var left = 'BXv3itKA8e';
 		var right = 'fhLtOv7Mcb';
-		var cat = '3';
+		var cat = '1';
 
 		var allCategories;
 		var categoriesColors = [
@@ -69,7 +69,7 @@ app.main = (function() {
 		  processSocialEngagement(json, drawSocialEngagement);
 
 		  $('body').bind('click', function(){
-		  	cat = '1';
+		  	cat = parseInt(cat) + 1;
 		  	processMainChart(json, drawMainChart, true);
 		  });
 		});
@@ -620,14 +620,14 @@ app.main = (function() {
 			// Update
 			}else{
 			
-				console.log('update');
+				console.log('Updating chart...');
 				// console.log(dataset);
 
 			    // Select the section we want to apply our changes to
 			    svg = d3.select("#mainChart")
 			             .transition();
 
-			    // Make the changes
+			    // Transitioning the scales
 		        svg.select(".x.axis") // change the x axis
 		            .duration(750)
 		            .call(xAxis);
@@ -640,7 +640,7 @@ app.main = (function() {
 		        chart = svg.select('#chart');	
 
 				company = chart.selectAll('.line')
-								.duration(750)
+								.duration(1000)
 								.attr('d', function(d, i){
 									// Shrinking lines to 0
 									_.each(d.val_history, function(element, index, list){
@@ -650,10 +650,9 @@ app.main = (function() {
 									return line(d.val_history);
 								})
 								.each('end', function(d, i){
-									d3.select(this).remove();
-
-									// The last one calls a new chart
 									if (i == company.length - 1) {
+										// Remove the whole chart
+										d3.select('#mainChart').remove();
 										drawMainChart(dataset, false);
 									};
 								});
@@ -663,17 +662,11 @@ app.main = (function() {
 
 				labels.selectAll('text')
 						.duration(750)
-						.style('opacity', 0.0)
-						.each('end', function(){
-							d3.select(this).remove();
-						});
+						.style('opacity', 0.0);
 
 				title = svg.select('#title')
 							.duration(750)
-							.style('opacity', 0.0)
-							.each('end', function(){
-								d3.select(this).remove();
-							});						
+							.style('opacity', 0.0);						
 			}
 
 		}
