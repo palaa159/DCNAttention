@@ -335,10 +335,10 @@ app.main = (function() {
 			console.log(dataset);
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('mainChart');
+			var svgSize = getCSS('topChart');
 
 			// Visualization attributes
-			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var margin = {top: 0, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
