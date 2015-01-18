@@ -70,18 +70,18 @@ text{
 
 text.heading2{
 	/*font-size: 21px;*/
-	font-size: 1.5em;
+	font-size: 1.3em;
 	font-weight: bold;
 }
 
 text.heading3{
-	font-size: 13px;
+	font-size: 0.8em;
 	font-weight: bold;
 }
 
 text.heading4{
 	/*font-weight: bold;*/
-	font-size: 11px;
+	font-size: 0.6em;
 }
 
 .axis path,
@@ -96,11 +96,11 @@ text.heading4{
 }
 
 .y.axis text{
-  font-size: 9px;
+  font-size: 0.6em;
 }
 
 .x.axis text {
-  font-size: 11px;
+  font-size: 0.6em;
 }
 
 .line {

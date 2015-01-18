@@ -762,7 +762,7 @@ app.main = (function() {
 			var svgSize = getCSS('socialEngagement');
 
 			// Visualization attributes
-			var margin = {top: 60, right: 0, bottom: 0, left: 0};
+			var margin = {top: 35, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 			var textOffset = 8;
@@ -770,7 +770,7 @@ app.main = (function() {
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: gutter.width/2, bottom: 0, left: gutter.width};
+			var chartMargin = {top: 30, right: 0, bottom: 0, left: 0};
 			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
 			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
 
@@ -832,7 +832,7 @@ app.main = (function() {
 				// Logo
 				chart.append('svg:image')
 						   .attr('x', - textOffset/2 - imgSize)
-						   .attr('y', - barHeight - imgSize)
+						   .attr('y', - barHeight/2 - imgSize)
 						   .attr('width', imgSize)
 						   .attr('height', imgSize)
 						   .attr('xlink:href', 'img/' + social_logos[index]);
