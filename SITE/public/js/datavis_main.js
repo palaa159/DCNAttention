@@ -33,7 +33,7 @@ app.main = (function() {
 
 		// Getting the current contenders and category at: /api/showing?left=objectId&right=objectId&cat=catId
 		// Faking it so far!
-		var left = 'WjSOqxTOWg';
+		var left = 'BXv3itKA8e';
 		var right = 'fhLtOv7Mcb';
 		var cat = '3';
 
@@ -41,12 +41,14 @@ app.main = (function() {
 		var categoriesColors = [
 			{	r: 80,		g: 200,		b: 245	},
 			{	r: 240,		g: 105,		b: 35	},
-			{	r: 0,		g: 140,		b: 220	},
+			{	r: 200,		g: 120,		b: 220	},
 			{	r: 240,		g: 75,		b: 160	},
 			{	r: 255,		g: 180,		b: 20	},
 			{	r: 0,		g: 210,		b: 125	},
 			{	r: 255,		g: 80,		b: 120	}
 		];
+		var neutralColor = {r: 170, g: 170, b: 170};
+
 		// var allCompanies;
 		var social_counts = ['twitter_counts', 'fb_counts', 'google_counts', 'linkedin_counts', 'pinterest_counts'];
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
@@ -60,8 +62,8 @@ app.main = (function() {
 		  allCategories = getAllCategories(json);
 		  // allCompanies = getAllCompanies(json);
 
-		  processTopChart(json, cat, drawTopChart);
-		  processMainChart(json, cat, drawMainChart);
+		  processTopChart(json, drawTopChart);
+		  processMainChart(json, drawMainChart);
 		  processTop5(json , drawTop5);
 		  processTopByCategory(json, drawTopByCategory);
 		  processSocialEngagement(json, drawSocialEngagement);
@@ -70,11 +72,11 @@ app.main = (function() {
 
 		/*---------- DATA PROCESSING ----------*/
 
-		function processTopChart(data, category, callback){
+		function processTopChart(data, callback){
 
 			// Filter current category
 			var filteredData = _.filter(data, function(obj){
-				return obj.cat_id == category;
+				return obj.cat_id == cat;
 			});
 			// console.log(filteredData);
 
@@ -84,24 +86,30 @@ app.main = (function() {
 			var currentContenders = _.filter(newData, function(element, index, list){
 				return element.highlight == true;
 			});
-			console.log(currentContenders);
+			// console.log(currentContenders);
 
-			// callback(newData);
+			callback(currentContenders);
 		}
 
 		// CHART: Main (current category)
-		function processMainChart(data, category, callback){
+		function processMainChart(data, callback){
 
 			// Filter current category
 			var filteredData = _.filter(data, function(obj){
-				return obj.cat_id == category;
+				return obj.cat_id == cat;
 			});
 			// console.log(filteredData);
 
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
 
-			callback(newData);
+			// Sorting descending
+			var sortedData = _.sortBy(newData, function(obj){
+				return obj.face_val + obj.social_val;
+			});
+			sortedData.reverse();
+
+			callback(sortedData);
 		}
 		
 		// CHART: Top 5 Publishers
@@ -332,30 +340,128 @@ app.main = (function() {
 
 		function drawTopChart(dataset){
 
-			console.log(dataset);
+			// console.log(dataset);
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('mainChart');
+			var svgSize = getCSS('topChart');
 
 			// Visualization attributes
-			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var margin = {top: 0, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var textOffset = gutter.width/2;
+			var barHeight = gutter.height;
 
-			var xScale = d3.time.scale()
-							.domain(d3.extent(fullTimeRange, function(d, i) {
-								// console.log(d.ts);
-								// console.log(i);
-								return d.ts;
-							}))
-							.range([0, width]);
+			// Each chart
+			var chartWidth = (3 * column.width + 2 * gutter.width);
 
-			var yScale = d3.scale.linear()
+			var xScale = d3.scale.linear()
 						   .domain([0, d3.max(dataset, function(d, i){
 															return d.social_val + d.face_val;
 														})])
-						   .range([height, 0]);			
+						   .range([0, chartWidth]);
 
+			// Canvas
+			var svg = d3.select('body')
+						.append('svg')
+						.attr('id', 'topChart')
+						.attr('width', width + margin.left + margin.right)
+					    .attr('height', height + margin.top + margin.bottom);
+
+
+			// Each group is composed by text and bar
+		  	var groups = svg.selectAll('g')
+					  		.data(dataset)
+					  		.enter()
+					  		.append('g')
+							.attr('transform', function(d, i){
+								var xOffset = (i % 2 == 0) ? (0) : (4 * (column.width + gutter.width));
+								return 'translate(' + xOffset + ', 0)';
+							});			
+
+			// Social value
+			groups.append('rect')
+					.attr('x', function(d, i){
+						if(i == 0){
+							return chartWidth - xScale(d.social_val);
+						}else{
+							return 0;
+						}
+					})
+					.attr('y', 1.5*barHeight)				
+					.attr('height', barHeight)
+					.attr('width', function(d, i){
+						return xScale(d.social_val);
+					})
+					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1));
+
+			groups.append('text')
+					.attr('x', function(d, i){
+						if(i == 0){
+							return chartWidth - textOffset/4;
+						}else{
+							return textOffset/4;
+						}
+					})
+					.attr('y', 2.25*barHeight)
+					.attr('text-anchor', function(d, i){
+						return (i == 0) ? ('end') : ('start');
+					})				
+					.text(function(d, i){
+						if(d.social_val > 0){
+							return 'SOCIAL: ' + numToCurrency(d.social_val);	
+						}
+					})
+					.attr('class', 'heading3');						
+
+			// Face value
+			groups.append('rect')
+					.attr('x', function(d, i){
+						if(i == 0){
+							return chartWidth - xScale(d.social_val + d.face_val);
+						}else{
+							return xScale(d.social_val);
+						}
+					})
+					.attr('y', 1.5*barHeight)				
+					.attr('height', barHeight)
+					.attr('width', function(d, i){
+						return xScale(d.face_val);
+					})
+					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5));
+
+			groups.append('text')
+					.attr('x', function(d, i){
+						if(i == 0){
+							return chartWidth - xScale(d.social_val) - textOffset/4;
+						}else{
+							return xScale(d.social_val) + textOffset/4;
+						}
+					})
+					.attr('y', 2.25*barHeight)
+					.attr('text-anchor', function(d, i){
+						return (i == 0) ? ('end') : ('start');
+					})				
+					.text(function(d, i){
+						if(d.face_val > 0){
+							return 'FACE: ' + numToCurrency(d.face_val);
+						}
+					})
+					.attr('class', 'heading3');					
+
+			// Companies
+			groups.append('text')
+					.attr('x', function(d, i){
+						return (i == 0) ? (chartWidth - textOffset) : (textOffset);
+					})
+					.attr('y', 20)
+					.attr('text-anchor', function(d, i){
+						return (i == 0) ? ('end') : ('start');
+					})
+					.text(function(d, i){
+						return d.company + ' | ' + numToCurrency(d.face_val + d.social_val);
+					})
+					.attr('class', 'heading2');	
 		}
 
 		function drawMainChart(dataset){
@@ -546,7 +652,7 @@ app.main = (function() {
 			  		.attr('cx', 6)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(180, 180, 180, 1)');
+			  		.attr('fill', parseRgba(neutralColor, 1));
 
 			legend.append('text')
 			  		.attr('x', 14)
@@ -558,7 +664,7 @@ app.main = (function() {
 			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
+			  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
 			legend.append('text')
 			  		.attr('x', 72)
@@ -587,7 +693,7 @@ app.main = (function() {
 			  			return xScale(d.social_val);
 			  		})
 					.attr('height', 13)
-					.attr('fill', 'rgba(180, 180, 180, 1)');							
+					.attr('fill', parseRgba(neutralColor, 1));							
 
 			// Face value
 			groups.append('rect')
@@ -599,7 +705,7 @@ app.main = (function() {
 			  			return xScale(d.face_val);
 			  		})
 					.attr('height', 13)
-					.attr('fill', 'rgba(180, 180, 180, 0.5)');
+					.attr('fill', parseRgba(neutralColor, 0.3));
 
 			// Publisher
 		  	groups.append('text')
@@ -667,7 +773,7 @@ app.main = (function() {
 			  		.attr('cx', 6)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(180, 180, 180, 1)');
+			  		.attr('fill', parseRgba(neutralColor, 1));
 
 			legend.append('text')
 			  		.attr('x', 14)
@@ -679,7 +785,7 @@ app.main = (function() {
 			  		.attr('cx', 65)
 			  		.attr('cy', -5)
 					.attr('r', 6)
-			  		.attr('fill', 'rgba(180, 180, 180, 0.5)');			  		
+			  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
 			legend.append('text')
 			  		.attr('x', 72)
@@ -762,7 +868,7 @@ app.main = (function() {
 			var svgSize = getCSS('socialEngagement');
 
 			// Visualization attributes
-			var margin = {top: 60, right: 0, bottom: 0, left: 0};
+			var margin = {top: 35, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 			var textOffset = 8;
@@ -770,7 +876,7 @@ app.main = (function() {
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: gutter.width/2, bottom: 0, left: gutter.width};
+			var chartMargin = {top: 30, right: 0, bottom: 0, left: 0};
 			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
 			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
 
@@ -832,7 +938,7 @@ app.main = (function() {
 				// Logo
 				chart.append('svg:image')
 						   .attr('x', - textOffset/2 - imgSize)
-						   .attr('y', - barHeight - imgSize)
+						   .attr('y', - barHeight/2 - imgSize)
 						   .attr('width', imgSize)
 						   .attr('height', imgSize)
 						   .attr('xlink:href', 'img/' + social_logos[index]);
