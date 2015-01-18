@@ -33,7 +33,7 @@ app.main = (function() {
 
 		// Getting the current contenders and category at: /api/showing?left=objectId&right=objectId&cat=catId
 		// Faking it so far!
-		var left = 'WjSOqxTOWg';
+		var left = 'BXv3itKA8e';
 		var right = 'fhLtOv7Mcb';
 		var cat = '3';
 
@@ -54,8 +54,8 @@ app.main = (function() {
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
 
 		// Load all data
-		d3.json("dummy_data/getcontents.json", function(error, json) {
-		// d3.json('http://attention.market/api/getcontents', function(error, json) {
+		// d3.json("dummy_data/getcontents.json", function(error, json) {
+		d3.json('http://attention.market/api/getcontents', function(error, json) {
 		  if (error) return console.warn(error);
 		  
 		  // Filling out our 'globals' — lists of categories and companies
@@ -103,7 +103,13 @@ app.main = (function() {
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
 
-			callback(newData);
+			// Sorting descending
+			var sortedData = _.sortBy(newData, function(obj){
+				return obj.face_val + obj.social_val;
+			});
+			sortedData.reverse();
+
+			callback(sortedData);
 		}
 		
 		// CHART: Top 5 Publishers
@@ -334,7 +340,7 @@ app.main = (function() {
 
 		function drawTopChart(dataset){
 
-			console.log(dataset);
+			// console.log(dataset);
 
 			/*----- LAYOUT -----*/
 			var svgSize = getCSS('topChart');
@@ -402,7 +408,9 @@ app.main = (function() {
 						return (i == 0) ? ('end') : ('start');
 					})				
 					.text(function(d, i){
-						return 'SOCIAL: ' + numToCurrency(d.social_val);
+						if(d.social_val > 0){
+							return 'SOCIAL: ' + numToCurrency(d.social_val);	
+						}
 					})
 					.attr('class', 'heading3');						
 
@@ -435,7 +443,9 @@ app.main = (function() {
 						return (i == 0) ? ('end') : ('start');
 					})				
 					.text(function(d, i){
-						return 'FACE: ' + numToCurrency(d.face_val);
+						if(d.face_val > 0){
+							return 'FACE: ' + numToCurrency(d.face_val);
+						}
 					})
 					.attr('class', 'heading3');					
 
