@@ -166,7 +166,7 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     
     
 //    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
-    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_LINEAR);
+    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 16.f, EASE_LINEAR);
     Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
     Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
     
