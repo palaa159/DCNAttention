@@ -21,21 +21,19 @@ app.main = (function() {
 
 		var cat, left, right;
 
-		// Connecting to socket.io
-		// var socket = io("http://attention.market:80");
-		// socket.on('showing', function(data){
-		// 	console.log(data);
-		// 	left = data.left;
-		// 	right = data.right;
-		// 	cat = data.cat;
-		// 	console.log('connected');
-		// });
+		cat = '0';
+		left = 'BXv3itKA8e';
+		right = 'fhLtOv7Mcb';
 
-		// Getting the current contenders and category at: /api/showing?left=objectId&right=objectId&cat=catId
-		// Faking it so far!
-		var left = 'BXv3itKA8e';
-		var right = 'fhLtOv7Mcb';
-		var cat = '1';
+		// Connecting to socket.io
+		var socket = io("http://attention.market:80");
+		socket.on('showing', function(data){
+			// console.log(data);
+			// left = data.left;
+			// right = data.right;
+			// cat = data.cat;
+			// console.log('connected');
+		});		
 
 		var allCategories;
 		var categoriesColors = [
@@ -53,27 +51,40 @@ app.main = (function() {
 		var social_counts = ['twitter_counts', 'fb_counts', 'google_counts', 'linkedin_counts', 'pinterest_counts'];
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
 
-		// Load all data
-		// d3.json("dummy_data/getcontents.json", function(error, json) {
-		d3.json('http://attention.market/api/getcontents', function(error, json) {
-		  if (error) return console.warn(error);
-		  
-		  // Filling out our 'globals' — lists of categories and companies
-		  allCategories = getAllCategories(json);
-		  // allCompanies = getAllCompanies(json);
+		loadAndStart(false);
 
-		  processTopChart(json, drawTopChart);
-		  processMainChart(json, drawMainChart, false);
-		  processTop5(json , drawTop5);
-		  processTopByCategory(json, drawTopByCategory);
-		  processSocialEngagement(json, drawSocialEngagement);
+		function loadAndStart(update){
 
-		  $('body').bind('click', function(){
-		  	cat = parseInt(cat) + 1;
-		  	processMainChart(json, drawMainChart, true);
-		  });
+			// // Load all data
+			// d3.json("dummy_data/getcontents.json", function(error, json) {
+			d3.json('http://attention.market/api/getcontents', function(error, json) {
+				if (error) return console.warn(error);
+
+				/* FAKE ---------------------------------------*/
+				cat = parseInt(cat) + 1;
+				var filteredData = _.filter(json, function(obj){
+					return obj.cat_id == cat;
+				});
+				left = filteredData[0].objectId;
+				right = filteredData[1].objectId;
+				/* FAKE ---------------------------------------*/
+
+				// Filling out our 'globals' — lists of categories and companies
+				allCategories = getAllCategories(json);
+				// allCompanies = getAllCompanies(json);
+
+				processTopChart(json, drawTopChart);
+				processMainChart(json, drawMainChart, update);
+				processTop5(json , drawTop5);
+				processTopByCategory(json, drawTopByCategory);
+				processSocialEngagement(json, drawSocialEngagement);
+
+			});			
+		}
+
+		$('body').bind('click', function(){
+			loadAndStart(true);
 		});
-
 
 		/*---------- DATA PROCESSING ----------*/
 
@@ -554,7 +565,12 @@ app.main = (function() {
 			  		.attr('y', 20)
 					.text(dataset[0].category)
 			  		.attr('class', 'heading2')
-			  		.attr('id', 'title');
+			  		.attr('id', 'title')
+					.style('opacity', 0)
+					.transition()
+					.duration(750)
+					.style('opacity', 1);
+
 
 				// Chart
 			    chart = svg.append('g')
@@ -592,6 +608,21 @@ app.main = (function() {
 										}
 										return stroke;
 								})
+								.attr('d', function(d, i){
+									// Shrinking lines to 0
+									var emptyHistory = [];
+									_.each(d.val_history, function(element, index, list){
+										var emptyObj = {
+											ts: element.ts,
+											social_val: 0,
+											face_val: 0
+										}
+										emptyHistory.push(emptyObj);
+									});
+									return line(emptyHistory);
+								})
+								.transition()
+								.duration(750)
 								.attr("d", function(d) { return line(d.val_history); });
 
 				// Labels
@@ -616,7 +647,12 @@ app.main = (function() {
 							}else{
 								return 'heading4';
 							}
-						});
+						})
+						.style('opacity', 0)
+						.transition()
+						.duration(750)
+						.style('opacity', 1);
+
 			// Update
 			}else{
 			
@@ -642,12 +678,16 @@ app.main = (function() {
 				company = chart.selectAll('.line')
 								.duration(1000)
 								.attr('d', function(d, i){
-									// Shrinking lines to 0
+									var emptyHistory = [];
 									_.each(d.val_history, function(element, index, list){
-										element.social_val = 0;
-										element.face_val = 0;
+										var emptyObj = {
+											ts: element.ts,
+											social_val: 0,
+											face_val: 0
+										}
+										emptyHistory.push(emptyObj);
 									});
-									return line(d.val_history);
+									return line(emptyHistory);
 								})
 								.each('end', function(d, i){
 									if (i == company.length - 1) {
