@@ -37,14 +37,11 @@ Display::Display(){
 //--------------------------------------------------------------
 void Display::update(int nFaces){
     
-    
-    
-    timerPos = ofWrap(timerPos, 0, 360);
-    
     numFaces = nFaces;
     
     if(roundOn){
         Tweenzor::update( ofGetElapsedTimeMillis() );
+        timerPos = ofWrap(timerPos, 0, 360);
         
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
         if(thisSec != lastSec) {
