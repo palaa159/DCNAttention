@@ -8,7 +8,7 @@
 
 #pragma once
 
-#define MASTER //COMMENT OUT TO RUN AS SLAVE (right screen)
+//#define MASTER //COMMENT OUT TO RUN AS SLAVE (right screen)
 
 #define USE_DEBUG_VIDEO //COMMENT OUT TO USE LIVE CAM
 #define CAM_DEVICE_ID 0
