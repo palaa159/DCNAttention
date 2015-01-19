@@ -42,7 +42,7 @@ void Display::update(int nFaces){
     
     if(roundOn){
         Tweenzor::update( ofGetElapsedTimeMillis() );
-        if(timerVal > 15)Tweenzor::resetAllTweens();
+        if(timerVal >= 15)Tweenzor::resetAllTweens();
         timerPosMapped = ofWrap(timerPos, 0, 360);
         
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
