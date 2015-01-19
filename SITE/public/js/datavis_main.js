@@ -29,10 +29,9 @@ app.main = (function() {
 			};
 		}else{
 			var svgSize = getCSS('#mainChart');
-			// console.log(svgSize);
 			gutter = {
-				width: 10,
-				height: 10
+				width: 20,
+				height: 20
 			};				
 			column = {
 				width: svgSize.width/2 - gutter.width,
@@ -801,6 +800,7 @@ app.main = (function() {
 			var margin = {top: 45, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = 12;
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -873,8 +873,8 @@ app.main = (function() {
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 13)
-						.attr('height', 13)
+						.attr('y', 1.2*barHeight)
+						.attr('height', barHeight)
 						.attr('fill', parseRgba(neutralColor, 1))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
@@ -887,8 +887,8 @@ app.main = (function() {
 						.attr('x', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('y', 13)
-						.attr('height', 13)
+						.attr('y', 1.2*barHeight)
+						.attr('height', barHeight)
 						.attr('fill', parseRgba(neutralColor, 0.3))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
@@ -899,7 +899,7 @@ app.main = (function() {
 				// Publisher
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 10)
+				  		.attr('y', barHeight)
 						.text(function(d, i){
 							return capText(d.company);
 						})
@@ -911,7 +911,7 @@ app.main = (function() {
 				// Value
 			  	groups.append('text')
 				  		.attr('x', 2)
-				  		.attr('y', 23)
+				  		.attr('y', 2*barHeight)
 						.text(function(d, i){
 							return numToCurrency(d.social_val + d.face_val);
 						})
@@ -959,9 +959,10 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
-			var margin = {top: 70, right: 0, bottom: 0, left: 0};
+			var margin = {top: (isMobile) ? (45) : (70), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = 12;
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -982,20 +983,32 @@ app.main = (function() {
 							.attr('width', width + margin.left + margin.right)
 						    .attr('height', height + margin.top + margin.bottom);
 
-				// Title
-				svg.append('text')
-				  		.attr('x', 0)
-				  		.attr('y', 20)
-						.text('Top by')
-				  		.attr('class', 'heading2')
-				  		.append('tspan')
-				  		.attr('x', 0)
-				  		.attr('y', 40)			  		
-				  		.text('Category');
+				// Title and legend
+				var title, legend;
 
-				// Legend
-				var legend = svg.append('g')
+				if(!isMobile){
+					title = svg.append('text')
+						  		.attr('x', 0)
+						  		.attr('y', 20)
+								.text('Top by')
+						  		.attr('class', 'heading2')
+						  		.append('tspan')
+						  		.attr('x', 0)
+						  		.attr('y', 40)			  		
+						  		.text('Category');					
+
+					legend = svg.append('g')
 							    .attr('transform', 'translate(0, 60)');
+				}else{
+					title = svg.append('text')
+						  		.attr('x', 0)
+						  		.attr('y', 20)
+								.text('Top by Category')
+						  		.attr('class', 'heading2');					
+
+					legend = svg.append('g')
+							    .attr('transform', 'translate(0, 40)');					
+				}
 
 				legend.append('circle')
 				  		.attr('cx', 6)
@@ -1026,7 +1039,7 @@ app.main = (function() {
 							    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 							    .attr('id', 'chart');
 
-				// Each group is composed by text and bar
+				// Each group is composed by text and bars
 			  	var groups = chart.selectAll('g')
 						  		.data(dataset)
 						  		.enter()
@@ -1038,11 +1051,11 @@ app.main = (function() {
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 26)
+						.attr('y', 2.2*barHeight)
 				  		.attr('width', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('height', 13)
+						.attr('height', barHeight)
 						.attr('fill', function(d, i){
 							return parseRgba(categoriesColors[i], 1);
 						})
@@ -1053,11 +1066,11 @@ app.main = (function() {
 						.attr('x', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('y', 26)
+						.attr('y', 2.2*barHeight)
 				  		.attr('width', function(d, i){
 				  			return xScale(d.face_val);
 				  		})
-						.attr('height', 13)
+						.attr('height', barHeight)
 						.attr('fill', function(d, i){
 							return parseRgba(categoriesColors[i], 0.5);
 						})
@@ -1066,7 +1079,7 @@ app.main = (function() {
 				// Category
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 10)
+				  		.attr('y', barHeight)
 						.text(function(d, i){
 							return d.category;
 						})
@@ -1075,7 +1088,7 @@ app.main = (function() {
 				// Publisher
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 23)
+				  		.attr('y', 2*barHeight)
 						.text(function(d, i){
 							return capText(d.company);
 						})
@@ -1084,7 +1097,7 @@ app.main = (function() {
 				// Value
 			  	groups.append('text')
 				  		.attr('x', 2)
-				  		.attr('y', 36)
+				  		.attr('y', 3*barHeight)
 						.text(function(d, i){
 							return numToCurrency(d.social_val + d.face_val);
 						})
