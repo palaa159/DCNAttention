@@ -42,6 +42,7 @@ void Display::update(int nFaces){
     
     if(roundOn){
         Tweenzor::update( ofGetElapsedTimeMillis() );
+        if(timerVal > 15)Tweenzor::resetAllTweens();
         timerPosMapped = ofWrap(timerPos, 0, 360);
         
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
@@ -163,7 +164,7 @@ void Display::startRound(ofxJSONElement thisContentObj){
     timestamp = int(ofGetElapsedTimef());
     //cout << timestamp << endl;
     lastSec = 0;
-    timerVal = 15;
+    timerVal = 16;
     timerPos = 0.f;
     // _property,  a_begin,  a_end,  a_delay,  a_duration, int a_easeType, float a_p, float a_a) {
     
