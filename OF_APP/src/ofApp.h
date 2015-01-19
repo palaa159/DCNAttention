@@ -44,7 +44,10 @@ public:
     //*** OSC STUFFS ***//
     string getOscMsgAsString(ofxOscMessage m);
     void broadcastMessage(string message);
+    void sendNewRound(ofxJSONElement contentObj);
+    bool checkForOscMsgs();
     vector<string>knownClients; //collected IP's of participants
+    bool heardBack;
     
     ofxOscSender oscSender;
     int     oscSendPort;

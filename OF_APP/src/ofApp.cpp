@@ -24,6 +24,7 @@ void ofApp::setup() {
 #endif
     oscSender.setup(oscSendHost, oscSendPort);
     oscRecvr.setup(oscRecvPort);
+    heardBack = false; //for master to listen
     
     //*** immediately init local data files ***//
     // query /api/getcontents, compare with local files
@@ -35,28 +36,31 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
-    
-    if(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
-        ofxOscMessage m;
-        oscRecvr.getNextMessage(&m);
-
-        string incomingHostIp = m.getRemoteIp();
-        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: " + incomingHostIp;
-        cout<< "m.getAddress: "<<m.getAddress()<<endl;
-        //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
-        if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
-           == knownClients.end()){
-            knownClients.push_back(incomingHostIp); //add new host to list
-        }
-        if(m.getAddress() == "/round"){
-            cout << "NEW ROUND !"<<endl;
-            ofxJSONElement thisObj;
-            //            string thisObjStr = m.getArgAsString(0);
-            //            cout << "thisObjStr: "<<thisObjStr<<endl;
-            thisObj = ofxJSONElement(m.getArgAsString(0));
-            display.startRound(thisObj);
-        }
-    }
+    checkForOscMsgs();
+//    while(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
+//        ofxOscMessage m;
+//        oscRecvr.getNextMessage(&m);
+//
+//        string incomingHostIp = m.getRemoteIp();
+//        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: " + incomingHostIp;
+//        cout<< "m.getAddress: "<<m.getAddress()<<endl;
+//        //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
+//        if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
+//           == knownClients.end()){
+//            knownClients.push_back(incomingHostIp); //add new host to list
+//        }
+//        if(m.getAddress() == "/round"){
+//            cout << "NEW ROUND !"<<endl;
+//            ofxJSONElement thisObj;
+//            //            string thisObjStr = m.getArgAsString(0);
+//            //            cout << "thisObjStr: "<<thisObjStr<<endl;
+//            thisObj = ofxJSONElement(m.getArgAsString(0));
+//            display.startRound(thisObj);
+//        } else if(m.getAddress() == "/callback"){
+//            cout << "heard back from right screen"<<endl;
+//        }
+//
+//    }
     
     ofSetWindowTitle("fps: "+ ofToString(ofGetFrameRate()));
     
@@ -139,11 +143,14 @@ void ofApp::nextRound(){
         // print entire objects
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;
+
+//        ofxOscMessage m;
+//        m.setAddress("/round");
+//        m.addStringArg(thisPair[1].getRawString());
+//        oscSender.sendMessage(m);
         
-        ofxOscMessage m;
-        m.setAddress("/round");
-        m.addStringArg(thisPair[1].getRawString());
-        oscSender.sendMessage(m);
+        sendNewRound(thisPair[1]);
+        
         display.startRound(thisPair[0]);
         
         dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
@@ -180,6 +187,50 @@ string ofApp::getOscMsgAsString(ofxOscMessage m){
     }
     return msg_string;
 }
+
+
+
+//--------------------------------------------------------------
+void ofApp::sendNewRound(ofxJSONElement contentObj){
+    
+    while (!checkForOscMsgs()){
+        ofxOscMessage m;
+        m.setAddress("/round");
+        m.addStringArg(contentObj.getRawString());
+        oscSender.sendMessage(m);
+    }
+}
+
+//--------------------------------------------------------------
+bool ofApp::checkForOscMsgs(){
+    
+
+    if(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
+        ofxOscMessage m;
+        oscRecvr.getNextMessage(&m);
+        
+        string incomingHostIp = m.getRemoteIp();
+        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: " + incomingHostIp;
+        cout<< "m.getAddress: "<<m.getAddress()<<endl;
+        //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
+        if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
+           == knownClients.end()){
+            knownClients.push_back(incomingHostIp); //add new host to list
+        }
+        if(m.getAddress() == "/round"){
+            cout << "NEW ROUND !"<<endl;
+            ofxJSONElement thisObj;
+            //            string thisObjStr = m.getArgAsString(0);
+            //            cout << "thisObjStr: "<<thisObjStr<<endl;
+            thisObj = ofxJSONElement(m.getArgAsString(0));
+            display.startRound(thisObj);
+        } else if(m.getAddress() == "/callback"){
+            cout << "heard back from right screen"<<endl;
+        }
+        return true;
+    } else return false;
+}
+
 
 //--------------------------------------------------------------
 void ofApp::broadcastMessage(string message){
