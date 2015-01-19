@@ -43,10 +43,13 @@ app.main = (function() {
 		var socket = io("http://attention.market:80");
 		socket.on('showing', function(data){
 			console.log(data);
-			// left = data.left;
-			// right = data.right;
-			// cat = data.cat;
+			left = data.left;
+			right = data.right;
+			cat = data.cat;
 			console.log('connected');
+
+			// update
+			loadAndStart(true);			
 		});		
 
 		var allCategories;
@@ -65,12 +68,14 @@ app.main = (function() {
 				if (error) return console.warn(error);
 
 				/* FAKE ---------------------------------------*/
-				cat = parseInt(cat) + 1;
-				var filteredData = _.filter(json, function(obj){
-					return obj.cat_id == cat;
-				});
-				left = filteredData[0].objectId;
-				right = filteredData[2].objectId;
+				if(!update){
+					cat = 1;
+					var filteredData = _.filter(json, function(obj){
+						return obj.cat_id == cat;
+					});
+					left = filteredData[0].objectId;
+					right = filteredData[1].objectId;
+				}
 				/* FAKE ---------------------------------------*/
 
 				// Filling out our 'globals' — lists of categories and companies
@@ -86,9 +91,9 @@ app.main = (function() {
 			});			
 		}
 
-		$('body').bind('click', function(){
-			loadAndStart(true);
-		});
+		// $('body').bind('click', function(){
+		// 	loadAndStart(true);
+		// });
 
 		/*---------- DATA PROCESSING ----------*/
 
