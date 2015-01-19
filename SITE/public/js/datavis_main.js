@@ -545,7 +545,7 @@ app.main = (function() {
 							return capText(d.company) + ' | ' + numToCurrency(d.face_val + d.social_val);
 						})
 						.attr('class', function(d, i){
-							return (isMobile) ? ('heading3') : ('heading2');	
+							return (isMobile) ? ('heading4') : ('heading2');
 						})
 						.style('opacity', 0)
 						.transition()
