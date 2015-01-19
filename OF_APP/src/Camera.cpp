@@ -26,10 +26,10 @@ Camera::Camera(){
     
     finder.setPreset(ObjectFinder::Sensitive);
     finder.setRescale(.9f);
-    finder.setMinNeighbors(2);
+    finder.setMinNeighbors(1);
     finder.setMultiScaleFactor(1.3f); //BETTER
     finder.setMinSizeScale(.08f);
-    finder.setMaxSizeScale(.3f);
+    finder.setMaxSizeScale(.4f);
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
     
