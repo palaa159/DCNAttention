@@ -21,7 +21,7 @@ app.main = (function() {
 
 		var cat, left, right;
 
-		cat = '0';
+		cat = '2';
 		left = 'BXv3itKA8e';
 		right = 'fhLtOv7Mcb';
 
@@ -66,7 +66,7 @@ app.main = (function() {
 					return obj.cat_id == cat;
 				});
 				left = filteredData[0].objectId;
-				right = filteredData[1].objectId;
+				right = filteredData[2].objectId;
 				/* FAKE ---------------------------------------*/
 
 				// Filling out our 'globals' — lists of categories and companies
@@ -411,19 +411,21 @@ app.main = (function() {
 
 			// Social value
 			groups.append('rect')
-					.attr('x', function(d, i){
-						if(i == 0){
-							return chartWidth - xScale(d.social_val);
-						}else{
-							return 0;
-						}
-					})
+					.attr('x', 0)
 					.attr('y', 1.5*barHeight)				
 					.attr('height', barHeight)
+					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+					.attr('transform', function(d, i){
+						var offset = (i == 0) ? (chartWidth) : (0);
+						var flip = (i == 0) ? (-1) : (1);						
+						return 'translate(' + offset + ', 0) scale(' + flip + ', 1)';
+					})
+					.attr('width', 0)
+					.transition()
+					.duration(750)
 					.attr('width', function(d, i){
 						return xScale(d.social_val);
-					})
-					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1));
+					});
 
 			groups.append('text')
 					.attr('x', function(d, i){
@@ -438,7 +440,7 @@ app.main = (function() {
 						return (i == 0) ? ('end') : ('start');
 					})				
 					.text(function(d, i){
-						if(d.social_val > 0){
+						if(xScale(d.social_val) > gutter.width){
 							return 'SOCIAL: ' + numToCurrency(d.social_val);	
 						}
 					})
@@ -447,18 +449,22 @@ app.main = (function() {
 			// Face value
 			groups.append('rect')
 					.attr('x', function(d, i){
-						if(i == 0){
-							return chartWidth - xScale(d.social_val + d.face_val);
-						}else{
 							return xScale(d.social_val);
-						}
 					})
 					.attr('y', 1.5*barHeight)				
 					.attr('height', barHeight)
+					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5))
+					.attr('transform', function(d, i){
+						var offset = (i == 0) ? (chartWidth) : (0);
+						var flip = (i == 0) ? (-1) : (1);						
+						return 'translate(' + offset + ', 0) scale(' + flip + ', 1)';
+					})
+					.attr('width', 0)
+					.transition()
+					.duration(750)
 					.attr('width', function(d, i){
 						return xScale(d.face_val);
-					})
-					.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5));
+					});;
 
 			groups.append('text')
 					.attr('x', function(d, i){
@@ -473,11 +479,15 @@ app.main = (function() {
 						return (i == 0) ? ('end') : ('start');
 					})				
 					.text(function(d, i){
-						if(d.face_val > 0){
+						if(xScale(d.face_val) > gutter.width){
 							return 'FACE: ' + numToCurrency(d.face_val);
 						}
 					})
-					.attr('class', 'heading3');					
+					.attr('class', 'heading3')
+					.style('opacity', 0)
+					.transition()
+					.duration(750)
+					.style('opacity', 1);
 
 			// Companies
 			groups.append('text')
@@ -491,7 +501,11 @@ app.main = (function() {
 					.text(function(d, i){
 						return d.company + ' | ' + numToCurrency(d.face_val + d.social_val);
 					})
-					.attr('class', 'heading2');	
+					.attr('class', 'heading2')
+					.style('opacity', 0)
+					.transition()
+					.duration(750)
+					.style('opacity', 1);
 		}
 
 		function drawMainChart(dataset, update){
