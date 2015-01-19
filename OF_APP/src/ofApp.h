@@ -47,6 +47,7 @@ public:
     string getOscMsgAsString(ofxOscMessage m);
     void broadcastMessage(string message);
     vector<string>knownClients; //collected IP's of participants
+    bool waitingCallback; //for master
     
     ofxOscSender oscSender;
     int     oscSendPort;

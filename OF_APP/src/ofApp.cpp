@@ -24,6 +24,7 @@ void ofApp::setup() {
 #endif
     oscSender.setup(oscSendHost, oscSendPort);
     oscRecvr.setup(oscRecvPort);
+    waitingCallback = false;
     
     //*** immediately init local data files ***//
     // query /api/getcontents, compare with local files
@@ -69,7 +70,13 @@ void ofApp::update() {
             cout << "GOT CALLBACK, STARTING ROUND";
             display.startRound(thisPair[0]);
             dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT));
+            waitingCallback = false;
         }
+    }
+    
+    while(waitingCallback){
+        sendRound();
+        ofSleepMillis(1000);
     }
 }
 
@@ -152,11 +159,11 @@ void ofApp::nextRound(){
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;
         
-        
-        ofxOscMessage m;
-        m.setAddress("/round");
-        m.addStringArg(thisPair[1].getRawString());
-        oscSender.sendMessage(m);
+        sendRound();
+//        ofxOscMessage m;
+//        m.setAddress("/round");
+//        m.addStringArg(thisPair[1].getRawString());
+//        oscSender.sendMessage(m);
         
         //display.startRound(thisPair[0]);
         
@@ -171,6 +178,7 @@ void ofApp::sendRound(){
     m.setAddress("/round");
     m.addStringArg(thisPair[1].getRawString());
     oscSender.sendMessage(m);
+    waitingCallback = true;
 }
 
 //--------------------------------------------------------------
