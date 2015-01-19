@@ -28,16 +28,15 @@ app.main = (function() {
 				height: window.innerHeight * 0.03
 			};
 		}else{
-			var svgSize = getCSS('#mainChart');
+			var svgSize = getCSS('socialEngagement-container');
 			gutter = {
-				width: 20,
-				height: 20
+				width: 40,
+				height: 40
 			};				
 			column = {
 				width: svgSize.width,
 				height: svgSize.height
 			};
-		
 		}
 		// console.log(column);
 
@@ -70,7 +69,7 @@ app.main = (function() {
 			console.log('connected');
 
 			// update
-			loadAndStart(true);			
+			// loadAndStart(true);			
 		});		
 
 		var allCategories;
@@ -408,12 +407,13 @@ app.main = (function() {
 			/*----- LAYOUT -----*/
 			var svgSize = getCSS('topChart-container');
 
-			// Visualization attributes
+			// Visualization attributes		
 			var margin = {top: 0, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var textOffset = gutter.width/2;
-			var barHeight = gutter.height;
+			var barHeight = height/2;	
+			var textOffset = gutter.width/4;
+			// console.log(svgSize);
 
 			// Each chart
 			var chartWidth = (isMobile) ? (column.width/2) : (3 * column.width + 2 * gutter.width);
@@ -451,7 +451,7 @@ app.main = (function() {
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 1.5*barHeight)				
+						.attr('y', barHeight)
 						.attr('height', barHeight)
 						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
 						.attr('transform', function(d, i){
@@ -469,12 +469,12 @@ app.main = (function() {
 				groups.append('text')
 						.attr('x', function(d, i){
 							if(i == 0){
-								return chartWidth - textOffset/4;
+								return chartWidth - textOffset;
 							}else{
-								return textOffset/4;
+								return textOffset;
 							}
 						})
-						.attr('y', 2.25*barHeight)
+						.attr('y', 1.8*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -492,7 +492,7 @@ app.main = (function() {
 						.attr('x', function(d, i){
 								return xScale(d.social_val);
 						})
-						.attr('y', 1.5*barHeight)				
+						.attr('y', barHeight)				
 						.attr('height', barHeight)
 						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5))
 						.attr('transform', function(d, i){
@@ -510,12 +510,12 @@ app.main = (function() {
 				groups.append('text')
 						.attr('x', function(d, i){
 							if(i == 0){
-								return chartWidth - xScale(d.social_val) - textOffset/4;
+								return chartWidth - xScale(d.social_val) - textOffset;
 							}else{
-								return xScale(d.social_val) + textOffset/4;
+								return xScale(d.social_val) + textOffset;
 							}
 						})
-						.attr('y', 2.25*barHeight)
+						.attr('y', 1.8*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -537,7 +537,7 @@ app.main = (function() {
 						.attr('x', function(d, i){
 							return (i == 0) ? (chartWidth - textOffset) : (textOffset);
 						})
-						.attr('y', 20)
+						.attr('y', 0.8*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})
@@ -557,7 +557,7 @@ app.main = (function() {
 					.attr('x', svgSize.width/2)
 					.attr('y', 0)
 					.attr('width', 1)
-					.attr('height', svgSize.height*2);						
+					.attr('height', svgSize.height + 10);
 
 			// Update
 			}else{
@@ -609,9 +609,25 @@ app.main = (function() {
 			var svgSize = getCSS('mainChart-container');
 
 			// Visualization attributes
-			var margin = {top: 60, right: (isMobile) ? (0) : (column.width + gutter.width), bottom: (isMobile) ? (svgSize.height/2) : (gutter.height), left: gutter.width};
+			var margin
+			if(!isMobile){
+				margin = {
+					top: 1.25 * getFontSize('heading2'),
+					right: column.width + gutter.width,
+					bottom: gutter.height,
+					left: gutter.width
+				};
+			}else{
+				margin = {
+					top: 1.25 * getFontSize('heading2'),
+					right: gutter.width*2,
+					bottom: svgSize.height/2,
+					left: gutter.width*2
+				};
+			} 
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = 1.25 * getFontSize('heading4');			
 
 			var xScale = d3.time.scale()
 							.domain(d3.extent(fullTimeRange, function(d, i) {
@@ -654,7 +670,7 @@ app.main = (function() {
 				// Title
 				svg.append('text')
 			  		.attr('x', 0)
-			  		.attr('y', 20)
+			  		.attr('y', getFontSize('heading2'))
 					.text(dataset[0].category)
 			  		.attr('class', 'heading2')
 			  		.attr('id', 'title')
@@ -734,7 +750,7 @@ app.main = (function() {
 						.append('text')
 						.attr('x', 0)
 						.attr('y', function(d, i){
-							return i * 16;
+							return i * barHeight;
 						})
 						.text(function(d, i){
 							return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
@@ -815,10 +831,10 @@ app.main = (function() {
 			var svgSize = getCSS('top5-container');			
 
 			// Visualization attributes
-			var margin = {top: 45, right: 0, bottom: 0, left: 0};
+			var margin = {top: 2 * getFontSize('heading2'), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var barHeight = 12;
+			var barHeight = getFontSize('heading3');
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -842,13 +858,13 @@ app.main = (function() {
 				// Title
 				svg.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 20)
+				  		.attr('y', margin.top/2)
 						.text('Top 5')
 				  		.attr('class', 'heading2');
 
 				// Legend
 				var legend = svg.append('g')
-							    .attr('transform', 'translate(0, 40)');
+							    .attr('transform', 'translate(0, ' + margin.top*0.9 + ')');
 
 				legend.append('circle')
 				  		.attr('cx', 6)
@@ -1345,8 +1361,7 @@ app.main = (function() {
 
 		/*-------- AUXILIAR (DRAW) FUNCTIONS ---------*/
 
-		function getCSS(id){
-			
+		function getCSS(id){			
 			// Creating a fake element and apending it to the body,
 			// to read its css properties
 			var protoElement = $('<div id='+ id + ' class="container"></div>');
@@ -1364,6 +1379,18 @@ app.main = (function() {
 			$(protoElement).remove();			
 
 			return svgSize;
+		}
+
+		function getFontSize(thisClass){
+			var protoElement = $('<text class=' + thisClass + '></div>');
+			$('body').append(protoElement);
+			var fontSize = $(protoElement).css('font-size');
+			fontSize = fontSize.substring(0, fontSize.indexOf('p'));
+			fontSize = parseInt(fontSize);
+			console.log(fontSize);
+			$(protoElement).remove();
+
+			return fontSize;
 		}
 
 		function numToCurrency(num){
