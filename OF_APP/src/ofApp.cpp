@@ -220,9 +220,13 @@ bool ofApp::checkForOscMsgs(){
         if(m.getAddress() == "/round"){
             cout << "NEW ROUND !"<<endl;
             ofxJSONElement thisObj;
-            //            string thisObjStr = m.getArgAsString(0);
-            //            cout << "thisObjStr: "<<thisObjStr<<endl;
             thisObj = ofxJSONElement(m.getArgAsString(0));
+            
+            ofxOscMessage n;
+            n.setAddress("/callback");
+            m.addStringArg("got you");
+            oscSender.sendMessage(n);
+            
             display.startRound(thisObj);
         } else if(m.getAddress() == "/callback"){
             cout << "heard back from right screen"<<endl;
