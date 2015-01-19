@@ -54,10 +54,14 @@ void ofApp::update() {
         }
         if(m.getAddress() == "/round"){
             ofxJSONElement thisObj;
-            //            string thisObjStr = m.getArgAsString(0);
-            //            cout << "thisObjStr: "<<thisObjStr<<endl;
             thisObj = ofxJSONElement(m.getArgAsString(0));
             display.startRound(thisObj);
+            
+            //send callback
+            ofxOscMessage n;
+            n.setAddress("/callback");
+            n.addIntArg(1);
+            oscSender.sendMessage(n);
         }
     }
 }
