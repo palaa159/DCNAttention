@@ -53,6 +53,7 @@ private:
     int timerSize;    //size of timer
     ofVec2f timerLoc; //x,y
     float timerPos;   //arc progress bar
+    float timerPosMapped;
     long timestamp; //for timerVal calc
     int lastSec;
     

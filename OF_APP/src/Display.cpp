@@ -41,7 +41,7 @@ void Display::update(int nFaces){
     
     if(roundOn){
         Tweenzor::update( ofGetElapsedTimeMillis() );
-        timerPos = ofWrap(timerPos, 0, 360);
+        timerPosMapped = ofWrap(timerPos, 0, 360);
         
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
         if(thisSec != lastSec) {
@@ -103,7 +103,7 @@ void Display::draw(){
         ofPath timerVis = ofPath();
         timerVis.setColor(payRed);
         timerVis.setCircleResolution(100);
-        timerVis.arc(timerLoc, timerSize, timerSize, timerPos, 270, false);
+        timerVis.arc(timerLoc, timerSize, timerSize, timerPosMapped, 270, false);
         timerVis.draw();
         ofSetColor(payDarkGray);
         ofCircle(timerLoc, timerSize-20);
@@ -154,7 +154,7 @@ void Display::startRound(ofxJSONElement thisContentObj){
     }
     
     
-    //    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
+    //Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
     Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 16.f, EASE_LINEAR);
     Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
     Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
