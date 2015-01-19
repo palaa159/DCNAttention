@@ -26,7 +26,8 @@ Display::Display(){
     timerVal = 15;
     Tweenzor::init();
     timerLoc.set(ofGetWidth()-175, ofGetHeight()-150);
-    timerPos = 270.001f;
+    timerPos = 0.0f;
+    timerPosMapped = 270.001f;
     
     roundOn = false;
     eyeLogo.loadImage("img/eye_white.png");
