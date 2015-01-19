@@ -1182,7 +1182,7 @@ app.main = (function() {
 			var svgSize = getCSS('socialEngagement-container');
 
 			// Visualization attributes
-			var margin = {top: 35, right: 0, bottom: 0, left: 0};
+			var margin = {top: (isMobile) ? (70) : (35), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 			var textOffset = 8;
@@ -1190,9 +1190,9 @@ app.main = (function() {
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: 0, bottom: 0, left: 0};
+			var chartMargin = {top: 30, right: 0, bottom: (isMobile) ? (30) : (0), left: (isMobile) ? (svgSize.width/2) : (0)};
 			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
-			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
+			var chartHeight = (isMobile) ? ((height - margin.top - margin.bottom)/4  - chartMargin.top - chartMargin.bottom) : (height - chartMargin.top - chartMargin.bottom);
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset[0].values.length))
@@ -1230,28 +1230,37 @@ app.main = (function() {
 
 			    var allCharts = svg.append('g')
 								    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-								    .attr('id', 'allCharts');
-
-				var labels = allCharts.selectAll('text')
-									.data(dataset[1].values)
-									.enter()
-									.append('text')
-									.attr('x', column.width)
-									.attr('y', function(d, i){
-										return chartMargin.top + textOffset + yScale(i);
-									})
-									.attr('text-anchor', 'end')
-									.text(function(d, i){
-										return d.category;
-									})
-									.attr('class', 'heading3');			  		
+								    .attr('id', 'allCharts');		  		
 
 				// Charts
 				_.each(dataset, function(element, index, list){
 
 				    var chart = allCharts.append('g')
-								   		 .attr('transform', 'translate(' + (chartMargin.left + (width/6) * (index + 1)) + ',' + chartMargin.top + ')')
+								   		 .attr('transform', function(){
+								   		 	if(isMobile){
+								   		 		return 'translate(' + chartMargin.left + ', ' + (index*(chartHeight + chartMargin.top + chartMargin.bottom)) + ')';
+								   		 	}else{
+								   		 		return 'translate(' + (chartMargin.left + (width/6) * (index + 1)) + ',' + chartMargin.top + ')';
+								   		 	}
+								   		 })
 								   		 .attr('id', 'chart');
+
+					if(isMobile || (!isMobile && index == 0)){
+						var labels = chart.selectAll('.heading3.labels')
+											.data(dataset[1].values)
+											.enter()
+											.append('text')
+											.attr('x', -4*textOffset)
+											// .attr('y', 0)
+											.attr('y', function(d, i){
+												return textOffset + yScale(i);
+											})
+											.attr('text-anchor', 'end')
+											.text(function(d, i){
+												return d.category;
+											})
+											.attr('class', 'heading3 labels');						
+					}								   		 
 
 					// Logo
 					chart.append('svg:image')
@@ -1279,7 +1288,7 @@ app.main = (function() {
 							});
 
 					// Values
-					chart.selectAll('text')
+					chart.selectAll('.heading4.values')
 							.data(element.values)
 							.enter()
 							.append('text')
@@ -1291,7 +1300,7 @@ app.main = (function() {
 								return d.counts;
 							})
 							.attr('text-anchor', 'end')
-							.attr('class', 'heading4');						
+							.attr('class', 'heading4 values');						
 				});				
 
 			// Update
