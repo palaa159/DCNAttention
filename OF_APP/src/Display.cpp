@@ -37,15 +37,13 @@ Display::Display(){
 //--------------------------------------------------------------
 void Display::update(int nFaces){
     
-//    ((testApp*) ofGetAppPtr())->someVariableThatsInTestApp  = 100;
-//    float faceV = ((ofApp*) ofGetAppPtr())->currContent.getFaceValue();
-//    float socialV = ((ofApp*) ofGetAppPtr())->currContent.getSocialValue();
 
-//    displayFaceVal = thisContent.getFaceValue();
-//    displaySocialVal = thisContent.getSocialValue();
     Tweenzor::update( ofGetElapsedTimeMillis() );
+    
     timerPos = ofWrap(timerPos, 0, 360);
+    
     numFaces = nFaces;
+    
     if(roundOn){
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
         if(thisSec != lastSec) {
@@ -55,6 +53,7 @@ void Display::update(int nFaces){
                 displayFaceVal += 0.0382*numFaces;
                 displayFaceVal = roundf(displayFaceVal * 100) / 100;
                 //diplayTotalValue += 0.0382*numFaces;
+                //TODO; value to two decimal places even with 0: 5.40
             }
             //cout << "timerVal "<<timerVal<<endl;
         }
@@ -122,8 +121,8 @@ void Display::draw(){
         
         if(timerVal>15)timerVal=15; //lil' hack
         if(timerVal<0)timerVal=0;
-        if(timerVal>9)timerFont.drawString(ofToString(timerVal), timerLoc.x-53, timerLoc.y+30);
-        else timerFont.drawString(ofToString(timerVal), timerLoc.x-23, timerLoc.y+30);
+        if(timerVal>9)timerFont.drawString(ofToString(timerVal), timerLoc.x-58, timerLoc.y+32);
+        else timerFont.drawString(ofToString(timerVal), timerLoc.x-29, timerLoc.y+32);
     } else {
         ofSetColor(0);
         headlineFont.drawString("waiting for content to download...", ofGetWidth()/2-400, ofGetHeight()/2+300);

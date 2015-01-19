@@ -17,6 +17,19 @@ void ofApp::setup() {
     dataConnect.pullData();
     
     CURR_CAT = 0;
+    
+#ifdef MASTER
+    oscSendHost = "localhost";
+    oscSendPort = 9000;
+    oscRecvPort = 9001;
+#endif
+#ifdef SLAVE
+    oscSendHost = "localhost";
+    oscSendPort = 9001;
+    oscRecvPort = 9000;
+#endif
+    oscSender.setup(oscSendHost, oscSendPort);
+    oscRecvr.setup(oscRecvPort);
 }
 
 
@@ -25,18 +38,20 @@ void ofApp::update() {
     
     ofSetWindowTitle("fps: "+ ofToString(ofGetFrameRate()));
     
-
-    int numFaces = cam.update();
-//    int numFaces = 1;
+    cam.update();
 
     display.update(cam.getNumFaces());
     
-    
-    
-    //if(currContentIdx>=0){
-    //    allContent[currContentIdx].update(cam.getFaceVal());
-    //display.update(numFaces, allContent[currContentIdx]);
-    //}
+    while(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
+        ofxOscMessage m;
+        oscRecvr.getNextMessage(&m);
+        string incomingHostIp = m.getRemoteIp();
+        ofLogVerbose("RECVD OSC MESSAGE FROM IP: "+m.getRemoteIp() +"\t MSG: "+ getOscMsgAsString(m));
+        if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
+           == knownClients.end()){
+            knownClients.push_back(incomingHostIp); //add new host to list
+        }
+    }
 }
 
 
@@ -107,12 +122,6 @@ void ofApp::nextRound(){
             cout<<"adding objNum: "<<objNum<<endl;
             thisPair.push_back(category[objNum]);
         }
-
-        
-        dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
-        
-        display.startRound(thisPair);
-        
         // cout<< "THIS ROUND OBJECTS: "<<endl;
         //cout << "\t left screen: "<<thisPair[0]["objectId"].asString()<<endl;
         //cout << "\t right screen: "<<thisPair[1]["objectId"].asString()<<endl;
@@ -120,12 +129,69 @@ void ofApp::nextRound(){
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;
         
+        dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
+        
+        display.startRound(thisPair);
         
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
+        
+#ifdef MASTER
+        ofxOscMessage sendMsg;
+        sendMsg.setAddress("/newRound");
+        sendMsg.addStringArg(thisPair[1].getRawString());
+        oscSender.sendMessage(sendMsg);
+#endif
+        
     }
 }
 
+
+//--------------------------------------------------------------
+string ofApp::getOscMsgAsString(ofxOscMessage m){
+    string msg_string;
+    msg_string = m.getAddress();
+    msg_string += ":";
+    for(int i = 0; i < m.getNumArgs(); i++){
+        // get the argument type
+        msg_string += " " + m.getArgTypeName(i);
+        msg_string += ":";
+        // display the argument - make sure we get the right type
+        if(m.getArgType(i) == OFXOSC_TYPE_INT32){
+            msg_string += ofToString(m.getArgAsInt32(i));
+        }
+        else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT){
+            msg_string += ofToString(m.getArgAsFloat(i));
+        }
+        else if(m.getArgType(i) == OFXOSC_TYPE_STRING){
+            msg_string += m.getArgAsString(i);
+        }
+        else{
+            msg_string += "unknown";
+        }
+    }
+    return msg_string;
+}
+
+//--------------------------------------------------------------
+void ofApp::broadcastMessage(string message){
+    
+    //create a new OSC message
+    ofxOscMessage m;
+    m.setAddress("/chatlog");
+    m.addStringArg(message);
+    //m.addBlobArg(<#ofBuffer argument#>);
+    
+    //Send message to all known hosts
+    // use another port to avoid a localhost loop
+    for(unsigned int i = 0; i < knownClients.size(); i++){
+        oscSender.setup(knownClients[i], 9002);
+        m.setRemoteEndpoint(knownClients[i], 9002);
+        oscSender.sendMessage(m);
+        ofLogVerbose("Server broadcast message " + m.getArgAsString(0) + " to " + m.getRemoteIp()
+                     + ":" + ofToString(m.getRemotePort()));
+    }
+}
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){

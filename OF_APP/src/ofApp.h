@@ -6,7 +6,12 @@
 #include "Display.h"
 #include "ContentModel.h"
 #include "Data.h"
+#include "ofxOsc.h"
 
+#define MASTER
+
+#define LEFT_SCREEN_IP "192.168.1.10" //MASTER
+#defind RIGHT_SCREEN_IP 
 
 class ofApp : public ofBaseApp {
 
@@ -25,18 +30,32 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    void nextRound();
 
+    //*** DISPLAY, CAMERA, DATA ***//
     Data dataConnect;
-    
-    int currContentIdx;
-    
     Display display;
-
     Camera cam;
     bool CAM_DEBUG = true;
     
-    bool GO_MODE = false;
     
+    //*** CONTROL STUFF ***//
+    void nextRound();
+    
+    bool GO_MODE = false;
     int CURR_CAT;
+    
+    
+    //*** OSC STUFFS ***//
+    string getOscMsgAsString(ofxOscMessage m);
+    void broadcastMessage(string message);
+    vector<string>knownClients; //collected IP's of participants
+    
+    ofxOscSender oscSender;
+    int     oscSendPort;
+    string  oscSendHost;
+    string  oscSendMessage;
+    
+    ofxOscReceiver oscRecvr;
+    int     oscRecvPort;
+    string  oscRecvdMessage;
 };

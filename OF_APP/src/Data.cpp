@@ -174,7 +174,7 @@ void Data::sendFace(string objId, int faceVal){
 void Data::urlResponse(ofHttpResponse & response) {
 
     if(response.status==200){
-        cout << "ofLoadURL response: "<< response.data << "   status: "<< response.status << "\tid: "<<response.request.getID()<< "\tname: "<<response.request.name <<endl;
+        cout << "\n>>ofLoadURL response: "<< response.data << "   status: "<< response.status << "\tid: "<<response.request.getID()<< "\tname: "<<response.request.name <<endl;
     } else {
         cout << "REQUEST ERROR: ofLoadURL response: "<< response.data << "   status: "<< response.status << "\tname: "<<response.request.name <<"****!!!"<<endl;
         cout  <<"****!!!"<<endl;
