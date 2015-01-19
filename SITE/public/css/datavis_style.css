@@ -1,11 +1,29 @@
 /*---------- SVG styles ----------------
+
+Dimensions:
 column = 10%
 gutter = 3%
 margin = 6% (2 * gutter)
+
+Colors:
+main color = rgb(80, 55, 150) (purple)
+aux color  = rgb(115, 205, 225) (cyan)
+
 --------------------------------------*/
 
 * {
 	font-family: 'Lato', sans-serif !important;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */;
+}
+
+body, html{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
 }
 
 #logo{
@@ -20,47 +38,48 @@ margin = 6% (2 * gutter)
 	max-width: 16%;
 }
 
-#topChart{
+div.container{
+	position: absolute;
+}
+
+svg{
+	width: 100%;
+	height: 100%;
+}
+
+#topChart-container{
 	top: 6%;
 	left: 6%;
 	width: 88%;
 	height: 10%;
 }
 
-#mainChart{
+#mainChart-container{
 	top: 19%;
 	left: 6%;
 	width: 75%;
 	height: 50%;
 }
 
-#top5{
+#top5-container{
 	top: 19%;
 	left: 84%;
 	width: 10%;
 	height: 23%;
 }
 
-#topByCategory{
+#topByCategory-container{
 	top: 45%;
 	left: 84%;
 	width: 10%;
 	height: 49%;
 }
 
-#socialEngagement{
+#socialEngagement-container{
 	top: 71%;
 	left: 6%;
 	width: 75%;
 	height: 23%;
-}
-
-/*---------- SVG styles ----------------
-main color:	rgb(80, 55, 150) (purple)
-aux color:	rgb(115, 205, 225) (cyan)
---------------------------------------*/
-svg{
-	position: absolute;
 }
 
 text{
@@ -105,6 +124,66 @@ text.heading4{
 
 .line {
   fill: none;
-/*  stroke: rgba(0, 255, 255, 0.5);
-  stroke-width: 1.5px;*/
+}
+
+@media screen and (max-width: 1100px) {
+
+	html{
+	  height: 100%;
+	  width: 100%;
+	  margin: 0;
+	  border: 0;
+	  padding: 0;
+	}
+
+	body{
+	  height: 100%;
+	  width: 100%;
+	  margin: 0;
+	  border: 0;
+	  padding: 0 20px 0 20px;
+	}
+
+	svg{
+		position: static;
+		margin: 0;
+	  	border: 0;
+	  	padding: 0;
+		display: block;
+	}
+
+	#logo{
+		position: static;
+		width: 100%;
+		text-align: center;
+	}
+
+	#logo img{
+		max-height: 20%;
+	}
+
+	#topChart{
+		width: 100%;
+		height: 10%;
+	}
+
+	#mainChart{
+		width: 100%;
+		height: 60%;
+	}
+
+	#top5{
+		width: 100%;
+		height: 23%;
+	}
+
+	#topByCategory{
+		width: 100%;
+		height: 49%;
+	}
+
+	#socialEngagement{
+		width: 100%;
+		height: 23%;
+	}
 }

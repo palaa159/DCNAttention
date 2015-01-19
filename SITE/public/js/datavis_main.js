@@ -13,14 +13,36 @@ app.main = (function() {
 		// Design
 		var transitionDuration = 750;
 
-		var column = {
-			width: window.innerWidth/10,
-			height: window.innerHeight/10
-		};
-		var gutter = {
-			width: window.innerWidth * 0.03,
-			height: window.innerHeight * 0.03
-		};
+		var isMobile = (window.innerWidth < 1100) ? (true) : (false);
+		// console.log(isMobile);
+
+		var column, gutter;
+
+		if(!isMobile){
+			column = {
+				width: window.innerWidth/10,
+				height: window.innerHeight/10
+			};
+			gutter = {
+				width: window.innerWidth * 0.03,
+				height: window.innerHeight * 0.03
+			};
+		}else{
+			var svgSize = getCSS('#mainChart');
+			// console.log(svgSize);
+			gutter = {
+				width: 10,
+				height: 10
+			};				
+			column = {
+				width: svgSize.width/2 - gutter.width,
+				height: svgSize.height/2 - gutter.height
+			};
+		
+		}
+		// console.log(column);
+
+
 		var categoriesColors = [
 			{	r: 80,		g: 200,		b: 245	},
 			{	r: 240,		g: 105,		b: 35	},
@@ -385,7 +407,7 @@ app.main = (function() {
 			// console.log(dataset);
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('topChart');
+			var svgSize = getCSS('topChart-container');
 
 			// Visualization attributes
 			var margin = {top: 0, right: 0, bottom: 0, left: 0};
@@ -395,7 +417,7 @@ app.main = (function() {
 			var barHeight = gutter.height;
 
 			// Each chart
-			var chartWidth = (3 * column.width + 2 * gutter.width);
+			var chartWidth = (isMobile) ? (column.width) : (3 * column.width + 2 * gutter.width);
 
 			var xScale = d3.scale.linear()
 						   .domain([0, d3.max(dataset, function(d, i){
@@ -406,7 +428,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#topChart-container')
 							.append('svg')
 							.attr('id', 'topChart')
 							.attr('width', width + margin.left + margin.right)
@@ -419,7 +441,12 @@ app.main = (function() {
 						  		.enter()
 						  		.append('g')
 								.attr('transform', function(d, i){
-									var xOffset = (i % 2 == 0) ? (0) : (4 * (column.width + gutter.width));
+									var xOffset;
+									if(!isMobile){
+										xOffset = (i == 0) ? (0) : (4 * (column.width + gutter.width));
+									}else{
+										xOffset = (i == 0) ? (0) : (column.width + gutter.width);
+									}
 									return 'translate(' + xOffset + ', 0)';
 								});			
 
@@ -568,7 +595,7 @@ app.main = (function() {
 
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('mainChart');
+			var svgSize = getCSS('mainChart-container');
 
 			// Visualization attributes
 			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
@@ -607,7 +634,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#mainChart-container')
 							.append('svg')
 							.attr('id', 'mainChart')
 							.attr('width', width + margin.left + margin.right)
@@ -768,7 +795,7 @@ app.main = (function() {
 		function drawTop5(dataset, update){
 
 			// Canvas properties
-			var svgSize = getCSS('top5');			
+			var svgSize = getCSS('top5-container');			
 
 			// Visualization attributes
 			var margin = {top: 45, right: 0, bottom: 0, left: 0};
@@ -788,7 +815,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#top5-container')
 							.append('svg')
 							.attr('id', 'top5')	
 							.attr('width', width + margin.left + margin.right)
@@ -929,7 +956,7 @@ app.main = (function() {
 		function drawTopByCategory(dataset, update){
 			
 			// Canvas properties
-			var svgSize = getCSS('topByCategory');
+			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
 			var margin = {top: 70, right: 0, bottom: 0, left: 0};
@@ -949,7 +976,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#topByCategory-container')
 							.append('svg')
 							.attr('id', 'topByCategory')	
 							.attr('width', width + margin.left + margin.right)
@@ -1121,7 +1148,7 @@ app.main = (function() {
 				// });			
 
 			// Canvas attributes
-			var svgSize = getCSS('socialEngagement');
+			var svgSize = getCSS('socialEngagement-container');
 
 			// Visualization attributes
 			var margin = {top: 35, right: 0, bottom: 0, left: 0};
@@ -1157,7 +1184,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#socialEngagement-container')
 							.append('svg')					
 							.attr('id', 'socialEngagement')	
 							.attr('width', width + margin.left + margin.right)
@@ -1238,7 +1265,7 @@ app.main = (function() {
 
 			// Update
 			}else{
-				console.log('Updating chart...');
+				// console.log('Updating chart...');
 				// console.log(dataset);
 
 			    var svg = d3.select("#socialEngagement");
