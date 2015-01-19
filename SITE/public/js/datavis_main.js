@@ -34,8 +34,8 @@ app.main = (function() {
 				height: 20
 			};				
 			column = {
-				width: svgSize.width/2 - gutter.width,
-				height: svgSize.height/2 - gutter.height
+				width: svgSize.width,
+				height: svgSize.height
 			};
 		
 		}
@@ -416,7 +416,7 @@ app.main = (function() {
 			var barHeight = gutter.height;
 
 			// Each chart
-			var chartWidth = (isMobile) ? (column.width) : (3 * column.width + 2 * gutter.width);
+			var chartWidth = (isMobile) ? (column.width/2) : (3 * column.width + 2 * gutter.width);
 
 			var xScale = d3.scale.linear()
 						   .domain([0, d3.max(dataset, function(d, i){
@@ -433,7 +433,6 @@ app.main = (function() {
 							.attr('width', width + margin.left + margin.right)
 						    .attr('height', height + margin.top + margin.bottom);
 
-
 				// Each group is composed by text and bar
 			  	var groups = svg.selectAll('g')
 						  		.data(dataset)
@@ -444,7 +443,7 @@ app.main = (function() {
 									if(!isMobile){
 										xOffset = (i == 0) ? (0) : (4 * (column.width + gutter.width));
 									}else{
-										xOffset = (i == 0) ? (0) : (column.width + gutter.width);
+										xOffset = (i == 0) ? (0) : (chartWidth);
 									}
 									return 'translate(' + xOffset + ', 0)';
 								});			
@@ -484,7 +483,9 @@ app.main = (function() {
 								return 'SOCIAL: ' + numToCurrency(d.social_val);	
 							}
 						})
-						.attr('class', 'heading3');						
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading4') : ('heading3');	
+						})					
 
 				// Face value
 				groups.append('rect')
@@ -523,7 +524,9 @@ app.main = (function() {
 								return 'FACE: ' + numToCurrency(d.face_val);
 							}
 						})
-						.attr('class', 'heading3')
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading4') : ('heading3');	
+						})
 						.style('opacity', 0)
 						.transition()
 						.duration(transitionDuration)
@@ -539,13 +542,22 @@ app.main = (function() {
 							return (i == 0) ? ('end') : ('start');
 						})
 						.text(function(d, i){
-							return d.company + ' | ' + numToCurrency(d.face_val + d.social_val);
+							return capText(d.company) + ' | ' + numToCurrency(d.face_val + d.social_val);
 						})
-						.attr('class', 'heading2')
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading3') : ('heading2');	
+						})
 						.style('opacity', 0)
 						.transition()
 						.duration(transitionDuration)
 						.style('opacity', 1);
+
+				// Middle line
+				svg.append('rect')
+					.attr('x', svgSize.width/2)
+					.attr('y', 0)
+					.attr('width', 1)
+					.attr('height', svgSize.height*2);						
 
 			// Update
 			}else{
@@ -959,10 +971,10 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
+			var barHeight = 12;			
 			var margin = {top: (isMobile) ? (45) : (70), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var barHeight = 12;
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -1322,12 +1334,17 @@ app.main = (function() {
 			
 			// Creating a fake element and apending it to the body,
 			// to read its css properties
-			var protoElement = $('<svg id='+ id + '></svg>');
+			var protoElement = $('<div id='+ id + ' class="container"></div>');
 			$('body').append(protoElement);
+			var verticalPadding = $(protoElement).css('padding-top');
+			verticalPadding = verticalPadding.substring(0, verticalPadding.indexOf('p'));
+			verticalPadding = 2*parseInt(verticalPadding);
+			// console.log(verticalPadding);
+
 			// Canvas attributes
 			var svgSize = {
 				width: $(protoElement).width(),
-				height: $(protoElement).height()
+				height: $(protoElement).height() - verticalPadding
 			}
 			$(protoElement).remove();			
 
