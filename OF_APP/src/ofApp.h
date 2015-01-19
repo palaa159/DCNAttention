@@ -7,11 +7,7 @@
 #include "ContentModel.h"
 #include "Data.h"
 #include "ofxOsc.h"
-
-#define MASTER
-
-#define LEFT_SCREEN_IP "192.168.1.10" //MASTER
-#defind RIGHT_SCREEN_IP 
+#include "settings.h"
 
 class ofApp : public ofBaseApp {
 

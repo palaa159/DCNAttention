@@ -10,8 +10,7 @@
 
 #include "ofMain.h"
 #include "ofxCv.h"
-
-#define USE_VIDEO 1 //set to '0' for camera
+#include "settings.h"
 
 class Camera {
 
@@ -26,7 +25,7 @@ public:
     
 private:
     
-#if USE_VIDEO
+#ifdef USE_DEBUG_VIDEO
     ofVideoPlayer grabber;
 #else
     ofVideoGrabber grabber;

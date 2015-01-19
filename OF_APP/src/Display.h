@@ -1,5 +1,5 @@
 //
-//  Canvas.h
+//  Display.h
 //  ofApp
 //
 //  Created by Joseph Saavedra on 1/4/15.
@@ -19,9 +19,9 @@ public:
     Display();
     void update(int nFaces);
     void draw();
-    void startRound(vector <ofxJSONElement> thisPair);
+    void startRound(ofxJSONElement thisObj);
     void onRoundComplete(float* arg);
-
+    
     
 private:
     void initFonts();
@@ -40,7 +40,7 @@ private:
     string displayCategory;
     string displayObjectId;
     int shownCount;
-
+    
     
     ofImage displayImage;
     ofImage eyeLogo;
@@ -55,12 +55,11 @@ private:
     float timerPos;   //arc progress bar
     long timestamp; //for timerVal calc
     int lastSec;
-
+    
     ofColor payRed;
     ofColor payLightGray;
     ofColor payDarkGray;
     
-    ContentModel leftScreen;
-    ContentModel rightScreen;
-
+    ContentModel thisScreen;
+    
 };

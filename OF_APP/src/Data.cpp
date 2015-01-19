@@ -94,7 +94,9 @@ bool Data::parseData(ofxJSONElement data){
     cout << "\n----------------------------\n\ttotal object count: "<< totalCt<< "\n----------------------------"<<endl;
     if(downloadCounter == 0){
         ((ofApp*)ofGetAppPtr())->GO_MODE = true; //start her up!
+#ifdef MASTER
         ((ofApp*)ofGetAppPtr())->nextRound(); //GO_MODE is checked inside
+#endif
     }
     return true;
 }

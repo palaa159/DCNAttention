@@ -8,28 +8,27 @@ void ofApp::setup() {
     ofSetFrameRate(60);
     ofEnableAlphaBlending();
     
-    
     display = *new Display();
     cam = *new Camera();
 
-    //*** immediately init local data files ***//
-    // query /api/getcontents, compare with local files
-    dataConnect.pullData();
-    
     CURR_CAT = 0;
     
 #ifdef MASTER
-    oscSendHost = "localhost";
+    oscSendHost = RIGHT_SCREEN_IP;
     oscSendPort = 9000;
     oscRecvPort = 9001;
-#endif
-#ifdef SLAVE
-    oscSendHost = "localhost";
+#else
+    oscSendHost = LEFT_SCREEN_IP;
     oscSendPort = 9001;
     oscRecvPort = 9000;
 #endif
     oscSender.setup(oscSendHost, oscSendPort);
     oscRecvr.setup(oscRecvPort);
+    
+    //*** immediately init local data files ***//
+    // query /api/getcontents, compare with local files
+    dataConnect.pullData();
+    
 }
 
 
@@ -45,11 +44,20 @@ void ofApp::update() {
     while(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
         ofxOscMessage m;
         oscRecvr.getNextMessage(&m);
+        cout<< "m.getAddress: "<<m.getAddress()<<endl;
         string incomingHostIp = m.getRemoteIp();
-        ofLogVerbose("RECVD OSC MESSAGE FROM IP: "+m.getRemoteIp() +"\t MSG: "+ getOscMsgAsString(m));
+        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: "+m.getRemoteIp()<<endl;
+        //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
         if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
            == knownClients.end()){
             knownClients.push_back(incomingHostIp); //add new host to list
+        }
+        if(m.getAddress() == "/round"){
+            ofxJSONElement thisObj;
+            //            string thisObjStr = m.getArgAsString(0);
+            //            cout << "thisObjStr: "<<thisObjStr<<endl;
+            thisObj = ofxJSONElement(m.getArgAsString(0));
+            display.startRound(thisObj);
         }
     }
 }
@@ -131,17 +139,14 @@ void ofApp::nextRound(){
         
         dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         
-        display.startRound(thisPair);
+        ofxOscMessage m;
+        m.setAddress("/round");
+        m.addStringArg(thisPair[1].getRawString());
+        oscSender.sendMessage(m);
+        display.startRound(thisPair[0]);
         
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
-        
-#ifdef MASTER
-        ofxOscMessage sendMsg;
-        sendMsg.setAddress("/newRound");
-        sendMsg.addStringArg(thisPair[1].getRawString());
-        oscSender.sendMessage(sendMsg);
-#endif
         
     }
 }
