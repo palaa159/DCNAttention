@@ -9,7 +9,10 @@ app.main = (function() {
 		// app starts running here
 
 		/*----- 'GLOBAL' VARS -----*/
-		// Layout
+		
+		// Design
+		var transitionDuration = 750;
+
 		var column = {
 			width: window.innerWidth/10,
 			height: window.innerHeight/10
@@ -18,7 +21,18 @@ app.main = (function() {
 			width: window.innerWidth * 0.03,
 			height: window.innerHeight * 0.03
 		};
+		var categoriesColors = [
+			{	r: 80,		g: 200,		b: 245	},
+			{	r: 240,		g: 105,		b: 35	},
+			{	r: 200,		g: 120,		b: 220	},
+			{	r: 240,		g: 75,		b: 160	},
+			{	r: 255,		g: 180,		b: 20	},
+			{	r: 0,		g: 210,		b: 125	},
+			{	r: 255,		g: 80,		b: 120	}
+		];
+		var neutralColor = {r: 170, g: 170, b: 170};
 
+		// Data
 		var cat, left, right;
 
 		cat = '0';
@@ -36,18 +50,8 @@ app.main = (function() {
 		});		
 
 		var allCategories;
-		var categoriesColors = [
-			{	r: 80,		g: 200,		b: 245	},
-			{	r: 240,		g: 105,		b: 35	},
-			{	r: 200,		g: 120,		b: 220	},
-			{	r: 240,		g: 75,		b: 160	},
-			{	r: 255,		g: 180,		b: 20	},
-			{	r: 0,		g: 210,		b: 125	},
-			{	r: 255,		g: 80,		b: 120	}
-		];
-		var neutralColor = {r: 170, g: 170, b: 170};
-
 		// var allCompanies;
+
 		var social_counts = ['twitter_counts', 'fb_counts', 'google_counts', 'linkedin_counts', 'pinterest_counts'];
 		var social_logos = ['social_network_twitter.png', 'social_network_facebook.png', 'social_network_google.png', 'social_network_linkedin.png', 'social_network_pinterest.png'];
 
@@ -143,7 +147,7 @@ app.main = (function() {
 		}
 		
 		// CHART: Top 5 Publishers
-		function processTop5(data, callback){
+		function processTop5(data, callback, update){
 
 			var newData = mergeCompanies(data);
 			// var newData = data;
@@ -156,7 +160,7 @@ app.main = (function() {
 
 			sortedData = sortedData.slice(0, 5);
 
-			callback(sortedData);
+			callback(sortedData, update);
 		}
 
 		// CHART: Top Publisher by Category
@@ -194,6 +198,8 @@ app.main = (function() {
 		// CHART: Social Engagement by Category
 		function processSocialEngagement(data, callback){
 
+			// console.log(data);
+
 			var newData = [];
 
 			_.each(social_counts, function(social_count_title, index, list){
@@ -204,7 +210,7 @@ app.main = (function() {
 
 				_.each(allCategories, function(category_obj, index, list){
 
-					// console.log('\t' + category.title);
+					// console.log('\t' + category_obj.title);
 
 					var filteredData = _.filter(data, function(value, key, list){
 						return value.category == category_obj.title;
@@ -213,6 +219,7 @@ app.main = (function() {
 
 					var totalByCategory = 0;
 					_.each(filteredData, function(value, key, list){
+						// console.log(value);
 						totalByCategory += value[social_count_title];
 					});
 
@@ -237,8 +244,8 @@ app.main = (function() {
 				newData.push(newSocialNetwork);
 
 			});
-
 			// console.log(newData);
+
 			callback(newData);
 		}		
 
@@ -424,7 +431,7 @@ app.main = (function() {
 						})
 						.attr('width', 0)
 						.transition()
-						.duration(750)
+						.duration(transitionDuration)
 						.attr('width', function(d, i){
 							return xScale(d.social_val);
 						});
@@ -463,7 +470,7 @@ app.main = (function() {
 						})
 						.attr('width', 0)
 						.transition()
-						.duration(750)
+						.duration(transitionDuration)
 						.attr('width', function(d, i){
 							return xScale(d.face_val);
 						});;
@@ -488,7 +495,7 @@ app.main = (function() {
 						.attr('class', 'heading3')
 						.style('opacity', 0)
 						.transition()
-						.duration(750)
+						.duration(transitionDuration)
 						.style('opacity', 1);
 
 				// Companies
@@ -506,12 +513,12 @@ app.main = (function() {
 						.attr('class', 'heading2')
 						.style('opacity', 0)
 						.transition()
-						.duration(750)
+						.duration(transitionDuration)
 						.style('opacity', 1);
 
 			// Update
 			}else{
-				console.log('Updating chart...');
+				// console.log('Updating chart...');
 				// console.log(dataset);
 
 			    // Select the section we want to apply our changes to
@@ -520,7 +527,7 @@ app.main = (function() {
 
 				var groups = svg.selectAll('g');
 				var bars = groups.selectAll('rect')
-									.duration(750)
+									.duration(transitionDuration)
 									.attr('width', 0)
 									.each('end', function(d, i){
 										console.log(i);
@@ -532,7 +539,7 @@ app.main = (function() {
 									});
 
 				var labels = groups.selectAll('text')
-									.duration(750)
+									.duration(transitionDuration)
 									.style('opacity', 0);
 			}
 
@@ -610,7 +617,7 @@ app.main = (function() {
 			  		.attr('id', 'title')
 					.style('opacity', 0)
 					.transition()
-					.duration(750)
+					.duration(transitionDuration)
 					.style('opacity', 1);
 
 
@@ -664,7 +671,7 @@ app.main = (function() {
 										return line(emptyHistory);
 									})
 									.transition()
-									.duration(750)
+									.duration(transitionDuration)
 									.attr("d", function(d) { return line(d.val_history); });
 
 				// Labels
@@ -692,7 +699,7 @@ app.main = (function() {
 						})
 						.style('opacity', 0)
 						.transition()
-						.duration(750)
+						.duration(transitionDuration)
 						.style('opacity', 1);
 
 			// Update
@@ -707,18 +714,18 @@ app.main = (function() {
 
 			    // Transitioning the scales
 		        svg.select(".x.axis") // change the x axis
-		            .duration(750)
+		            .duration(transitionDuration)
 		            .call(xAxis);
 
 		        svg.select(".y.axis") // change the y axis
-		            .duration(750)
+		            .duration(transitionDuration)
 		            .call(yAxis);
 
 		        // Shrinking lines and removing them
 		        var chart = svg.select('#chart');	
 
 				var company = chart.selectAll('.line')
-									.duration(1000)
+									.duration(transitionDuration)
 									.attr('d', function(d, i){
 										var emptyHistory = [];
 										_.each(d.val_history, function(element, index, list){
@@ -743,17 +750,17 @@ app.main = (function() {
 				var labels = svg.select('#labels');
 
 				labels.selectAll('text')
-						.duration(750)
+						.duration(transitionDuration)
 						.style('opacity', 0.0);
 
 				var title = svg.select('#title')
-								.duration(750)
+								.duration(transitionDuration)
 								.style('opacity', 0.0);						
 			}
 
 		}
 
-		function drawTop5(dataset){
+		function drawTop5(dataset, update){
 
 			// Canvas properties
 			var svgSize = getCSS('top5');			
@@ -771,102 +778,148 @@ app.main = (function() {
 						   .domain([0, d3.max(dataset, function(d, i){
 															return d.social_val + d.face_val;
 														})])
-						   .range([0, width]);			
+						   .range([0, width]);
 
-			// Canvas
-			var svg = d3.select('body')
-						.append('svg')
-						.attr('id', 'top5')	
-						.attr('width', width + margin.left + margin.right)
-					    .attr('height', height + margin.top + margin.bottom);
+			if(!update){
 
-			// Title
-			svg.append('text')
-			  		.attr('x', 0)
-			  		.attr('y', 20)
-					.text('Top 5')
-			  		.attr('class', 'heading2');
+				// Canvas
+				var svg = d3.select('body')
+							.append('svg')
+							.attr('id', 'top5')	
+							.attr('width', width + margin.left + margin.right)
+						    .attr('height', height + margin.top + margin.bottom);
 
-			// Legend
-			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 40)');
+				// Title
+				svg.append('text')
+				  		.attr('x', 0)
+				  		.attr('y', 20)
+						.text('Top 5')
+				  		.attr('class', 'heading2');
 
-			legend.append('circle')
-			  		.attr('cx', 6)
-			  		.attr('cy', -5)
-					.attr('r', 6)
-			  		.attr('fill', parseRgba(neutralColor, 1));
+				// Legend
+				var legend = svg.append('g')
+							    .attr('transform', 'translate(0, 40)');
 
-			legend.append('text')
-			  		.attr('x', 14)
-			  		.attr('y', 0)
-					.text('SOCIAL')
-			  		.attr('class', 'heading4');
+				legend.append('circle')
+				  		.attr('cx', 6)
+				  		.attr('cy', -5)
+						.attr('r', 6)
+				  		.attr('fill', parseRgba(neutralColor, 1));
 
-			legend.append('circle')
-			  		.attr('cx', 65)
-			  		.attr('cy', -5)
-					.attr('r', 6)
-			  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				legend.append('text')
+				  		.attr('x', 14)
+				  		.attr('y', 0)
+						.text('SOCIAL')
+				  		.attr('class', 'heading4');
 
-			legend.append('text')
-			  		.attr('x', 72)
-			  		.attr('y', 0)
-					.text('FACE')
-			  		.attr('class', 'heading4');			  					  		
+				legend.append('circle')
+				  		.attr('cx', 65)
+				  		.attr('cy', -5)
+						.attr('r', 6)
+				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
-			// Chart
-		    var chart = svg.append('g')
-						    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+				legend.append('text')
+				  		.attr('x', 72)
+				  		.attr('y', 0)
+						.text('FACE')
+				  		.attr('class', 'heading4');			  					  		
 
-			// Each group is composed by text and bar
-		  	var groups = chart.selectAll('g')
-					  		.data(dataset)
-					  		.enter()
-					  		.append('g')
-							.attr('transform', function(d, i){
-								return 'translate(0, ' + yScale(i) + ')';
-							});			
+				// Chart
+			    var chart = svg.append('g')
+							    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+							    .attr('id', 'chart');
 
-			// Social value
-			groups.append('rect')
-					.attr('x', 0)
-					.attr('y', 13)
-			  		.attr('width', function(d, i){
-			  			return xScale(d.social_val);
-			  		})
-					.attr('height', 13)
-					.attr('fill', parseRgba(neutralColor, 1));							
+				// Each group is composed by text and bar
+			  	var groups = chart.selectAll('g')
+						  		.data(dataset)
+						  		.enter()
+						  		.append('g')
+								.attr('transform', function(d, i){
+									return 'translate(0, ' + yScale(i) + ')';
+								});			
 
-			// Face value
-			groups.append('rect')
-					.attr('x', function(d, i){
-			  			return xScale(d.social_val);
-			  		})
-					.attr('y', 13)
-			  		.attr('width', function(d, i){
-			  			return xScale(d.face_val);
-			  		})
-					.attr('height', 13)
-					.attr('fill', parseRgba(neutralColor, 0.3));
+				// Social value
+				groups.append('rect')
+						.attr('x', 0)
+						.attr('y', 13)
+						.attr('height', 13)
+						.attr('fill', parseRgba(neutralColor, 1))
+				  		.attr('width', 0)
+				  		.transition(transitionDuration)
+				  		.attr('width', function(d, i){
+				  			return xScale(d.social_val);
+				  		})						
 
-			// Publisher
-		  	groups.append('text')
-			  		.attr('x', 0)
-			  		.attr('y', 10)
-					.text(function(d, i){
-						return capText(d.company);
-					})
-			  		.attr('class', 'heading3');
+				// Face value
+				groups.append('rect')
+						.attr('x', function(d, i){
+				  			return xScale(d.social_val);
+				  		})
+						.attr('y', 13)
+						.attr('height', 13)
+						.attr('fill', parseRgba(neutralColor, 0.3))
+				  		.attr('width', 0)
+				  		.transition(transitionDuration)
+				  		.attr('width', function(d, i){
+				  			return xScale(d.face_val);
+				  		})
 
-			// Value
-		  	groups.append('text')
-			  		.attr('x', 2)
-			  		.attr('y', 23)
-					.text(function(d, i){
-						return numToCurrency(d.social_val + d.face_val);
-					})
-			  		.attr('class', 'heading4');			  		
+				// Publisher
+			  	groups.append('text')
+				  		.attr('x', 0)
+				  		.attr('y', 10)
+						.text(function(d, i){
+							return capText(d.company);
+						})
+				  		.attr('class', 'heading3')
+				  		.style('opacity', 0)
+				  		.transition(transitionDuration)
+				  		.style('opacity', 1);;
+
+				// Value
+			  	groups.append('text')
+				  		.attr('x', 2)
+				  		.attr('y', 23)
+						.text(function(d, i){
+							return numToCurrency(d.social_val + d.face_val);
+						})
+				  		.attr('class', 'heading4')
+				  		.style('opacity', 0)
+				  		.transition(transitionDuration)
+				  		.style('opacity', 1);
+
+			// Update
+			}else{
+				console.log('Updating chart...');
+				// console.log(dataset);
+
+			    // Select the section we want to apply our changes to
+			    var svg = d3.select("#top5")
+				             .transition();
+
+		        var chart = svg.select('#chart');
+
+		        var groups = chart.selectAll('g');
+
+				// Shrinking the bars and removing them
+				groups.selectAll('rect')
+						.duration(transitionDuration)
+						.attr('width', 0)
+
+				// Fading texts
+				groups.selectAll('text')
+						.duration(transitionDuration)
+						.style('opacity', 0)
+						.each('end', function(d, i){
+							if (i == groups.length - 1) {
+								// Remove the whole chart
+								d3.select('#top5').remove();
+								drawTop5(dataset, false);
+							};
+						});		
+			}	
+
+	  		
 		}
 
 		// Draws the top publishers by category
