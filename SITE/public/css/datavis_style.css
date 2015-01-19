@@ -144,14 +144,6 @@ text.heading4{
 	  padding: 0 20px 0 20px;
 	}
 
-	svg{
-		position: static;
-		margin: 0;
-	  	border: 0;
-	  	padding: 0;
-		display: block;
-	}
-
 	#logo{
 		position: static;
 		width: 100%;
@@ -159,30 +151,38 @@ text.heading4{
 	}
 
 	#logo img{
-		max-height: 20%;
+		max-width: 50%;
 	}
 
-	#topChart{
+	div.container{
+		position: static;
+		margin: 0;
+	  	border: 0;
+	  	padding: 10px 0 10px 0;
+		display: block;
+	}
+
+	#topChart-container{
 		width: 100%;
 		height: 10%;
 	}
 
-	#mainChart{
+	#mainChart-container{
 		width: 100%;
 		height: 60%;
 	}
 
-	#top5{
+	#top5-container{
 		width: 100%;
 		height: 23%;
 	}
 
-	#topByCategory{
+	#topByCategory-container{
 		width: 100%;
 		height: 49%;
 	}
 
-	#socialEngagement{
+	#socialEngagement-container{
 		width: 100%;
 		height: 23%;
 	}
