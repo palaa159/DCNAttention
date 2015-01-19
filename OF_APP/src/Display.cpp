@@ -182,7 +182,7 @@ void Display::onRoundComplete(float* arg) {
     cout << "=========================================="<<endl;
     //cout << "Display::onComplete : arg = " << *arg << endl;
     
-    Tweenzor::resetAllTweens();
+    //Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
     float faceDiff = displayFaceVal - thisScreen.getFaceValue();
     
