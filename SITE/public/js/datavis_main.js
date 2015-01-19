@@ -1329,7 +1329,7 @@ app.main = (function() {
 							  		});
 
 				// Values
-				var texts = groups.selectAll('text')
+				var texts = groups.selectAll('.heading4.values')
 			  						.data(function(d, i){
 			  							return d.values;
 			  						})
