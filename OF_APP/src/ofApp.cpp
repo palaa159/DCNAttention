@@ -74,7 +74,7 @@ void ofApp::update() {
         }
     }
     
-    while(waitingCallback){
+    if(waitingCallback){
         sendRound();
         ofSleepMillis(1000);
     }
@@ -174,6 +174,7 @@ void ofApp::nextRound(){
 }
 //--------------------------------------------------------------
 void ofApp::sendRound(){
+    cout << "SENDING ROUND "<<endl;
     ofxOscMessage m;
     m.setAddress("/round");
     m.addStringArg(thisPair[1].getRawString());
