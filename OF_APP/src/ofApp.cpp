@@ -34,25 +34,22 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-    
-    ofSetWindowTitle("fps: "+ ofToString(ofGetFrameRate()));
-    
-    cam.update();
 
-    display.update(cam.getNumFaces());
     
     if(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
         ofxOscMessage m;
         oscRecvr.getNextMessage(&m);
-        cout<< "m.getAddress: "<<m.getAddress()<<endl;
+
         string incomingHostIp = m.getRemoteIp();
-        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: "+m.getRemoteIp()<<endl;
+        cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: " + incomingHostIp;
+        cout<< "m.getAddress: "<<m.getAddress()<<endl;
         //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
         if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
            == knownClients.end()){
             knownClients.push_back(incomingHostIp); //add new host to list
         }
         if(m.getAddress() == "/round"){
+            cout << "NEW ROUND !"<<endl;
             ofxJSONElement thisObj;
             //            string thisObjStr = m.getArgAsString(0);
             //            cout << "thisObjStr: "<<thisObjStr<<endl;
@@ -60,6 +57,12 @@ void ofApp::update() {
             display.startRound(thisObj);
         }
     }
+    
+    ofSetWindowTitle("fps: "+ ofToString(ofGetFrameRate()));
+    
+    cam.update();
+    
+    display.update(cam.getNumFaces());
 }
 
 
