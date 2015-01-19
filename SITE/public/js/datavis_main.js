@@ -69,7 +69,7 @@ app.main = (function() {
 			console.log('connected');
 
 			// update
-			// loadAndStart(true);			
+			loadAndStart(true);			
 		});		
 
 		var allCategories;
@@ -474,7 +474,7 @@ app.main = (function() {
 								return textOffset;
 							}
 						})
-						.attr('y', 1.8*barHeight)
+						.attr('y', 1.65*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -515,7 +515,7 @@ app.main = (function() {
 								return xScale(d.social_val) + textOffset;
 							}
 						})
-						.attr('y', 1.8*barHeight)
+						.attr('y', 1.65*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -612,14 +612,14 @@ app.main = (function() {
 			var margin
 			if(!isMobile){
 				margin = {
-					top: 1.25 * getFontSize('heading2'),
+					top: 1.5 * getFontSize('heading2'),
 					right: column.width + gutter.width,
 					bottom: gutter.height,
 					left: gutter.width
 				};
 			}else{
 				margin = {
-					top: 1.25 * getFontSize('heading2'),
+					top: 1.5 * getFontSize('heading2'),
 					right: gutter.width*2,
 					bottom: svgSize.height/2,
 					left: gutter.width*2
@@ -866,26 +866,28 @@ app.main = (function() {
 				var legend = svg.append('g')
 							    .attr('transform', 'translate(0, ' + margin.top*0.9 + ')');
 
+				var radius = getFontSize('heading4')/2;
+
 				legend.append('circle')
-				  		.attr('cx', 6)
-				  		.attr('cy', -5)
-						.attr('r', 6)
+				  		.attr('cx', radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
 				  		.attr('fill', parseRgba(neutralColor, 1));
 
 				legend.append('text')
-				  		.attr('x', 14)
+				  		.attr('x', 2.5*radius)
 				  		.attr('y', 0)
 						.text('SOCIAL')
 				  		.attr('class', 'heading4');
 
 				legend.append('circle')
-				  		.attr('cx', 65)
-				  		.attr('cy', -5)
-						.attr('r', 6)
+				  		.attr('cx', 12*radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
 				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
 				legend.append('text')
-				  		.attr('x', 72)
+				  		.attr('x', 13.5*radius)
 				  		.attr('y', 0)
 						.text('FACE')
 				  		.attr('class', 'heading4');			  					  		
@@ -993,10 +995,10 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
-			var barHeight = 12;			
-			var margin = {top: (isMobile) ? (45) : (70), right: 0, bottom: 0, left: 0};
+			var margin = {top: (isMobile) ? (2 * getFontSize('heading2')) : (4 * getFontSize('heading2')), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = getFontSize('heading3');
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -1023,50 +1025,49 @@ app.main = (function() {
 				if(!isMobile){
 					title = svg.append('text')
 						  		.attr('x', 0)
-						  		.attr('y', 20)
+						  		.attr('y', margin.top/2)
 								.text('Top by')
 						  		.attr('class', 'heading2')
 						  		.append('tspan')
 						  		.attr('x', 0)
-						  		.attr('y', 40)			  		
+						  		.attr('y', margin.top*0.7)			  		
 						  		.text('Category');					
-
-					legend = svg.append('g')
-							    .attr('transform', 'translate(0, 60)');
 				}else{
 					title = svg.append('text')
 						  		.attr('x', 0)
-						  		.attr('y', 20)
+						  		.attr('y', margin.top/2)
 								.text('Top by Category')
 						  		.attr('class', 'heading2');					
-
-					legend = svg.append('g')
-							    .attr('transform', 'translate(0, 40)');					
 				}
 
+				legend = svg.append('g')
+						    .attr('transform', 'translate(0, ' + 0.9*margin.top + ')');
+
+				var radius = getFontSize('heading4')/2;
+
 				legend.append('circle')
-				  		.attr('cx', 6)
-				  		.attr('cy', -5)
-						.attr('r', 6)
+				  		.attr('cx', radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
 				  		.attr('fill', parseRgba(neutralColor, 1));
 
 				legend.append('text')
-				  		.attr('x', 14)
+				  		.attr('x', 2.5*radius)
 				  		.attr('y', 0)
 						.text('SOCIAL')
 				  		.attr('class', 'heading4');
 
 				legend.append('circle')
-				  		.attr('cx', 65)
-				  		.attr('cy', -5)
-						.attr('r', 6)
+				  		.attr('cx', 12*radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
 				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
 				legend.append('text')
-				  		.attr('x', 72)
+				  		.attr('x', 13.5*radius)
 				  		.attr('y', 0)
 						.text('FACE')
-				  		.attr('class', 'heading4');			  					  		
+				  		.attr('class', 'heading4');				  					  		
 
 				// Chart
 			    var chart = svg.append('g')
@@ -1198,11 +1199,14 @@ app.main = (function() {
 			var svgSize = getCSS('socialEngagement-container');
 
 			// Visualization attributes
-			var margin = {top: (isMobile) ? (70) : (35), right: 0, bottom: 0, left: 0};
+			var margin = {
+				top: (isMobile) ? (2.5 * getFontSize('heading2')) : (1.5 * getFontSize('heading2')),
+				right: 0, bottom: 0, left: 0
+			};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var textOffset = 8;
-			var barHeight = 10;
+			var barHeight = getFontSize('heading3');
+			var textOffset = barHeight/2;			
 			var imgSize = 28;
 
 			// Each chart
@@ -1240,7 +1244,7 @@ app.main = (function() {
 				// Title
 				svg.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 20)
+				  		.attr('y', getFontSize('heading2'))
 						.text('Social Engagement by Category')
 				  		.attr('class', 'heading2');
 
@@ -1266,16 +1270,18 @@ app.main = (function() {
 											.data(dataset[1].values)
 											.enter()
 											.append('text')
-											.attr('x', -4*textOffset)
+											.attr('x', -5*textOffset)
 											// .attr('y', 0)
 											.attr('y', function(d, i){
-												return textOffset + yScale(i);
+												return textOffset + getFontSize('heading4')/3 + yScale(i);
 											})
 											.attr('text-anchor', 'end')
 											.text(function(d, i){
 												return d.category;
 											})
-											.attr('class', 'heading3 labels');						
+											.attr('class', function(){
+												return (isMobile) ? ('heading4 labels') : ('heading3 labels');
+											});
 					}								   		 
 
 					// Logo
@@ -1310,7 +1316,7 @@ app.main = (function() {
 							.append('text')
 							.attr('x', -textOffset/2)
 							.attr('y', function(d, i){
-								return  textOffset + yScale(i);
+								return  textOffset + getFontSize('heading4')/3 + yScale(i);
 							})
 							.text(function(d, i){
 								return d.counts;
@@ -1387,7 +1393,7 @@ app.main = (function() {
 			var fontSize = $(protoElement).css('font-size');
 			fontSize = fontSize.substring(0, fontSize.indexOf('p'));
 			fontSize = parseInt(fontSize);
-			console.log(fontSize);
+			// console.log(fontSize);
 			$(protoElement).remove();
 
 			return fontSize;
