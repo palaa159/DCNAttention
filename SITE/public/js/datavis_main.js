@@ -609,7 +609,7 @@ app.main = (function() {
 			var svgSize = getCSS('mainChart-container');
 
 			// Visualization attributes
-			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var margin = {top: 60, right: (isMobile) ? (0) : (column.width + gutter.width), bottom: (isMobile) ? (svgSize.height/2) : (gutter.height), left: gutter.width};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 
@@ -719,8 +719,14 @@ app.main = (function() {
 
 				// Labels
 			    var labels = svg.append('g')
-					    		.attr('transform', 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')')
-					    		.attr('id', 'labels');			
+					    		.attr('transform', function(){
+					    			if(isMobile){
+					    				return 'translate(' + margin.left + ' ,' + (margin.bottom + 2*gutter.height) + ')';
+					    			}else{
+										return 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
+					    			}
+					    		})
+					    		.attr('id', 'labels');
 
 				labels.selectAll('text')
 						.data(dataset)
