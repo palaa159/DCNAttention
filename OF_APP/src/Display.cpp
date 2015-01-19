@@ -38,13 +38,14 @@ Display::Display(){
 void Display::update(int nFaces){
     
     
-    Tweenzor::update( ofGetElapsedTimeMillis() );
     
     timerPos = ofWrap(timerPos, 0, 360);
     
     numFaces = nFaces;
     
     if(roundOn){
+        Tweenzor::update( ofGetElapsedTimeMillis() );
+        
         int thisSec = int(ofGetElapsedTimef()) - timestamp;
         if(thisSec != lastSec) {
             timerVal -= 1;
@@ -184,7 +185,7 @@ void Display::onRoundComplete(float* arg) {
     cout << "=========================================="<<endl;
     //cout << "Display::onComplete : arg = " << *arg << endl;
     
-    //Tweenzor::resetAllTweens();
+    Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
     float faceDiff = displayFaceVal - thisScreen.getFaceValue();
     
