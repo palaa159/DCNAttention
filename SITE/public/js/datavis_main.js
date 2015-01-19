@@ -42,11 +42,11 @@ app.main = (function() {
 		// Connecting to socket.io
 		var socket = io("http://attention.market:80");
 		socket.on('showing', function(data){
-			// console.log(data);
+			console.log(data);
 			// left = data.left;
 			// right = data.right;
 			// cat = data.cat;
-			// console.log('connected');
+			console.log('connected');
 		});		
 
 		var allCategories;
@@ -164,7 +164,7 @@ app.main = (function() {
 		}
 
 		// CHART: Top Publisher by Category
-		function processTopByCategory(data, callback){
+		function processTopByCategory(data, callback, update){
 
 			var newData = [];
 
@@ -192,11 +192,11 @@ app.main = (function() {
 			});
 			// console.log(newData);
 
-			callback(newData);
+			callback(newData, update);
 		}
 
 		// CHART: Social Engagement by Category
-		function processSocialEngagement(data, callback){
+		function processSocialEngagement(data, callback, update){
 
 			// console.log(data);
 
@@ -246,7 +246,7 @@ app.main = (function() {
 			});
 			// console.log(newData);
 
-			callback(newData);
+			callback(newData, update);
 		}		
 
 		/*--- AUXILIAR DATA PROCESSING ---*/
@@ -530,7 +530,7 @@ app.main = (function() {
 									.duration(transitionDuration)
 									.attr('width', 0)
 									.each('end', function(d, i){
-										console.log(i);
+										// console.log(i);
 										if (i == groups.length - 1) {
 											// Remove the whole chart
 											d3.select('#topChart').remove();
@@ -890,7 +890,7 @@ app.main = (function() {
 
 			// Update
 			}else{
-				console.log('Updating chart...');
+				// console.log('Updating chart...');
 				// console.log(dataset);
 
 			    // Select the section we want to apply our changes to
@@ -918,12 +918,10 @@ app.main = (function() {
 							};
 						});		
 			}	
-
-	  		
 		}
 
 		// Draws the top publishers by category
-		function drawTopByCategory(dataset){
+		function drawTopByCategory(dataset, update){
 			
 			// Canvas properties
 			var svgSize = getCSS('topByCategory');
@@ -939,121 +937,171 @@ app.main = (function() {
 
 			var xScale = d3.scale.linear()
 						   .domain([0, d3.max(dataset, function(d, i){
-															return d.social_val + d.face_val;
-														})])
-						   .range([0, width]);			
+								return d.social_val + d.face_val;
+							})])
+						   .range([0, width]);
 
-			// Canvas
-			var svg = d3.select('body')
-						.append('svg')
-						.attr('id', 'topByCategory')	
-						.attr('width', width + margin.left + margin.right)
-					    .attr('height', height + margin.top + margin.bottom);
+			if(!update){
 
-			// Title
-			svg.append('text')
-			  		.attr('x', 0)
-			  		.attr('y', 20)
-					.text('Top by')
-			  		.attr('class', 'heading2')
-			  		.append('tspan')
-			  		.attr('x', 0)
-			  		.attr('y', 40)			  		
-			  		.text('Category');
+				// Canvas
+				var svg = d3.select('body')
+							.append('svg')
+							.attr('id', 'topByCategory')	
+							.attr('width', width + margin.left + margin.right)
+						    .attr('height', height + margin.top + margin.bottom);
 
-			// Legend
-			var legend = svg.append('g')
-						    .attr('transform', 'translate(0, 60)');
+				// Title
+				svg.append('text')
+				  		.attr('x', 0)
+				  		.attr('y', 20)
+						.text('Top by')
+				  		.attr('class', 'heading2')
+				  		.append('tspan')
+				  		.attr('x', 0)
+				  		.attr('y', 40)			  		
+				  		.text('Category');
 
-			legend.append('circle')
-			  		.attr('cx', 6)
-			  		.attr('cy', -5)
-					.attr('r', 6)
-			  		.attr('fill', parseRgba(neutralColor, 1));
+				// Legend
+				var legend = svg.append('g')
+							    .attr('transform', 'translate(0, 60)');
 
-			legend.append('text')
-			  		.attr('x', 14)
-			  		.attr('y', 0)
-					.text('SOCIAL')
-			  		.attr('class', 'heading4');
+				legend.append('circle')
+				  		.attr('cx', 6)
+				  		.attr('cy', -5)
+						.attr('r', 6)
+				  		.attr('fill', parseRgba(neutralColor, 1));
 
-			legend.append('circle')
-			  		.attr('cx', 65)
-			  		.attr('cy', -5)
-					.attr('r', 6)
-			  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				legend.append('text')
+				  		.attr('x', 14)
+				  		.attr('y', 0)
+						.text('SOCIAL')
+				  		.attr('class', 'heading4');
 
-			legend.append('text')
-			  		.attr('x', 72)
-			  		.attr('y', 0)
-					.text('FACE')
-			  		.attr('class', 'heading4');			  					  		
+				legend.append('circle')
+				  		.attr('cx', 65)
+				  		.attr('cy', -5)
+						.attr('r', 6)
+				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
 
-			// Chart
-		    var chart = svg.append('g')
-						    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+				legend.append('text')
+				  		.attr('x', 72)
+				  		.attr('y', 0)
+						.text('FACE')
+				  		.attr('class', 'heading4');			  					  		
 
-			// Each group is composed by text and bar
-		  	var groups = chart.selectAll('g')
-					  		.data(dataset)
-					  		.enter()
-					  		.append('g')
-							.attr('transform', function(d, i){
-								return 'translate(0, ' + yScale(i) + ')';
-							});			
+				// Chart
+			    var chart = svg.append('g')
+							    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+							    .attr('id', 'chart');
 
-			// Social value
-			groups.append('rect')
-					.attr('x', 0)
-					.attr('y', 26)
-			  		.attr('width', function(d, i){
-			  			return xScale(d.social_val);
-			  		})
-					.attr('height', 13)
-					.attr('fill', function(d, i){
-						return parseRgba(categoriesColors[i], 1);
-					});
+				// Each group is composed by text and bar
+			  	var groups = chart.selectAll('g')
+						  		.data(dataset)
+						  		.enter()
+						  		.append('g')
+								.attr('transform', function(d, i){
+									return 'translate(0, ' + yScale(i) + ')';
+								});			
 
-			// Face value
-			groups.append('rect')
-					.attr('x', function(d, i){
-			  			return xScale(d.social_val);
-			  		})
-					.attr('y', 26)
-			  		.attr('width', function(d, i){
-			  			return xScale(d.face_val);
-			  		})
-					.attr('height', 13)
-					.attr('fill', function(d, i){
-						return parseRgba(categoriesColors[i], 0.5);
-					});
+				// Social value
+				groups.append('rect')
+						.attr('x', 0)
+						.attr('y', 26)
+				  		.attr('width', function(d, i){
+				  			return xScale(d.social_val);
+				  		})
+						.attr('height', 13)
+						.attr('fill', function(d, i){
+							return parseRgba(categoriesColors[i], 1);
+						})
+						.attr('class', 'social');
 
-			// Category
-		  	groups.append('text')
-			  		.attr('x', 0)
-			  		.attr('y', 10)
-					.text(function(d, i){
-						return d.category;
-					})
-			  		.attr('class', 'heading4');
+				// Face value
+				groups.append('rect')
+						.attr('x', function(d, i){
+				  			return xScale(d.social_val);
+				  		})
+						.attr('y', 26)
+				  		.attr('width', function(d, i){
+				  			return xScale(d.face_val);
+				  		})
+						.attr('height', 13)
+						.attr('fill', function(d, i){
+							return parseRgba(categoriesColors[i], 0.5);
+						})
+						.attr('class', 'face');
 
-			// Publisher
-		  	groups.append('text')
-			  		.attr('x', 0)
-			  		.attr('y', 23)
-					.text(function(d, i){
-						return capText(d.company);
-					})
-			  		.attr('class', 'heading3');
+				// Category
+			  	groups.append('text')
+				  		.attr('x', 0)
+				  		.attr('y', 10)
+						.text(function(d, i){
+							return d.category;
+						})
+				  		.attr('class', 'heading4');
 
-			// Value
-		  	groups.append('text')
-			  		.attr('x', 2)
-			  		.attr('y', 36)
-					.text(function(d, i){
-						return numToCurrency(d.social_val + d.face_val);
-					})
-			  		.attr('class', 'heading4');
+				// Publisher
+			  	groups.append('text')
+				  		.attr('x', 0)
+				  		.attr('y', 23)
+						.text(function(d, i){
+							return capText(d.company);
+						})
+				  		.attr('class', 'heading3');
+
+				// Value
+			  	groups.append('text')
+				  		.attr('x', 2)
+				  		.attr('y', 36)
+						.text(function(d, i){
+							return numToCurrency(d.social_val + d.face_val);
+						})
+				  		.attr('class', 'heading4 values');
+
+			// Update
+			}else{
+
+				console.log('Updating chart...');
+				console.log(dataset);
+
+				// Fake update
+				// _.each(dataset, function(element, index, list){
+				// 	element.face_val = Math.random()*100;
+				// 	element.social_val = Math.random()*100;
+				// });
+
+			    var svg = d3.select("#topByCategory");
+
+				// Chart
+			    var chart = svg.select('#chart');
+
+			  	var groups = chart.selectAll('g');
+
+				var socialBars = groups.select('.social')
+								  		.data(dataset)
+										.transition()
+										.duration(transitionDuration)
+								  		.attr('width', function(d, i){
+								  			return xScale(d.social_val);
+								  		});
+
+				var faceBars = groups.select('.face')
+								  		.data(dataset)
+										.transition()
+										.duration(transitionDuration)
+										.attr('x', function(d, i){
+								  			return xScale(d.social_val);
+								  		})
+								  		.attr('width', function(d, i){
+								  			return xScale(d.face_val);
+								  		});
+
+				var values = groups.select('.heading4.values')
+							  		.data(dataset)
+									.text(function(d, i){
+										return numToCurrency(d.social_val + d.face_val);
+									});
+			}
 		}
 
 		function drawSocialEngagement(dataset){
