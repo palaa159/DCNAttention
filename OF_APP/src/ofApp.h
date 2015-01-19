@@ -36,6 +36,7 @@ public:
     
     //*** CONTROL STUFF ***//
     void nextRound();
+    void sendRound();
     vector <ofxJSONElement> thisPair;
 
     bool GO_MODE = false;

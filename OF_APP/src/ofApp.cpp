@@ -66,6 +66,7 @@ void ofApp::update() {
             display.startRound(thisObj);
         }
         if(m.getAddress() == "/callback"){
+            cout << "GOT CALLBACK, STARTING ROUND";
             display.startRound(thisPair[0]);
             dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         }
@@ -101,9 +102,13 @@ void ofApp::keyPressed(int key){
             if(!GO_MODE){
                 GO_MODE = true;
                 nextRound();
-            } else GO_MODE = false;
+            } else{
+                 GO_MODE = false;
+            }
             break;
-            
+        case 'r':
+            sendRound();
+            break;
         default:
             break;
     }
@@ -160,7 +165,13 @@ void ofApp::nextRound(){
         
     }
 }
-
+//--------------------------------------------------------------
+void ofApp::sendRound(){
+    ofxOscMessage m;
+    m.setAddress("/round");
+    m.addStringArg(thisPair[1].getRawString());
+    oscSender.sendMessage(m);
+}
 
 //--------------------------------------------------------------
 string ofApp::getOscMsgAsString(ofxOscMessage m){
