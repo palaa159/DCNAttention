@@ -47,6 +47,7 @@ void ofApp::update() {
         cout<< "m.getAddress: "<<m.getAddress()<<endl;
         string incomingHostIp = m.getRemoteIp();
         cout << "\n-----------------\n\nRECVD OSC MESSAGE FROM IP: "+m.getRemoteIp()<<endl;
+        cout << " /address: "<< m.getAddress() << endl;
         //cout << "\t MSG: "+ getOscMsgAsString(m) << "\n\n------------";
         if(std::find(knownClients.begin(), knownClients.end(), incomingHostIp)
            == knownClients.end()){
@@ -55,13 +56,18 @@ void ofApp::update() {
         if(m.getAddress() == "/round"){
             ofxJSONElement thisObj;
             thisObj = ofxJSONElement(m.getArgAsString(0));
-            display.startRound(thisObj);
             
             //send callback
             ofxOscMessage n;
             n.setAddress("/callback");
             n.addIntArg(1);
             oscSender.sendMessage(n);
+            
+            display.startRound(thisObj);
+        }
+        if(m.getAddress() == "/callback"){
+            display.startRound(thisPair[0]);
+            dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         }
     }
 }
@@ -114,7 +120,7 @@ void ofApp::nextRound(){
         cout << "LENGTH: "<<category.size() << endl;
         int lowestShowCt = category[0]["shown"].asInt(); //start with shownCt of first obj
         cout << "first lowestShowCt: "<< lowestShowCt << endl;
-        vector <ofxJSONElement> thisPair;
+        thisPair.clear();
         int objNum = 0;
         
         for(int i=0; i<category.size(); i++){
@@ -141,13 +147,13 @@ void ofApp::nextRound(){
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;
         
-        dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         
         ofxOscMessage m;
         m.setAddress("/round");
         m.addStringArg(thisPair[1].getRawString());
         oscSender.sendMessage(m);
-        display.startRound(thisPair[0]);
+        
+        //display.startRound(thisPair[0]);
         
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;

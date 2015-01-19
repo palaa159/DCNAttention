@@ -36,7 +36,8 @@ public:
     
     //*** CONTROL STUFF ***//
     void nextRound();
-    
+    vector <ofxJSONElement> thisPair;
+
     bool GO_MODE = false;
     int CURR_CAT;
     
