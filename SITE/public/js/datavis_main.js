@@ -561,8 +561,8 @@ app.main = (function() {
 
 			// Update
 			}else{
-				// console.log('Updating chart...');
-				// console.log(dataset);
+				console.log('Updating chart...');
+				console.log(dataset);
 
 			    // Select the section we want to apply our changes to
 			    var svg = d3.select("#topChart")
