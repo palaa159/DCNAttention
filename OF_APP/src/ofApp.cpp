@@ -140,13 +140,13 @@ void ofApp::nextRound(){
         //cout<< thisPair[0].getRawString() << endl;
         //cout<< thisPair[1].getRawString() << endl;
         
-        dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
-        
         ofxOscMessage m;
         m.setAddress("/round");
         m.addStringArg(thisPair[1].getRawString());
         oscSender.sendMessage(m);
         display.startRound(thisPair[0]);
+        
+        dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT+1));
         
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
