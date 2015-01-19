@@ -68,15 +68,16 @@ void ofApp::update() {
         }
         if(m.getAddress() == "/callback"){
             cout << "GOT CALLBACK, STARTING ROUND";
+            waitingCallback = false;
             display.startRound(thisPair[0]);
             dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT));
-            waitingCallback = false;
+
         }
     }
     
     if(waitingCallback){
-        sendRound();
         ofSleepMillis(1000);
+        sendRound();
     }
 }
 
