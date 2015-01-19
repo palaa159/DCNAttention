@@ -1,5 +1,5 @@
 //
-//  Canvas.cpp
+//  Display.cpp
 //  ofApp
 //
 //  Created by Joseph Saavedra on 1/4/15.
@@ -37,7 +37,7 @@ Display::Display(){
 //--------------------------------------------------------------
 void Display::update(int nFaces){
     
-
+    
     Tweenzor::update( ofGetElapsedTimeMillis() );
     
     timerPos = ofWrap(timerPos, 0, 360);
@@ -74,7 +74,7 @@ void Display::draw(){
     if(displayImage.isAllocated()){
         //float sizeFactor = ofGetWidth()/displayImage.getWidth();
         //displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
-
+        
         displayImage.draw(ofGetWidth()/2 - displayImage.getWidth()/2, 0);
         
         int leftMargin = 60;
@@ -92,14 +92,14 @@ void Display::draw(){
         ofSetColor(payRed);
         labelsFont.drawString("Face Value", valuesRightMargin, topMargin+50);
         //labelsFont.drawString("Faces", valuesRightMargin, topMargin+200);
-
-
+        
+        
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
         headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
         valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
-
-
+        
+        
         eyeLogo.draw(valuesRightMargin, topMargin+170);
         valueFont.drawString(ofToString(numFaces), valuesRightMargin+eyeLogo.getWidth()+40, topMargin+220);
         
@@ -132,13 +132,13 @@ void Display::draw(){
 
 
 //--------------------------------------------------------------
-void Display::startRound(vector <ofxJSONElement> thisPair){
+void Display::startRound(ofxJSONElement thisContentObj){
     
-    leftScreen.init(thisPair[0]);
-    rightScreen.init(thisPair[1]);
+    leftScreen.init(thisContentObj);
+    //    rightScreen.init(thisPair[1]);
     
-    cout << ">>>> LEFT SCREEN <<<<<\n";
-    cout << "objectId:      \t"<<thisPair[0]["objectId"].asString();
+    cout << ">>>> THIS SCREEN <<<<<\n";
+    cout << "objectId:      \t"<<thisContentObj["objectId"].asString();
     cout << "\nimgLocalPath:\t"<< leftScreen.getImgLocalPath();
     cout << "\nheadline:    \t"<< leftScreen.getHeadline();
     cout << "\nface value:  \t"<< leftScreen.getFaceValue();
@@ -151,8 +151,8 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     displayHeadline = leftScreen.getHeadline();
     displayCompany = leftScreen.getCompany();
     diplayTotalValue = leftScreen.getTotalValue(); //float
-    displayObjectId = thisPair[0]["objectId"].asString();
-    shownCount = thisPair[0]["shown"].asInt();
+    displayObjectId = thisContentObj["objectId"].asString();
+    shownCount = thisContentObj["shown"].asInt();
     
     float sizeFactor = ofGetWidth()/displayImage.getWidth();
     displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
@@ -164,7 +164,7 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     }
     
     
-//    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
+    //    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
     Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 16.f, EASE_LINEAR);
     Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
     Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
@@ -175,7 +175,7 @@ void Display::startRound(vector <ofxJSONElement> thisPair){
     timerVal = 15;
     timerPos = 0.f;
     // _property,  a_begin,  a_end,  a_delay,  a_duration, int a_easeType, float a_p, float a_a) {
-
+    
     roundOn = true;
 }
 
@@ -191,7 +191,7 @@ void Display::onRoundComplete(float* arg) {
     cout << ">>>>> ROUND COMPLETE <<<<<<" << endl;
     cout << "=========================================="<<endl;
     //cout << "Display::onComplete : arg = " << *arg << endl;
-
+    
     //Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
     float faceDiff = displayFaceVal - leftScreen.getFaceValue();
@@ -200,7 +200,7 @@ void Display::onRoundComplete(float* arg) {
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+",\"shown\":"+ofToString(shownCount)+"}";
     string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(faceDiff)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
     string completeUpdate =
-    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";    
+    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
     
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);

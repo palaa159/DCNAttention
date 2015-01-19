@@ -8,10 +8,10 @@
 #include "Data.h"
 #include "ofxOsc.h"
 
-#define MASTER
+#define MASTER //COMMENT OUT TO RUN AS SLAVE (right screen)
 
-#define LEFT_SCREEN_IP "192.168.1.10" //MASTER
-#defind RIGHT_SCREEN_IP 
+#define LEFT_SCREEN_IP  "192.168.1.10" //MASTER (left screen)
+#define RIGHT_SCREEN_IP "192.168.1.26" //SLAVE (right screen)
 
 class ofApp : public ofBaseApp {
 
