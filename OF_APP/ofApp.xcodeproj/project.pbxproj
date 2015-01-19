@@ -228,6 +228,7 @@
 		E2B5AE181A6C744E00BB39E7 /* OscReceivedElements.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscReceivedElements.h; sourceTree = "<group>"; };
 		E2B5AE191A6C744E00BB39E7 /* OscTypes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OscTypes.cpp; sourceTree = "<group>"; };
 		E2B5AE1A1A6C744E00BB39E7 /* OscTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OscTypes.h; sourceTree = "<group>"; };
+		E2B5AE291A6D06B100BB39E7 /* settings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = settings.h; sourceTree = "<group>"; };
 		E2E2CCFB1A66462E006F9592 /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
 		E2E2CCFC1A66462E006F9592 /* ofxJSONElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxJSONElement.cpp; sourceTree = "<group>"; };
 		E2E2CCFD1A66462E006F9592 /* ofxJSONElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSONElement.h; sourceTree = "<group>"; };
@@ -886,6 +887,7 @@
 				E21F17151A5967E700C7830A /* Camera.h */,
 				E2E2CFBA1A66FD49006F9592 /* Data.cpp */,
 				E2E2CFBB1A66FD49006F9592 /* Data.h */,
+				E2B5AE291A6D06B100BB39E7 /* settings.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

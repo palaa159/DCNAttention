@@ -55,16 +55,8 @@ void Display::update(int nFaces){
                 //diplayTotalValue += 0.0382*numFaces;
                 //TODO; value to two decimal places even with 0: 5.40
             }
-            //cout << "timerVal "<<timerVal<<endl;
         }
     }
-    
-    
-    //numFaces = nFaces;
-    //if(numFaces > 0){
-    //    displayFaceVal += 0.01*numFaces;
-    //    diplayTotalValue += 0.01*numFaces;
-    //}
 }
 
 
@@ -125,7 +117,7 @@ void Display::draw(){
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-29, timerLoc.y+32);
     } else {
         ofSetColor(0);
-        headlineFont.drawString("waiting for content to download...", ofGetWidth()/2-400, ofGetHeight()/2+300);
+        headlineFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+300);
     }
 }
 
@@ -134,23 +126,23 @@ void Display::draw(){
 //--------------------------------------------------------------
 void Display::startRound(ofxJSONElement thisContentObj){
     
-    leftScreen.init(thisContentObj);
+    thisScreen.init(thisContentObj);
     //    rightScreen.init(thisPair[1]);
     
     cout << ">>>> THIS SCREEN <<<<<\n";
     cout << "objectId:      \t"<<thisContentObj["objectId"].asString();
-    cout << "\nimgLocalPath:\t"<< leftScreen.getImgLocalPath();
-    cout << "\nheadline:    \t"<< leftScreen.getHeadline();
-    cout << "\nface value:  \t"<< leftScreen.getFaceValue();
-    cout << "\nsocial value:\t"<< leftScreen.getSocialValue();
+    cout << "\nimgLocalPath:\t"<< thisScreen.getImgLocalPath();
+    cout << "\nheadline:    \t"<< thisScreen.getHeadline();
+    cout << "\nface value:  \t"<< thisScreen.getFaceValue();
+    cout << "\nsocial value:\t"<< thisScreen.getSocialValue();
     
-    displayImage = leftScreen.getImgLocalPath();
-    displayFaceVal = leftScreen.getFaceValue();
-    displaySocialVal = leftScreen.getSocialValue();
-    displayCategory = leftScreen.getCategoryName();
-    displayHeadline = leftScreen.getHeadline();
-    displayCompany = leftScreen.getCompany();
-    diplayTotalValue = leftScreen.getTotalValue(); //float
+    displayImage = thisScreen.getImgLocalPath();
+    displayFaceVal = thisScreen.getFaceValue();
+    displaySocialVal = thisScreen.getSocialValue();
+    displayCategory = thisScreen.getCategoryName();
+    displayHeadline = thisScreen.getHeadline();
+    displayCompany = thisScreen.getCompany();
+    diplayTotalValue = thisScreen.getTotalValue(); //float
     displayObjectId = thisContentObj["objectId"].asString();
     shownCount = thisContentObj["shown"].asInt();
     
@@ -194,7 +186,7 @@ void Display::onRoundComplete(float* arg) {
     
     //Tweenzor::resetAllTweens();
     Tweenzor::removeTween(&timerPos);
-    float faceDiff = displayFaceVal - leftScreen.getFaceValue();
+    float faceDiff = displayFaceVal - thisScreen.getFaceValue();
     
     shownCount++;
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+",\"shown\":"+ofToString(shownCount)+"}";

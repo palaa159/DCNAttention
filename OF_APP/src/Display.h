@@ -60,7 +60,6 @@ private:
     ofColor payLightGray;
     ofColor payDarkGray;
     
-    ContentModel leftScreen;
-    ContentModel rightScreen;
+    ContentModel thisScreen;
     
 };

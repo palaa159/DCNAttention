@@ -14,11 +14,11 @@ void ofApp::setup() {
     CURR_CAT = 0;
     
 #ifdef MASTER
-    oscSendHost = "localhost";
+    oscSendHost = RIGHT_SCREEN_IP;
     oscSendPort = 9000;
     oscRecvPort = 9001;
 #else
-    oscSendHost = "localhost";
+    oscSendHost = LEFT_SCREEN_IP;
     oscSendPort = 9001;
     oscRecvPort = 9000;
 #endif
