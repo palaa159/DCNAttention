@@ -41,6 +41,7 @@ public:
 
     bool GO_MODE = false;
     int CURR_CAT;
+    int CURR_CAT_URL; //bc non-zero indexed (apon, WHY)
     
     
     //*** OSC STUFFS ***//

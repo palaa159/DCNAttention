@@ -12,6 +12,7 @@ void ofApp::setup() {
     cam = *new Camera();
 
     CURR_CAT = 0;
+    CURR_CAT_URL = 0;
     
 #ifdef MASTER
     oscSendHost = RIGHT_SCREEN_IP;
@@ -70,7 +71,7 @@ void ofApp::update() {
             cout << "GOT CALLBACK, STARTING ROUND";
             waitingCallback = false;
             display.startRound(thisPair[0]);
-            dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT));
+            dataConnect.sendShowing(thisPair[0]["objectId"].asString(), thisPair[1]["objectId"].asString(), ofToString(CURR_CAT_URL));
 
         }
     }
@@ -167,7 +168,7 @@ void ofApp::nextRound(){
 //        oscSender.sendMessage(m);
         
         //display.startRound(thisPair[0]);
-        
+        CURR_CAT_URL = CURR_CAT+1;
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
         

@@ -180,6 +180,8 @@ void Display::onRoundComplete(float* arg) {
     timerPos = 270;
     timerVal = 0;
     
+    string dbName = DATABASE_NAME;
+    
     cout << ">>>>> ROUND COMPLETE <<<<<<" << endl;
     cout << "=========================================="<<endl;
     //cout << "Display::onComplete : arg = " << *arg << endl;
@@ -191,9 +193,12 @@ void Display::onRoundComplete(float* arg) {
     shownCount++;
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+",\"shown\":"+ofToString(shownCount)+"}";
     string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(faceDiff)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
+
     string completeUpdate =
-    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
+    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
     
+//    string completeUpdate =
+//    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";  
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
     if(((ofApp*)ofGetAppPtr())->GO_MODE)
