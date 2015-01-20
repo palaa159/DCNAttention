@@ -41,23 +41,28 @@ app.main = (function() {
 		// console.log(column);
 
 
+		// var categoriesColors = [
+		// 	{	h: 80,		s: 200,		l: 245	},
+		// 	{	h: 240,		s: 105,		l: 35	},
+		// 	{	h: 200,		s: 120,		l: 220	},
+		// 	{	h: 240,		s: 75,		l: 160	},
+		// 	{	h: 255,		s: 180,		l: 20	},
+		// 	{	h: 0,		s: 210,		l: 125	},
+		// 	{	h: 255,		s: 80,		l: 120	}
+		// ];
 		var categoriesColors = [
-			{	r: 80,		g: 200,		b: 245	},
-			{	r: 240,		g: 105,		b: 35	},
-			{	r: 200,		g: 120,		b: 220	},
-			{	r: 240,		g: 75,		b: 160	},
-			{	r: 255,		g: 180,		b: 20	},
-			{	r: 0,		g: 210,		b: 125	},
-			{	r: 255,		g: 80,		b: 120	}
-		];
-		var neutralColor = {r: 170, g: 170, b: 170};
+			{	h: 195,		s: 85,		l: 65	},
+			{	h: 20,		s: 85,		l: 60	},
+			{	h: 285,		s: 45,		l: 65	},
+			{	h: 330,		s: 70,		l: 65	},
+			{	h: 40,		s: 90,		l: 50	},
+			{	h: 155,		s: 70,		l: 60	},
+			{	h: 350,		s: 80,		l: 65	}
+		];		
+		var neutralColor = {h: 170, s: 170, l: 170};
 
 		// Data
 		var cat, left, right;
-
-		cat = '0';
-		left = 'BXv3itKA8e';
-		right = 'fhLtOv7Mcb';
 
 		// Connecting to socket.io
 		var socket = io("http://attention.market:80");
@@ -83,13 +88,13 @@ app.main = (function() {
 		function loadAndStart(update){
 
 			// // Load all data
-			// d3.json("dummy_data/getcontents.json", function(error, json) {
-			d3.json('http://attention.market/api/getcontents', function(error, json) {
+			d3.json("dummy_data/getcontents.json", function(error, json) {
+			// d3.json('http://attention.market/api/getcontents', function(error, json) {
 				if (error) return console.warn(error);
 
 				/* FAKE ---------------------------------------*/
 				if(!update){
-					cat = 1;
+					cat = 7;
 					var filteredData = _.filter(json, function(obj){
 						return obj.cat_id == cat;
 					});
@@ -453,7 +458,7 @@ app.main = (function() {
 						.attr('x', 0)
 						.attr('y', barHeight)
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+						.attr('fill', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
 							var flip = (i == 0) ? (-1) : (1);						
@@ -494,7 +499,13 @@ app.main = (function() {
 						})
 						.attr('y', barHeight)				
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5))
+						.attr('fill', function(d, i){
+							if(i == 0){
+								return parseHsla(darkerColor(categoriesColors[parseInt(cat) - 1]), 0.5);
+							}else{
+								return parseHsla(categoriesColors[parseInt(cat) - 1], 0.5);
+							}
+						})
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
 							var flip = (i == 0) ? (-1) : (1);						
@@ -708,7 +719,7 @@ app.main = (function() {
 								    .enter()
 									.append("path")
 									.attr("class", "line")
-									.attr('stroke', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+									.attr('stroke', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
 									.attr('stroke-width', function(d, i){
 											var stroke = 1;
 											if(d.highlight){
@@ -872,7 +883,7 @@ app.main = (function() {
 				  		.attr('cx', radius)
 				  		.attr('cy', -radius)
 						.attr('r', radius)
-				  		.attr('fill', parseRgba(neutralColor, 1));
+				  		.attr('fill', parseHsla(neutralColor, 1));
 
 				legend.append('text')
 				  		.attr('x', 2.5*radius)
@@ -884,7 +895,7 @@ app.main = (function() {
 				  		.attr('cx', 12*radius)
 				  		.attr('cy', -radius)
 						.attr('r', radius)
-				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
 
 				legend.append('text')
 				  		.attr('x', 13.5*radius)
@@ -911,7 +922,7 @@ app.main = (function() {
 						.attr('x', 0)
 						.attr('y', 1.2*barHeight)
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(neutralColor, 1))
+						.attr('fill', parseHsla(neutralColor, 1))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
 				  		.attr('width', function(d, i){
@@ -925,7 +936,7 @@ app.main = (function() {
 				  		})
 						.attr('y', 1.2*barHeight)
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(neutralColor, 0.3))
+						.attr('fill', parseHsla(neutralColor, 0.3))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
 				  		.attr('width', function(d, i){
@@ -1049,7 +1060,7 @@ app.main = (function() {
 				  		.attr('cx', radius)
 				  		.attr('cy', -radius)
 						.attr('r', radius)
-				  		.attr('fill', parseRgba(neutralColor, 1));
+				  		.attr('fill', parseHsla(neutralColor, 1));
 
 				legend.append('text')
 				  		.attr('x', 2.5*radius)
@@ -1061,7 +1072,7 @@ app.main = (function() {
 				  		.attr('cx', 12*radius)
 				  		.attr('cy', -radius)
 						.attr('r', radius)
-				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
 
 				legend.append('text')
 				  		.attr('x', 13.5*radius)
@@ -1092,7 +1103,7 @@ app.main = (function() {
 				  		})
 						.attr('height', barHeight)
 						.attr('fill', function(d, i){
-							return parseRgba(categoriesColors[i], 1);
+							return parseHsla(categoriesColors[i], 1);
 						})
 						.attr('class', 'social');
 
@@ -1107,7 +1118,7 @@ app.main = (function() {
 				  		})
 						.attr('height', barHeight)
 						.attr('fill', function(d, i){
-							return parseRgba(categoriesColors[i], 0.5);
+							return parseHsla(categoriesColors[i], 0.5);
 						})
 						.attr('class', 'face');
 
@@ -1285,7 +1296,7 @@ app.main = (function() {
 					}								   		 
 
 					// Logo
-					chart.append('svg:image')
+					chart.append('svs:image')
 							   .attr('x', - textOffset/2 - imgSize)
 							   .attr('y', - barHeight/2 - imgSize)
 							   .attr('width', imgSize)
@@ -1306,7 +1317,7 @@ app.main = (function() {
 							})
 							.attr('height', barHeight)
 							.attr('fill', function(d, i){
-								return parseRgba(categoriesColors[i], 1);
+								return parseHsla(categoriesColors[i], 1);
 							});
 
 					// Values
@@ -1405,9 +1416,21 @@ app.main = (function() {
 			return num;
 		}
 
-		function parseRgba(color, a){
-			var myRgbColor = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + a +')';
-			return myRgbColor;
+		function parseHsla(color, a){
+			var myHslaColor = 'hsla(' + color.h + ', ' + color.s + '%, ' + color.l + '%, ' + a +')';
+			return myHslaColor;
+		}
+
+		function darkerColor(color){
+			// var offset = 0.8;
+			// var myRgbColor = {
+			// 	h: color.r * offset,
+			// 	s: color.g * offset,
+			// 	l: color.b * offset
+			// };
+			// // console.log(myRgbColor);
+			// return myRgbColor;
+			return color;
 		}
 
 		function capText(txt){
