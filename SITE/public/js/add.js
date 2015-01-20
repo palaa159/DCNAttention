@@ -70,7 +70,7 @@ var attachEvents = function() {
         // saveAll
         var today = (new Date().getMonth() + 1).toString() + (new Date().getDate()).toString();
         console.log(today);
-        var DB = Parse.Object.extend('content_' + 'dummy_new');
+        var DB = Parse.Object.extend('payattention');
 
         // let's make a list to post
         var listToPost = [];
@@ -101,18 +101,14 @@ var attachEvents = function() {
             db.set('image_url', image_url);
             db.set('company', company);
             db.set('category', cat_title);
-            db.set('cat_id', parseInt(cat_id));
+            db.set('cat_id', cat_id);
             db.set('shown', 0);
             db.set('fb_counts', 0);
             db.set('twitter_counts', 0);
             db.set('linkedin_counts', 0);
             db.set('google_counts', 0);
             db.set('pinterest_counts', 0);
-            db.set('val_history', [{
-                ts: new Date().getTime(),
-                face_val: 0,
-                social_val: 0
-            }]);
+            db.set('val_history', []);
             db.set('face_val', 0);
             db.set('social_val', 0);
             // not cumulative
@@ -120,16 +116,16 @@ var attachEvents = function() {
             listToPost.push(db);
         });
 
-        // Parse.Object.saveAll(listToPost, {
-        //     success: function() {
-        //         alert('yeah');
-        //         $('input').val('');
-        //         location.reload();
-        //     },
-        //     error: function(err) {
-        //         console.log(err);
-        //         alert('nah');
-        //     }
-        // });
+        Parse.Object.saveAll(listToPost, {
+            success: function() {
+                alert('yeah');
+                $('input').val('');
+                location.reload();
+            },
+            error: function(err) {
+                console.log(err);
+                alert('nah');
+            }
+        });
     });
 };

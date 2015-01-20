@@ -1,11 +1,29 @@
 /*---------- SVG styles ----------------
+
+Dimensions:
 column = 10%
 gutter = 3%
 margin = 6% (2 * gutter)
+
+Colors:
+main color = rgb(80, 55, 150) (purple)
+aux color  = rgb(115, 205, 225) (cyan)
+
 --------------------------------------*/
 
 * {
 	font-family: 'Lato', sans-serif !important;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */;
+}
+
+body, html{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
 }
 
 #logo{
@@ -14,62 +32,63 @@ margin = 6% (2 * gutter)
 	top: 0;
 	width: 100%;
 	text-align: center;
+	z-index: 1000;
 }
 
 #logo img{
-	max-width: 16%;
+	max-width: 14%;
 }
 
-#topChart{
+div.container{
+	position: absolute;
+}
+
+svg{
+	width: 100%;
+	height: 100%;
+}
+
+#topChart-container{
 	top: 6%;
 	left: 6%;
 	width: 88%;
 	height: 10%;
 }
 
-#mainChart{
+#mainChart-container{
 	top: 19%;
 	left: 6%;
 	width: 75%;
 	height: 50%;
 }
 
-#top5{
+#top5-container{
 	top: 19%;
 	left: 84%;
 	width: 10%;
 	height: 23%;
 }
 
-#topByCategory{
+#topByCategory-container{
 	top: 45%;
 	left: 84%;
 	width: 10%;
 	height: 49%;
 }
 
-#socialEngagement{
+#socialEngagement-container{
 	top: 71%;
 	left: 6%;
 	width: 75%;
 	height: 23%;
 }
 
-/*---------- SVG styles ----------------
-main color:	rgb(80, 55, 150) (purple)
-aux color:	rgb(115, 205, 225) (cyan)
---------------------------------------*/
-svg{
-	position: absolute;
-}
-
 text{
-	font-family: Arial, Helvetica, sans-serif; 
+/*	font-family: Arial, Helvetica, sans-serif; */
 	fill: rgb(80, 55, 150);
 }
 
 text.heading2{
-	/*font-size: 21px;*/
 	font-size: 1.3em;
 	font-weight: bold;
 }
@@ -80,7 +99,6 @@ text.heading3{
 }
 
 text.heading4{
-	/*font-weight: bold;*/
 	font-size: 0.6em;
 }
 
@@ -105,6 +123,87 @@ text.heading4{
 
 .line {
   fill: none;
-/*  stroke: rgba(0, 255, 255, 0.5);
-  stroke-width: 1.5px;*/
+}
+
+@media screen and (max-width: 1100px) {
+
+	html{
+	  height: 100%;
+	  width: 100%;
+	  margin: 0;
+	  border: 0;
+	  padding: 0;
+	}
+
+	body{
+	  height: 100%;
+	  width: 100%;
+	  margin: 0;
+	  border: 0;
+	  padding: 0 20px;
+	}
+
+	#logo{
+		position: static;
+		width: 100%;
+		text-align: center;
+	}
+
+	#logo img{
+		max-width: none;
+	}
+
+	div.container{
+		position: static;
+		margin: 0;
+	  	border: 0;
+	  	padding: 10px 0;
+		display: block;
+	}
+
+	#topChart-container{
+		width: 100%;
+		height: 10%;
+	}
+
+	#mainChart-container{
+		width: 100%;
+		height: 75%;
+	}
+
+	#top5-container{
+		width: 100%;
+		height: 40%;
+	}
+
+	#topByCategory-container{
+		width: 100%;
+		height: 70%;
+	}
+
+	#socialEngagement-container{
+		width: 100%;
+		height: 125%;
+	}
+
+	text.heading2{
+		font-size: 4em;
+		font-weight: bold;
+	}
+
+	text.heading3{
+		font-size: 2.4em;
+		font-weight: bold;
+	}
+
+	text.heading4{
+		font-size: 1.8em;
+	}
+	.y.axis text{
+	  font-size: 1.8em;
+	}
+
+	.x.axis text {
+	  font-size: 1.8em;
+	}
 }
