@@ -13,31 +13,47 @@ app.main = (function() {
 		// Design
 		var transitionDuration = 750;
 
-		var column = {
-			width: window.innerWidth/10,
-			height: window.innerHeight/10
-		};
-		var gutter = {
-			width: window.innerWidth * 0.03,
-			height: window.innerHeight * 0.03
-		};
+		var isMobile = (window.innerWidth < 1100) ? (true) : (false);
+		// console.log(isMobile);
+
+		var column, gutter;
+
+		if(!isMobile){
+			column = {
+				width: window.innerWidth/10,
+				height: window.innerHeight/10
+			};
+			gutter = {
+				width: window.innerWidth * 0.03,
+				height: window.innerHeight * 0.03
+			};
+		}else{
+			var svgSize = getCSS('socialEngagement-container');
+			gutter = {
+				width: 40,
+				height: 40
+			};				
+			column = {
+				width: svgSize.width,
+				height: svgSize.height
+			};
+		}
+		// console.log(column);
+
 		var categoriesColors = [
-			{	r: 80,		g: 200,		b: 245	},
-			{	r: 240,		g: 105,		b: 35	},
-			{	r: 200,		g: 120,		b: 220	},
-			{	r: 240,		g: 75,		b: 160	},
-			{	r: 255,		g: 180,		b: 20	},
-			{	r: 0,		g: 210,		b: 125	},
-			{	r: 255,		g: 80,		b: 120	}
+			{	h: 195,		s: 85,		l: 65	},
+			{	h: 20,		s: 85,		l: 60	},
+			{	h: 285,		s: 45,		l: 65	},
+			{	h: 330,		s: 70,		l: 65	},
+			{	h: 40,		s: 90,		l: 50	},
+			{	h: 155,		s: 70,		l: 60	},
+			{	h: 350,		s: 80,		l: 65	}
 		];
-		var neutralColor = {r: 170, g: 170, b: 170};
+		var neutralColor = {h: 170, s: 0, l: 70};
+		var currentColors;
 
 		// Data
 		var cat, left, right;
-
-		cat = '0';
-		left = 'BXv3itKA8e';
-		right = 'fhLtOv7Mcb';
 
 		// Connecting to socket.io
 		var socket = io("http://attention.market:80");
@@ -62,21 +78,22 @@ app.main = (function() {
 
 		function loadAndStart(update){
 
+			currentColors = [];
+
 			// // Load all data
 			// d3.json("dummy_data/getcontents.json", function(error, json) {
 			d3.json('http://attention.market/api/getcontents', function(error, json) {
 				if (error) return console.warn(error);
 
-				/* FAKE ---------------------------------------*/
 				if(!update){
-					cat = 1;
+					cat = Math.ceil(Math.random()*7);
+					// console.log(cat);
 					var filteredData = _.filter(json, function(obj){
 						return obj.cat_id == cat;
-					});
+					});				
 					left = filteredData[0].objectId;
 					right = filteredData[1].objectId;
 				}
-				/* FAKE ---------------------------------------*/
 
 				// Filling out our 'globals' — lists of categories and companies
 				allCategories = getAllCategories(json);
@@ -108,12 +125,16 @@ app.main = (function() {
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
 
-			var currentContenders = _.filter(newData, function(element, index, list){
-				return element.highlight == true;
+			// Sorting descending
+			var sortedData = _.sortBy(newData, function(obj){
+				return obj.face_val + obj.social_val;
 			});
-			// console.log(currentContenders);
+			sortedData.reverse();
 
-			callback(currentContenders, update);
+			currentColors = getCurrentColors(sortedData);
+			// console.log(currentColors);
+
+			callback(sortedData, update);
 		}
 
 		// CHART: Main (current category)
@@ -123,7 +144,7 @@ app.main = (function() {
 			var filteredData = _.filter(data, function(obj){
 				return obj.cat_id == cat;
 			});
-			// console.log(filteredData);
+			console.log(filteredData);
 
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
@@ -133,6 +154,9 @@ app.main = (function() {
 				return obj.face_val + obj.social_val;
 			});
 			sortedData.reverse();
+
+			currentColors = getCurrentColors(newData);
+			// console.log(currentColors);
 
 			// Some more data processing before drawing the chart
 			// Adding a last element to each val_history array,
@@ -383,19 +407,37 @@ app.main = (function() {
 		function drawTopChart(dataset, update){
 
 			// console.log(dataset);
+			var currentIndexes = [];
+			var currentContenders = _.filter(dataset, function(element, index, list){
+				if(element.highlight){
+					currentIndexes.push(index);
+				}
+				return element.highlight == true;
+			});
+			// console.log(currentContenders);
+			// console.log(currentIndexes);
+
+			dataset = currentContenders;
+
+			var theseColors = [];
+			_.each(currentIndexes, function(element){
+				theseColors.push(currentColors[element]);
+			});
+			// console.log(theseColors);
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('topChart');
+			var svgSize = getCSS('topChart-container');
 
-			// Visualization attributes
+			// Visualization attributes		
 			var margin = {top: 0, right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var textOffset = gutter.width/2;
-			var barHeight = gutter.height;
+			var barHeight = height/2;	
+			var textOffset = gutter.width/4;
+			// console.log(svgSize);
 
 			// Each chart
-			var chartWidth = (3 * column.width + 2 * gutter.width);
+			var chartWidth = (isMobile) ? (column.width/2) : (3 * column.width + 2 * gutter.width);
 
 			var xScale = d3.scale.linear()
 						   .domain([0, d3.max(dataset, function(d, i){
@@ -406,12 +448,11 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#topChart-container')
 							.append('svg')
 							.attr('id', 'topChart')
 							.attr('width', width + margin.left + margin.right)
 						    .attr('height', height + margin.top + margin.bottom);
-
 
 				// Each group is composed by text and bar
 			  	var groups = svg.selectAll('g')
@@ -419,16 +460,24 @@ app.main = (function() {
 						  		.enter()
 						  		.append('g')
 								.attr('transform', function(d, i){
-									var xOffset = (i % 2 == 0) ? (0) : (4 * (column.width + gutter.width));
+									var xOffset;
+									if(!isMobile){
+										xOffset = (i == 0) ? (0) : (4 * (column.width + gutter.width));
+									}else{
+										xOffset = (i == 0) ? (0) : (chartWidth);
+									}
 									return 'translate(' + xOffset + ', 0)';
 								});			
 
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 1.5*barHeight)				
+						.attr('y', barHeight)
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+						// .attr('fill', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+						.attr('fill', function(d, i){
+							return parseHsla(theseColors[i], 1);
+						})
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
 							var flip = (i == 0) ? (-1) : (1);						
@@ -444,12 +493,12 @@ app.main = (function() {
 				groups.append('text')
 						.attr('x', function(d, i){
 							if(i == 0){
-								return chartWidth - textOffset/4;
+								return chartWidth - textOffset;
 							}else{
-								return textOffset/4;
+								return textOffset;
 							}
 						})
-						.attr('y', 2.25*barHeight)
+						.attr('y', 1.65*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -458,16 +507,20 @@ app.main = (function() {
 								return 'SOCIAL: ' + numToCurrency(d.social_val);	
 							}
 						})
-						.attr('class', 'heading3');						
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading4') : ('heading3');	
+						})					
 
 				// Face value
 				groups.append('rect')
 						.attr('x', function(d, i){
 								return xScale(d.social_val);
 						})
-						.attr('y', 1.5*barHeight)				
+						.attr('y', barHeight)				
 						.attr('height', barHeight)
-						.attr('fill', parseRgba(categoriesColors[parseInt(cat) - 1], 0.5))
+						.attr('fill', function(d, i){
+							return parseHsla(theseColors[i], 0.5);
+						})
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
 							var flip = (i == 0) ? (-1) : (1);						
@@ -483,12 +536,12 @@ app.main = (function() {
 				groups.append('text')
 						.attr('x', function(d, i){
 							if(i == 0){
-								return chartWidth - xScale(d.social_val) - textOffset/4;
+								return chartWidth - xScale(d.social_val) - textOffset;
 							}else{
-								return xScale(d.social_val) + textOffset/4;
+								return xScale(d.social_val) + textOffset;
 							}
 						})
-						.attr('y', 2.25*barHeight)
+						.attr('y', 1.65*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})				
@@ -497,7 +550,9 @@ app.main = (function() {
 								return 'FACE: ' + numToCurrency(d.face_val);
 							}
 						})
-						.attr('class', 'heading3')
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading4') : ('heading3');	
+						})
 						.style('opacity', 0)
 						.transition()
 						.duration(transitionDuration)
@@ -508,18 +563,27 @@ app.main = (function() {
 						.attr('x', function(d, i){
 							return (i == 0) ? (chartWidth - textOffset) : (textOffset);
 						})
-						.attr('y', 20)
+						.attr('y', 0.8*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})
 						.text(function(d, i){
-							return d.company + ' | ' + numToCurrency(d.face_val + d.social_val);
+							return capText(d.company) + ' | ' + numToCurrency(d.face_val + d.social_val);
 						})
-						.attr('class', 'heading2')
+						.attr('class', function(d, i){
+							return (isMobile) ? ('heading4') : ('heading2');
+						})
 						.style('opacity', 0)
 						.transition()
 						.duration(transitionDuration)
 						.style('opacity', 1);
+
+				// Middle line
+				svg.append('rect')
+					.attr('x', svgSize.width/2)
+					.attr('y', 0)
+					.attr('width', 1)
+					.attr('height', svgSize.height + 10);
 
 			// Update
 			}else{
@@ -568,12 +632,28 @@ app.main = (function() {
 
 
 			/*----- LAYOUT -----*/
-			var svgSize = getCSS('mainChart');
+			var svgSize = getCSS('mainChart-container');
 
 			// Visualization attributes
-			var margin = {top: 60, right: column.width + gutter.width, bottom: gutter.height, left: gutter.width};
+			var margin
+			if(!isMobile){
+				margin = {
+					top: 1.5 * getFontSize('heading2'),
+					right: column.width + gutter.width,
+					bottom: gutter.height,
+					left: gutter.width
+				};
+			}else{
+				margin = {
+					top: 1.5 * getFontSize('heading2'),
+					right: gutter.width*2,
+					bottom: svgSize.height/2,
+					left: gutter.width*2
+				};
+			} 
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = 1.25 * getFontSize('heading3');
 
 			var xScale = d3.time.scale()
 							.domain(d3.extent(fullTimeRange, function(d, i) {
@@ -605,18 +685,22 @@ app.main = (function() {
 
 			// Create
 			if(!update){
+				if(isMobile){
+					var realHeight = svgSize.height/2 + (2 * gutter.height) + (dataset.length * barHeight);
+					$('#mainChart-container').height(realHeight);
+				}
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#mainChart-container')
 							.append('svg')
-							.attr('id', 'mainChart')
-							.attr('width', width + margin.left + margin.right)
-						    .attr('height', height + margin.top + margin.bottom);
+							.attr('id', 'mainChart');
+							// .attr('width', width + margin.left + margin.right)
+						 //    .attr('height', height + margin.top + margin.bottom);
 
 				// Title
 				svg.append('text')
 			  		.attr('x', 0)
-			  		.attr('y', 20)
+			  		.attr('y', getFontSize('heading2'))
 					.text(dataset[0].category)
 			  		.attr('class', 'heading2')
 			  		.attr('id', 'title')
@@ -654,7 +738,11 @@ app.main = (function() {
 								    .enter()
 									.append("path")
 									.attr("class", "line")
-									.attr('stroke', parseRgba(categoriesColors[parseInt(cat) - 1], 1))
+									// .attr('stroke', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+									.attr('stroke', function(d, i){
+										// console.log(currentColors);
+										return parseHsla(currentColors[i], 1);
+									})
 									.attr('stroke-width', function(d, i){
 											var stroke = 1;
 											if(d.highlight){
@@ -681,8 +769,32 @@ app.main = (function() {
 
 				// Labels
 			    var labels = svg.append('g')
-					    		.attr('transform', 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')')
-					    		.attr('id', 'labels');			
+					    		.attr('transform', function(){
+					    			if(isMobile){
+					    				return 'translate(' + margin.left + ' ,' + (margin.bottom + 2*gutter.height) + ')';
+					    			}else{
+										return 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
+					    			}
+					    		})
+					    		.attr('id', 'labels');
+
+				labels.selectAll('circle')
+						.data(dataset)
+						.enter()
+						.append('circle')
+						.attr('cx', -barHeight*0.8)
+						.attr('cy', function(d, i){
+							return ((i * barHeight) - barHeight*0.2);
+						})
+						.attr('r', barHeight*0.4)
+						.attr('fill', function(d, i){
+							return parseHsla(currentColors[i], 1);
+						})
+						.style('opacity', 0)
+						.transition()
+						.duration(transitionDuration)
+						.style('opacity', 1);
+
 
 				labels.selectAll('text')
 						.data(dataset)
@@ -690,7 +802,7 @@ app.main = (function() {
 						.append('text')
 						.attr('x', 0)
 						.attr('y', function(d, i){
-							return i * 16;
+							return i * barHeight;
 						})
 						.text(function(d, i){
 							return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
@@ -701,6 +813,14 @@ app.main = (function() {
 							}else{
 								return 'heading4';
 							}
+						})
+						.attr('fill', function(d, i){
+							if(d.highlight){
+								// console.log(parseHsla(currentColors[i], 1));
+								return parseHsla(currentColors[i], 1);
+							}else{
+								return 'heading4';
+							}							
 						})
 						.style('opacity', 0)
 						.transition()
@@ -758,6 +878,10 @@ app.main = (function() {
 						.duration(transitionDuration)
 						.style('opacity', 0.0);
 
+				labels.selectAll('circle')
+						.duration(transitionDuration)
+						.style('opacity', 0.0);
+
 				var title = svg.select('#title')
 								.duration(transitionDuration)
 								.style('opacity', 0.0);						
@@ -768,12 +892,13 @@ app.main = (function() {
 		function drawTop5(dataset, update){
 
 			// Canvas properties
-			var svgSize = getCSS('top5');			
+			var svgSize = getCSS('top5-container');			
 
 			// Visualization attributes
-			var margin = {top: 45, right: 0, bottom: 0, left: 0};
+			var margin = {top: 2 * getFontSize('heading2'), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = getFontSize('heading3');
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -788,7 +913,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#top5-container')
 							.append('svg')
 							.attr('id', 'top5')	
 							.attr('width', width + margin.left + margin.right)
@@ -797,34 +922,36 @@ app.main = (function() {
 				// Title
 				svg.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 20)
+				  		.attr('y', margin.top/2)
 						.text('Top 5')
 				  		.attr('class', 'heading2');
 
 				// Legend
 				var legend = svg.append('g')
-							    .attr('transform', 'translate(0, 40)');
+							    .attr('transform', 'translate(0, ' + margin.top*0.9 + ')');
+
+				var radius = getFontSize('heading4')/2;
 
 				legend.append('circle')
-				  		.attr('cx', 6)
-				  		.attr('cy', -5)
-						.attr('r', 6)
-				  		.attr('fill', parseRgba(neutralColor, 1));
+				  		.attr('cx', radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
+				  		.attr('fill', parseHsla(neutralColor, 1));
 
 				legend.append('text')
-				  		.attr('x', 14)
+				  		.attr('x', 2.5*radius)
 				  		.attr('y', 0)
 						.text('SOCIAL')
 				  		.attr('class', 'heading4');
 
 				legend.append('circle')
-				  		.attr('cx', 65)
-				  		.attr('cy', -5)
-						.attr('r', 6)
-				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				  		.attr('cx', 12*radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
+				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
 
 				legend.append('text')
-				  		.attr('x', 72)
+				  		.attr('x', 13.5*radius)
 				  		.attr('y', 0)
 						.text('FACE')
 				  		.attr('class', 'heading4');			  					  		
@@ -846,9 +973,9 @@ app.main = (function() {
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 13)
-						.attr('height', 13)
-						.attr('fill', parseRgba(neutralColor, 1))
+						.attr('y', 1.2*barHeight)
+						.attr('height', barHeight)
+						.attr('fill', parseHsla(neutralColor, 1))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
 				  		.attr('width', function(d, i){
@@ -860,9 +987,9 @@ app.main = (function() {
 						.attr('x', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('y', 13)
-						.attr('height', 13)
-						.attr('fill', parseRgba(neutralColor, 0.3))
+						.attr('y', 1.2*barHeight)
+						.attr('height', barHeight)
+						.attr('fill', parseHsla(neutralColor, 0.3))
 				  		.attr('width', 0)
 				  		.transition(transitionDuration)
 				  		.attr('width', function(d, i){
@@ -872,7 +999,7 @@ app.main = (function() {
 				// Publisher
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 10)
+				  		.attr('y', barHeight)
 						.text(function(d, i){
 							return capText(d.company);
 						})
@@ -884,7 +1011,7 @@ app.main = (function() {
 				// Value
 			  	groups.append('text')
 				  		.attr('x', 2)
-				  		.attr('y', 23)
+				  		.attr('y', 2*barHeight)
 						.text(function(d, i){
 							return numToCurrency(d.social_val + d.face_val);
 						})
@@ -929,12 +1056,13 @@ app.main = (function() {
 		function drawTopByCategory(dataset, update){
 			
 			// Canvas properties
-			var svgSize = getCSS('topByCategory');
+			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
-			var margin = {top: 70, right: 0, bottom: 0, left: 0};
+			var margin = {top: (isMobile) ? (2 * getFontSize('heading2')) : (3 * getFontSize('heading2')), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
+			var barHeight = getFontSize('heading3');
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -949,57 +1077,68 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#topByCategory-container')
 							.append('svg')
 							.attr('id', 'topByCategory')	
 							.attr('width', width + margin.left + margin.right)
 						    .attr('height', height + margin.top + margin.bottom);
 
-				// Title
-				svg.append('text')
-				  		.attr('x', 0)
-				  		.attr('y', 20)
-						.text('Top by')
-				  		.attr('class', 'heading2')
-				  		.append('tspan')
-				  		.attr('x', 0)
-				  		.attr('y', 40)			  		
-				  		.text('Category');
+				// Title and legend
+				var title, legend;
 
-				// Legend
-				var legend = svg.append('g')
-							    .attr('transform', 'translate(0, 60)');
+				if(!isMobile){
+					title = svg.append('text')
+						  		.attr('x', 0)
+						  		.attr('y', margin.top*0.3)
+								.text('Top by')
+						  		.attr('class', 'heading2')
+						  		.append('tspan')
+						  		.attr('x', 0)
+						  		.attr('y', margin.top*0.6)			  		
+						  		.text('Category');					
+				}else{
+					title = svg.append('text')
+						  		.attr('x', 0)
+						  		.attr('y', margin.top/2)
+								.text('Top by Category')
+						  		.attr('class', 'heading2');					
+				}
+
+				legend = svg.append('g')
+						    .attr('transform', 'translate(0, ' + 0.9*margin.top + ')');
+
+				var radius = getFontSize('heading4')/2;
 
 				legend.append('circle')
-				  		.attr('cx', 6)
-				  		.attr('cy', -5)
-						.attr('r', 6)
-				  		.attr('fill', parseRgba(neutralColor, 1));
+				  		.attr('cx', radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
+				  		.attr('fill', parseHsla(neutralColor, 1));
 
 				legend.append('text')
-				  		.attr('x', 14)
+				  		.attr('x', 2.5*radius)
 				  		.attr('y', 0)
 						.text('SOCIAL')
 				  		.attr('class', 'heading4');
 
 				legend.append('circle')
-				  		.attr('cx', 65)
-				  		.attr('cy', -5)
-						.attr('r', 6)
-				  		.attr('fill', parseRgba(neutralColor, 0.3));			  		
+				  		.attr('cx', 12*radius)
+				  		.attr('cy', -radius)
+						.attr('r', radius)
+				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
 
 				legend.append('text')
-				  		.attr('x', 72)
+				  		.attr('x', 13.5*radius)
 				  		.attr('y', 0)
 						.text('FACE')
-				  		.attr('class', 'heading4');			  					  		
+				  		.attr('class', 'heading4');				  					  		
 
 				// Chart
 			    var chart = svg.append('g')
 							    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 							    .attr('id', 'chart');
 
-				// Each group is composed by text and bar
+				// Each group is composed by text and bars
 			  	var groups = chart.selectAll('g')
 						  		.data(dataset)
 						  		.enter()
@@ -1011,13 +1150,13 @@ app.main = (function() {
 				// Social value
 				groups.append('rect')
 						.attr('x', 0)
-						.attr('y', 26)
+						.attr('y', 2.2*barHeight)
 				  		.attr('width', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('height', 13)
+						.attr('height', barHeight)
 						.attr('fill', function(d, i){
-							return parseRgba(categoriesColors[i], 1);
+							return parseHsla(categoriesColors[i], 1);
 						})
 						.attr('class', 'social');
 
@@ -1026,20 +1165,20 @@ app.main = (function() {
 						.attr('x', function(d, i){
 				  			return xScale(d.social_val);
 				  		})
-						.attr('y', 26)
+						.attr('y', 2.2*barHeight)
 				  		.attr('width', function(d, i){
 				  			return xScale(d.face_val);
 				  		})
-						.attr('height', 13)
+						.attr('height', barHeight)
 						.attr('fill', function(d, i){
-							return parseRgba(categoriesColors[i], 0.5);
+							return parseHsla(categoriesColors[i], 0.5);
 						})
 						.attr('class', 'face');
 
 				// Category
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 10)
+				  		.attr('y', barHeight)
 						.text(function(d, i){
 							return d.category;
 						})
@@ -1048,7 +1187,7 @@ app.main = (function() {
 				// Publisher
 			  	groups.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 23)
+				  		.attr('y', 2*barHeight)
 						.text(function(d, i){
 							return capText(d.company);
 						})
@@ -1057,7 +1196,7 @@ app.main = (function() {
 				// Value
 			  	groups.append('text')
 				  		.attr('x', 2)
-				  		.attr('y', 36)
+				  		.attr('y', 3*barHeight)
 						.text(function(d, i){
 							return numToCurrency(d.social_val + d.face_val);
 						})
@@ -1121,20 +1260,23 @@ app.main = (function() {
 				// });			
 
 			// Canvas attributes
-			var svgSize = getCSS('socialEngagement');
+			var svgSize = getCSS('socialEngagement-container');
 
 			// Visualization attributes
-			var margin = {top: 35, right: 0, bottom: 0, left: 0};
+			var margin = {
+				top: (isMobile) ? (2.5 * getFontSize('heading2')) : (1.5 * getFontSize('heading2')),
+				right: 0, bottom: 0, left: 0
+			};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var textOffset = 8;
-			var barHeight = 10;
+			var barHeight = getFontSize('heading3');
+			var textOffset = barHeight/2;			
 			var imgSize = 28;
 
 			// Each chart
-			var chartMargin = {top: 30, right: 0, bottom: 0, left: 0};
+			var chartMargin = {top: 30, right: 0, bottom: (isMobile) ? (30) : (0), left: (isMobile) ? (svgSize.width/2) : (0)};
 			var chartWidth  = column.width - chartMargin.left - chartMargin.right;
-			var chartHeight = height - chartMargin.top - chartMargin.bottom;							
+			var chartHeight = (isMobile) ? ((height - margin.top - margin.bottom)/4  - chartMargin.top - chartMargin.bottom) : (height - chartMargin.top - chartMargin.bottom);
 
 			var yScale = d3.scale.ordinal()
 							.domain(d3.range(dataset[0].values.length))
@@ -1157,7 +1299,7 @@ app.main = (function() {
 			if(!update){
 
 				// Canvas
-				var svg = d3.select('body')
+				var svg = d3.select('#socialEngagement-container')
 							.append('svg')					
 							.attr('id', 'socialEngagement')	
 							.attr('width', width + margin.left + margin.right)
@@ -1166,37 +1308,48 @@ app.main = (function() {
 				// Title
 				svg.append('text')
 				  		.attr('x', 0)
-				  		.attr('y', 20)
+				  		.attr('y', getFontSize('heading2'))
 						.text('Social Engagement by Category')
 				  		.attr('class', 'heading2');
 
 			    var allCharts = svg.append('g')
 								    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-								    .attr('id', 'allCharts');
-
-				var labels = allCharts.selectAll('text')
-									.data(dataset[1].values)
-									.enter()
-									.append('text')
-									.attr('x', column.width)
-									.attr('y', function(d, i){
-										return chartMargin.top + textOffset + yScale(i);
-									})
-									.attr('text-anchor', 'end')
-									.text(function(d, i){
-										return d.category;
-									})
-									.attr('class', 'heading3');			  		
+								    .attr('id', 'allCharts');		  		
 
 				// Charts
 				_.each(dataset, function(element, index, list){
 
 				    var chart = allCharts.append('g')
-								   		 .attr('transform', 'translate(' + (chartMargin.left + (width/6) * (index + 1)) + ',' + chartMargin.top + ')')
+								   		 .attr('transform', function(){
+								   		 	if(isMobile){
+								   		 		return 'translate(' + chartMargin.left + ', ' + (index*(chartHeight + chartMargin.top + chartMargin.bottom)) + ')';
+								   		 	}else{
+								   		 		return 'translate(' + (chartMargin.left + (width/6) * (index + 1)) + ',' + chartMargin.top + ')';
+								   		 	}
+								   		 })
 								   		 .attr('id', 'chart');
 
+					if(isMobile || (!isMobile && index == 0)){
+						var labels = chart.selectAll('.heading3.labels')
+											.data(dataset[1].values)
+											.enter()
+											.append('text')
+											.attr('x', -5*textOffset)
+											// .attr('y', 0)
+											.attr('y', function(d, i){
+												return textOffset + getFontSize('heading4')/3 + yScale(i);
+											})
+											.attr('text-anchor', 'end')
+											.text(function(d, i){
+												return d.category;
+											})
+											.attr('class', function(){
+												return (isMobile) ? ('heading4 labels') : ('heading3 labels');
+											});
+					}								   		 
+
 					// Logo
-					chart.append('svg:image')
+					chart.append('svs:image')
 							   .attr('x', - textOffset/2 - imgSize)
 							   .attr('y', - barHeight/2 - imgSize)
 							   .attr('width', imgSize)
@@ -1217,28 +1370,28 @@ app.main = (function() {
 							})
 							.attr('height', barHeight)
 							.attr('fill', function(d, i){
-								return parseRgba(categoriesColors[i], 1);
+								return parseHsla(categoriesColors[i], 1);
 							});
 
 					// Values
-					chart.selectAll('text')
+					chart.selectAll('.heading4.values')
 							.data(element.values)
 							.enter()
 							.append('text')
 							.attr('x', -textOffset/2)
 							.attr('y', function(d, i){
-								return  textOffset + yScale(i);
+								return  textOffset + getFontSize('heading4')/3 + yScale(i);
 							})
 							.text(function(d, i){
 								return d.counts;
 							})
 							.attr('text-anchor', 'end')
-							.attr('class', 'heading4');						
+							.attr('class', 'heading4 values');						
 				});				
 
 			// Update
 			}else{
-				console.log('Updating chart...');
+				// console.log('Updating chart...');
 				// console.log(dataset);
 
 			    var svg = d3.select("#socialEngagement");
@@ -1262,7 +1415,7 @@ app.main = (function() {
 							  		});
 
 				// Values
-				var texts = groups.selectAll('text')
+				var texts = groups.selectAll('.heading4.values')
 			  						.data(function(d, i){
 			  							return d.values;
 			  						})
@@ -1278,20 +1431,36 @@ app.main = (function() {
 
 		/*-------- AUXILIAR (DRAW) FUNCTIONS ---------*/
 
-		function getCSS(id){
-			
+		function getCSS(id){			
 			// Creating a fake element and apending it to the body,
 			// to read its css properties
-			var protoElement = $('<svg id='+ id + '></svg>');
+			var protoElement = $('<div id='+ id + ' class="container"></div>');
 			$('body').append(protoElement);
+			var verticalPadding = $(protoElement).css('padding-top');
+			verticalPadding = verticalPadding.substring(0, verticalPadding.indexOf('p'));
+			verticalPadding = 2*parseInt(verticalPadding);
+			// console.log(verticalPadding);
+
 			// Canvas attributes
 			var svgSize = {
 				width: $(protoElement).width(),
-				height: $(protoElement).height()
+				height: $(protoElement).height() - verticalPadding
 			}
 			$(protoElement).remove();			
 
 			return svgSize;
+		}
+
+		function getFontSize(thisClass){
+			var protoElement = $('<text class=' + thisClass + '></div>');
+			$('body').append(protoElement);
+			var fontSize = $(protoElement).css('font-size');
+			fontSize = fontSize.substring(0, fontSize.indexOf('p'));
+			fontSize = parseInt(fontSize);
+			// console.log(fontSize);
+			$(protoElement).remove();
+
+			return fontSize;
 		}
 
 		function numToCurrency(num){
@@ -1300,14 +1469,31 @@ app.main = (function() {
 			return num;
 		}
 
-		function parseRgba(color, a){
-			var myRgbColor = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + a +')';
-			return myRgbColor;
+		function parseHsla(color, a){
+			var myHslaColor = 'hsla(' + color.h + ', ' + color.s + '%, ' + color.l + '%, ' + a +')';
+			return myHslaColor;
+		}
+
+		function getCurrentColors(data){
+			var newColors = [];
+			_.each(data, function(element, index, list){
+				var baseColor = categoriesColors[parseInt(cat) - 1];
+				var offset = 10;
+				var newColor = {
+					h: baseColor.h + (index*offset),
+					s: baseColor.s,
+					l: baseColor.l
+				};
+				newColors.push(newColor);
+			});
+			// console.log(newColors);
+			return newColors;
 		}
 
 		function capText(txt){
-			if(txt.length > 20){
-				txt = txt.slice(0, 20);
+			var max = 16;
+			if(txt.length > max){
+				txt = txt.slice(0, max);
 				txt += '...'
 			}
 			return txt;
