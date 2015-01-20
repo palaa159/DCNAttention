@@ -995,7 +995,7 @@ app.main = (function() {
 			var svgSize = getCSS('topByCategory-container');
 
 			// Visualization attributes
-			var margin = {top: (isMobile) ? (2 * getFontSize('heading2')) : (4 * getFontSize('heading2')), right: 0, bottom: 0, left: 0};
+			var margin = {top: (isMobile) ? (2 * getFontSize('heading2')) : (3 * getFontSize('heading2')), right: 0, bottom: 0, left: 0};
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
 			var barHeight = getFontSize('heading3');
@@ -1025,12 +1025,12 @@ app.main = (function() {
 				if(!isMobile){
 					title = svg.append('text')
 						  		.attr('x', 0)
-						  		.attr('y', margin.top/2)
+						  		.attr('y', margin.top*0.3)
 								.text('Top by')
 						  		.attr('class', 'heading2')
 						  		.append('tspan')
 						  		.attr('x', 0)
-						  		.attr('y', margin.top*0.7)			  		
+						  		.attr('y', margin.top*0.6)			  		
 						  		.text('Category');					
 				}else{
 					title = svg.append('text')
