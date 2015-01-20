@@ -40,16 +40,6 @@ app.main = (function() {
 		}
 		// console.log(column);
 
-
-		// var categoriesColors = [
-		// 	{	h: 80,		s: 200,		l: 245	},
-		// 	{	h: 240,		s: 105,		l: 35	},
-		// 	{	h: 200,		s: 120,		l: 220	},
-		// 	{	h: 240,		s: 75,		l: 160	},
-		// 	{	h: 255,		s: 180,		l: 20	},
-		// 	{	h: 0,		s: 210,		l: 125	},
-		// 	{	h: 255,		s: 80,		l: 120	}
-		// ];
 		var categoriesColors = [
 			{	h: 195,		s: 85,		l: 65	},
 			{	h: 20,		s: 85,		l: 60	},
@@ -58,8 +48,9 @@ app.main = (function() {
 			{	h: 40,		s: 90,		l: 50	},
 			{	h: 155,		s: 70,		l: 60	},
 			{	h: 350,		s: 80,		l: 65	}
-		];		
-		var neutralColor = {h: 170, s: 170, l: 170};
+		];
+		var neutralColor = {h: 170, s: 0, l: 70};
+		var currentColors;
 
 		// Data
 		var cat, left, right;
@@ -87,21 +78,22 @@ app.main = (function() {
 
 		function loadAndStart(update){
 
+			currentColors = [];
+
 			// // Load all data
-			d3.json("dummy_data/getcontents.json", function(error, json) {
-			// d3.json('http://attention.market/api/getcontents', function(error, json) {
+			// d3.json("dummy_data/getcontents.json", function(error, json) {
+			d3.json('http://attention.market/api/getcontents', function(error, json) {
 				if (error) return console.warn(error);
 
-				/* FAKE ---------------------------------------*/
 				if(!update){
-					cat = 7;
+					cat = Math.ceil(Math.random()*7);
+					// console.log(cat);
 					var filteredData = _.filter(json, function(obj){
 						return obj.cat_id == cat;
-					});
+					});				
 					left = filteredData[0].objectId;
 					right = filteredData[1].objectId;
 				}
-				/* FAKE ---------------------------------------*/
 
 				// Filling out our 'globals' — lists of categories and companies
 				allCategories = getAllCategories(json);
@@ -133,12 +125,16 @@ app.main = (function() {
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
 
-			var currentContenders = _.filter(newData, function(element, index, list){
-				return element.highlight == true;
+			// Sorting descending
+			var sortedData = _.sortBy(newData, function(obj){
+				return obj.face_val + obj.social_val;
 			});
-			// console.log(currentContenders);
+			sortedData.reverse();
 
-			callback(currentContenders, update);
+			currentColors = getCurrentColors(sortedData);
+			// console.log(currentColors);
+
+			callback(sortedData, update);
 		}
 
 		// CHART: Main (current category)
@@ -148,7 +144,7 @@ app.main = (function() {
 			var filteredData = _.filter(data, function(obj){
 				return obj.cat_id == cat;
 			});
-			// console.log(filteredData);
+			console.log(filteredData);
 
 			var newData = mergeCompanies(filteredData);
 			// console.log(newData);
@@ -158,6 +154,9 @@ app.main = (function() {
 				return obj.face_val + obj.social_val;
 			});
 			sortedData.reverse();
+
+			currentColors = getCurrentColors(newData);
+			// console.log(currentColors);
 
 			// Some more data processing before drawing the chart
 			// Adding a last element to each val_history array,
@@ -408,6 +407,23 @@ app.main = (function() {
 		function drawTopChart(dataset, update){
 
 			// console.log(dataset);
+			var currentIndexes = [];
+			var currentContenders = _.filter(dataset, function(element, index, list){
+				if(element.highlight){
+					currentIndexes.push(index);
+				}
+				return element.highlight == true;
+			});
+			// console.log(currentContenders);
+			// console.log(currentIndexes);
+
+			dataset = currentContenders;
+
+			var theseColors = [];
+			_.each(currentIndexes, function(element){
+				theseColors.push(currentColors[element]);
+			});
+			// console.log(theseColors);
 
 			/*----- LAYOUT -----*/
 			var svgSize = getCSS('topChart-container');
@@ -458,7 +474,10 @@ app.main = (function() {
 						.attr('x', 0)
 						.attr('y', barHeight)
 						.attr('height', barHeight)
-						.attr('fill', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+						// .attr('fill', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+						.attr('fill', function(d, i){
+							return parseHsla(theseColors[i], 1);
+						})
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
 							var flip = (i == 0) ? (-1) : (1);						
@@ -500,11 +519,7 @@ app.main = (function() {
 						.attr('y', barHeight)				
 						.attr('height', barHeight)
 						.attr('fill', function(d, i){
-							if(i == 0){
-								return parseHsla(darkerColor(categoriesColors[parseInt(cat) - 1]), 0.5);
-							}else{
-								return parseHsla(categoriesColors[parseInt(cat) - 1], 0.5);
-							}
+							return parseHsla(theseColors[i], 0.5);
 						})
 						.attr('transform', function(d, i){
 							var offset = (i == 0) ? (chartWidth) : (0);
@@ -572,8 +587,8 @@ app.main = (function() {
 
 			// Update
 			}else{
-				console.log('Updating chart...');
-				console.log(dataset);
+				// console.log('Updating chart...');
+				// console.log(dataset);
 
 			    // Select the section we want to apply our changes to
 			    var svg = d3.select("#topChart")
@@ -638,7 +653,7 @@ app.main = (function() {
 			} 
 			var width  = svgSize.width - margin.left - margin.right;
 			var height = svgSize.height - margin.top - margin.bottom;
-			var barHeight = 1.25 * getFontSize('heading4');			
+			var barHeight = 1.25 * getFontSize('heading3');
 
 			var xScale = d3.time.scale()
 							.domain(d3.extent(fullTimeRange, function(d, i) {
@@ -719,7 +734,11 @@ app.main = (function() {
 								    .enter()
 									.append("path")
 									.attr("class", "line")
-									.attr('stroke', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+									// .attr('stroke', parseHsla(categoriesColors[parseInt(cat) - 1], 1))
+									.attr('stroke', function(d, i){
+										// console.log(currentColors);
+										return parseHsla(currentColors[i], 1);
+									})
 									.attr('stroke-width', function(d, i){
 											var stroke = 1;
 											if(d.highlight){
@@ -772,6 +791,14 @@ app.main = (function() {
 							}else{
 								return 'heading4';
 							}
+						})
+						.attr('fill', function(d, i){
+							if(d.highlight){
+								console.log(parseHsla(currentColors[i], 1));
+								return parseHsla(currentColors[i], 1);
+							}else{
+								return 'heading4';
+							}							
 						})
 						.style('opacity', 0)
 						.transition()
@@ -1421,16 +1448,20 @@ app.main = (function() {
 			return myHslaColor;
 		}
 
-		function darkerColor(color){
-			// var offset = 0.8;
-			// var myRgbColor = {
-			// 	h: color.r * offset,
-			// 	s: color.g * offset,
-			// 	l: color.b * offset
-			// };
-			// // console.log(myRgbColor);
-			// return myRgbColor;
-			return color;
+		function getCurrentColors(data){
+			var newColors = [];
+			_.each(data, function(element, index, list){
+				var baseColor = categoriesColors[parseInt(cat) - 1];
+				var offset = 10;
+				var newColor = {
+					h: baseColor.h + (index*offset),
+					s: baseColor.s,
+					l: baseColor.l
+				};
+				newColors.push(newColor);
+			});
+			// console.log(newColors);
+			return newColors;
 		}
 
 		function capText(txt){
