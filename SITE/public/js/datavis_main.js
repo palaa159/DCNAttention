@@ -685,13 +685,17 @@ app.main = (function() {
 
 			// Create
 			if(!update){
+				if(isMobile){
+					var realHeight = svgSize.height/2 + (2 * gutter.height) + (dataset.length * barHeight);
+					$('#mainChart-container').height(realHeight);
+				}
 
 				// Canvas
 				var svg = d3.select('#mainChart-container')
 							.append('svg')
-							.attr('id', 'mainChart')
-							.attr('width', width + margin.left + margin.right)
-						    .attr('height', height + margin.top + margin.bottom);
+							.attr('id', 'mainChart');
+							// .attr('width', width + margin.left + margin.right)
+						 //    .attr('height', height + margin.top + margin.bottom);
 
 				// Title
 				svg.append('text')
@@ -871,6 +875,10 @@ app.main = (function() {
 				var labels = svg.select('#labels');
 
 				labels.selectAll('text')
+						.duration(transitionDuration)
+						.style('opacity', 0.0);
+
+				labels.selectAll('circle')
 						.duration(transitionDuration)
 						.style('opacity', 0.0);
 
