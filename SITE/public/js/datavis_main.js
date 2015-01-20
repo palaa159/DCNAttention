@@ -774,6 +774,24 @@ app.main = (function() {
 					    		})
 					    		.attr('id', 'labels');
 
+				labels.selectAll('circle')
+						.data(dataset)
+						.enter()
+						.append('circle')
+						.attr('cx', -barHeight*0.8)
+						.attr('cy', function(d, i){
+							return ((i * barHeight) - barHeight*0.2);
+						})
+						.attr('r', barHeight*0.4)
+						.attr('fill', function(d, i){
+							return parseHsla(currentColors[i], 1);
+						})
+						.style('opacity', 0)
+						.transition()
+						.duration(transitionDuration)
+						.style('opacity', 1);
+
+
 				labels.selectAll('text')
 						.data(dataset)
 						.enter()
@@ -794,7 +812,7 @@ app.main = (function() {
 						})
 						.attr('fill', function(d, i){
 							if(d.highlight){
-								console.log(parseHsla(currentColors[i], 1));
+								// console.log(parseHsla(currentColors[i], 1));
 								return parseHsla(currentColors[i], 1);
 							}else{
 								return 'heading4';
@@ -1465,8 +1483,9 @@ app.main = (function() {
 		}
 
 		function capText(txt){
-			if(txt.length > 20){
-				txt = txt.slice(0, 20);
+			var max = 16;
+			if(txt.length > max){
+				txt = txt.slice(0, max);
 				txt += '...'
 			}
 			return txt;
