@@ -161,7 +161,7 @@ app
 function init() {
     getBulkId();
     var j = schedule.scheduleJob('0,30 * * * *', function() {
-        updateSocVal(bulk_id);
+        getBulkId();
     });
 }
 
