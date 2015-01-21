@@ -111,9 +111,9 @@ app.main = (function() {
 			});			
 		}
 
-		// $('body').bind('click', function(){
-		// 	loadAndStart(true);
-		// });
+		$('body').bind('click', function(){
+			loadAndStart(true);
+		});
 
 		/*---------- DATA PROCESSING ----------*/
 
@@ -516,6 +516,10 @@ app.main = (function() {
 								return 'Social Value';
 							}
 						})
+						.style('opacity', 0)
+						.transition()
+						.duration(transitionDuration)
+						.style('opacity', 1);						
 						
 				groups.append('text')
 						.attr('x', function(d, i){
@@ -535,19 +539,13 @@ app.main = (function() {
 						.text(function(d, i){
 							// Only writes value if there's enough space
 							if(checkFitting(xScale, d.social_val)){
-								return numToCurrency(d.social_val);
+								return d.social_val.formatMoney(2);
 							}
-						});
-
-					// title = svg.append('text')
-					// 	  		.attr('x', 0)
-					// 	  		.attr('y', margin.top*0.3)
-					// 			.text('Top by')
-					// 	  		.attr('class', 'heading2')
-					// 	  		.append('tspan')
-					// 	  		.attr('x', 0)
-					// 	  		.attr('y', margin.top*0.6)			  		
-					// 	  		.text('Category');							
+						})
+						.style('opacity', 0)
+						.transition()
+						.duration(transitionDuration)
+						.style('opacity', 1);
 
 				// Face value bar
 				groups.append('rect')
@@ -575,25 +573,53 @@ app.main = (function() {
 						.attr('x', function(d, i){
 							if(i == 0){
 								return chartWidth - xScale(d.social_val) - textOffset;
+								return chartWidth - textOffset;
 							}else{
 								return xScale(d.social_val) + textOffset;
+								return textOffset;
 							}
 						})
-						.attr('y', 1.65*barHeight)
+						.attr('y', 1.45*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
-						})				
-						.text(function(d, i){
-							if(isMobile){
-								if(xScale(d.face_val) > gutter.width * 4){
-									return 'FACE: ' + numToCurrency(d.face_val);
-								}
-							}else if(xScale(d.face_val) > gutter.width * 2){
-								return 'FACE: ' + numToCurrency(d.face_val);
-							}					
 						})
 						.attr('class', function(d, i){
+							return (isMobile) ? ('heading5') : ('heading4');	
+						})
+						.text(function(d, i){
+
+							// Only writes value if there's enough space
+							if(checkFitting(xScale, d.face_val)){
+								return 'Face Value';
+							}
+						})
+						.style('opacity', 0)
+						.transition()
+						.duration(transitionDuration)
+						.style('opacity', 1);						
+						
+				groups.append('text')
+						.attr('x', function(d, i){
+							if(i == 0){
+								return chartWidth - xScale(d.social_val) - textOffset;
+								return chartWidth - textOffset;
+							}else{
+								return xScale(d.social_val) + textOffset;
+								return textOffset;
+							}
+						})
+						.attr('y', 1.80 * barHeight)
+						.attr('text-anchor', function(d, i){
+							return (i == 0) ? ('end') : ('start');
+						})						
+						.attr('class', function(d, i){
 							return (isMobile) ? ('heading4') : ('heading3');	
+						})						
+						.text(function(d, i){
+							// Only writes value if there's enough space
+							if(checkFitting(xScale, d.face_val)){
+								return d.face_val.formatMoney(2);
+							}
 						})
 						.style('opacity', 0)
 						.transition()
@@ -1466,6 +1492,17 @@ app.main = (function() {
 			return num;
 		}
 
+Number.prototype.formatMoney = function(c, d, t){
+var n = this, 
+    c = isNaN(c = Math.abs(c)) ? 2 : c, 
+    d = d == undefined ? "." : d, 
+    t = t == undefined ? "," : t, 
+    s = n < 0 ? "-" : "", 
+    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+    j = (j = i.length) > 3 ? j % 3 : 0;
+   return '$' + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+ };
+
 		function parseHsla(color, a){
 			var myHslaColor = 'hsla(' + color.h + ', ' + color.s + '%, ' + color.l + '%, ' + a +')';
 			return myHslaColor;
@@ -1498,7 +1535,7 @@ app.main = (function() {
 
 		function checkFitting(scale, val){
 			if(isMobile){
-				if(scale(val) > gutter.width * 4){
+				if(scale(val) > gutter.width * 3.5){
 					return true;
 				}
 			}else if(scale(val) > gutter.width * 2){
