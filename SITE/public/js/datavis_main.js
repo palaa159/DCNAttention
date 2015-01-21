@@ -13,8 +13,7 @@ app.main = (function() {
 		// Design
 		var transitionDuration = 750;
 
-		var isMobile = (window.innerWidth < 700) ? (true) : (false);
-		var isInstallation = (700 < window.innerWidth && window.innerWidth < 800) ? (true) : (false);
+		var isMobile = (window.innerWidth < 1000) ? (true) : (false);
 		// console.log(isMobile);
 
 		var column, gutter;
@@ -486,7 +485,7 @@ app.main = (function() {
 								return textOffset;
 							}
 						})
-						.attr('y', 1.45*barHeight)
+						.attr('y', 1.35*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})
@@ -513,7 +512,7 @@ app.main = (function() {
 								return textOffset;
 							}
 						})
-						.attr('y', 1.80 * barHeight)
+						.attr('y', 1.85 * barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
 						})						
@@ -687,20 +686,21 @@ app.main = (function() {
 			var svgSize = getCSS('mainChart-container');
 
 			// Visualization attributes
-			var margin
+			var margin;
+
 			if(!isMobile){
 				margin = {
 					top: 1.5 * getFontSize('heading2'),
-					right: column.width + gutter.width,
+					right: column.width * 1.5 + gutter.width,
 					bottom: gutter.height,
 					left: gutter.width
 				};
 			}else{
 				margin = {
 					top: 1.5 * getFontSize('heading2'),
-					right: gutter.width*2,
+					right: gutter.width * 2,
 					bottom: svgSize.height/2,
-					left: gutter.width*2
+					left: gutter.width * 2
 				};
 			} 
 			var width  = svgSize.width - margin.left - margin.right;
@@ -728,15 +728,18 @@ app.main = (function() {
 			// X Scale
 			var xAxis = d3.svg.axis()
 							    .scale(xScale)
-							    .orient("bottom");
+							    .orient("bottom")
+							    .ticks(5);
 
 			// Y Scale
 			var yAxis = d3.svg.axis()
 							    .scale(yScale)
-							    .orient("left");
+							    .orient("left")
+							    .ticks(5);
 
 			// Create
 			if(!update){
+
 				if(isMobile){
 					var realHeight = svgSize.height/2 + (2 * gutter.height) + (dataset.length * barHeight);
 					$('#mainChart-container').height(realHeight);
@@ -746,7 +749,7 @@ app.main = (function() {
 				var svg = d3.select('#mainChart-container')
 							.append('svg')
 							.attr('id', 'mainChart');
-							// .attr('width', width + margin.left + margin.right)
+							// .attr('width', width + margin.left + margin.right);
 						 //    .attr('height', height + margin.top + margin.bottom);
 
 				// Title
@@ -825,7 +828,8 @@ app.main = (function() {
 					    			if(isMobile){
 					    				return 'translate(' + margin.left + ' ,' + (margin.bottom + 2*gutter.height) + ')';
 					    			}else{
-										return 'translate(' + ((4.75 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
+										// return 'translate(' + ((4.75 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
+										return 'translate(' + (width + 2*gutter.width) + ',' + margin.top + ')';
 					    			}
 					    		})
 					    		.attr('id', 'labels');
@@ -1179,7 +1183,7 @@ app.main = (function() {
 						.text(function(d, i){
 							return d.category;
 						})
-				  		.attr('class', 'heading4');
+				  		.attr('class', 'heading5');
 
 				// Publisher
 			  	groups.append('text')
@@ -1508,7 +1512,7 @@ var n = this,
 			return newColors;
 		}
 
-		function capText(txt){
+		function capText(txt, max){
 			var max = 16;
 			if(txt.length > max){
 				txt = txt.slice(0, max);
