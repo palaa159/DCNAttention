@@ -469,7 +469,7 @@ app.main = (function() {
 									return 'translate(' + xOffset + ', 0)';
 								});			
 
-				// Social value
+				// Social value bar
 				groups.append('rect')
 						.attr('x', 0)
 						.attr('y', barHeight)
@@ -490,6 +490,7 @@ app.main = (function() {
 							return xScale(d.social_val);
 						});
 
+				// Social value text
 				groups.append('text')
 						.attr('x', function(d, i){
 							if(i == 0){
@@ -503,7 +504,12 @@ app.main = (function() {
 							return (i == 0) ? ('end') : ('start');
 						})				
 						.text(function(d, i){
-							if(xScale(d.social_val) > gutter.width * 2){
+							// Only writes value if there's enough space
+							if(isMobile){
+								if(xScale(d.social_val) > gutter.width * 4){
+									return 'SOCIAL: ' + numToCurrency(d.social_val);
+								}
+							}else if(xScale(d.social_val) > gutter.width * 2){
 								return 'SOCIAL: ' + numToCurrency(d.social_val);	
 							}
 						})
@@ -511,7 +517,7 @@ app.main = (function() {
 							return (isMobile) ? ('heading4') : ('heading3');	
 						})					
 
-				// Face value
+				// Face value bar
 				groups.append('rect')
 						.attr('x', function(d, i){
 								return xScale(d.social_val);
@@ -546,9 +552,13 @@ app.main = (function() {
 							return (i == 0) ? ('end') : ('start');
 						})				
 						.text(function(d, i){
-							if(xScale(d.face_val) > gutter.width){
+							if(isMobile){
+								if(xScale(d.face_val) > gutter.width * 4){
+									return 'FACE: ' + numToCurrency(d.face_val);
+								}
+							}else if(xScale(d.face_val) > gutter.width * 2){
 								return 'FACE: ' + numToCurrency(d.face_val);
-							}
+							}					
 						})
 						.attr('class', function(d, i){
 							return (isMobile) ? ('heading4') : ('heading3');	
@@ -1253,11 +1263,11 @@ app.main = (function() {
 			// console.log(dataset);
 
 				// Fake update
-				// _.each(dataset, function(element, index, list){
-				// 	_.each(element.values, function(e, i, l){
-				// 		e.counts = Math.random()*500;
-				// 	});
-				// });			
+				_.each(dataset, function(element, index, list){
+					_.each(element.values, function(e, i, l){
+						e.counts = Math.random()*500;
+					});
+				});			
 
 			// Canvas attributes
 			var svgSize = getCSS('socialEngagement-container');
@@ -1282,20 +1292,6 @@ app.main = (function() {
 							.domain(d3.range(dataset[0].values.length))
 							.rangeBands([0, chartHeight]);
 
-			var xScale = d3.scale.linear()
-						   .domain([0, d3.max(dataset, function(d, i){
-						   		// console.log(d);
-								var maxByCategory = d3.max(d.values, function(e, j){
-									// console.log('category: ' + e.category + ', counts: ' + e.counts);
-									return e.counts;
-								});
-
-								// console.log(maxByCategory);
-								return maxByCategory;
-
-							})])
-						   .range([0, chartWidth]);
-
 			if(!update){
 
 				// Canvas
@@ -1309,7 +1305,7 @@ app.main = (function() {
 				svg.append('text')
 				  		.attr('x', 0)
 				  		.attr('y', getFontSize('heading2'))
-						.text('Social Engagement by Category')
+						.text('Social Engagement Counts')
 				  		.attr('class', 'heading2');
 
 			    var allCharts = svg.append('g')
@@ -1318,6 +1314,12 @@ app.main = (function() {
 
 				// Charts
 				_.each(dataset, function(element, index, list){
+
+					var xScale = d3.scale.linear()
+								   .domain([0, d3.max(element.values, function(d, i){
+								   		return d.counts;
+									})])
+								   .range([0, chartWidth]);
 
 				    var chart = allCharts.append('g')
 								   		 .attr('transform', function(){
@@ -1404,24 +1406,33 @@ app.main = (function() {
 			  						.data(dataset);
 			  	// console.log(groups);
 
-			  	var bars = groups.selectAll('rect')
-			  						.data(function(d, i){
-			  							return d.values;
-			  						})
-									.transition()
-									.duration(transitionDuration)
-							  		.attr('width', function(d, i){
-							  			return xScale(d.counts);
-							  		});
+				_.each(dataset, function(element, index, list){
 
-				// Values
-				var texts = groups.selectAll('.heading4.values')
-			  						.data(function(d, i){
-			  							return d.values;
-			  						})
-									.text(function(d, i){
-										return Math.round(d.counts);
-									});
+					var xScale = d3.scale.linear()
+								   .domain([0, d3.max(element.values, function(d, i){
+								   		return d.counts;
+									})])
+								   .range([0, chartWidth]);			  	
+
+				//   	var bars = groups.selectAll('rect')
+				//   						.data(function(d, i){
+				//   							return d.values;
+				//   						})
+				// 						.transition()
+				// 						.duration(transitionDuration)
+				// 				  		.attr('width', function(d, i){
+				// 				  			return xScale(d.counts);
+				// 				  		});
+
+					// Values
+					var texts = groups.selectAll('.heading4.values')
+				  						.data(function(d, i){
+				  							return d.values;
+				  						})
+										.text(function(d, i){
+											return Math.round(d.counts);
+										});
+				});
 			}	
 
 

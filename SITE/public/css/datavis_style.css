@@ -29,14 +29,14 @@ body, html{
 #logo{
 	position: absolute;
 	left: 0;
-	top: 0;
+	top: -20px;
 	width: 100%;
 	text-align: center;
 	z-index: 1000;
 }
 
 #logo img{
-	max-width: 14%;
+	max-width: 17%;
 }
 
 div.container{
@@ -199,6 +199,7 @@ text.heading4{
 	text.heading4{
 		font-size: 1.8em;
 	}
+
 	.y.axis text{
 	  font-size: 1.8em;
 	}
