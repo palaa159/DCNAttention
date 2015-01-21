@@ -89,15 +89,16 @@ void Display::draw(){
         
         //headline.setText(displayHeadline);
         //headline.setText("a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 4 0 2 4 1 - 0 8 3 1 A B C D E F G H I J K L M N O P Q R S T U V");
-//        headline.wrapTextX(leftMargin+600);
+        //headline.wrapTextX(leftMargin+600);
+        //headline.wrapTextArea(750, 300);
+        
+        //headline.draw(leftMargin, topMargin+700);
+        //headline.draw(leftMargin+40, 950);
         //headline.wrapTextArea(750, 300);
 
-//        headline.setColor(255, 255, 255, 255);
-//        headline.draw(leftMargin, topMargin+60);
-
-//        headline.draw(leftMargin+40, 950);
-//        headline.wrapTextArea(750, 300);
-
+        //headline.setColor(255, 255, 255, 255);
+        //headline.draw(60, 800);
+        
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
         valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
@@ -130,7 +131,7 @@ void Display::draw(){
         ofSetColor(255);
         payLogo.draw(ofGetWidth()/2-(payLogo.getWidth()*.7f)/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
         ofSetColor(255,255);
-        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+500);
+        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-250, ofGetHeight()/2+500);
     }
 }
 
@@ -165,14 +166,14 @@ void Display::startRound(ofxJSONElement thisContentObj){
     int lineBreakIdx = 28;
     if(displayHeadline.size() > lineBreakIdx){
         //split the string
-        if(displayHeadline.compare(28, 1, " ")){
+        if(displayHeadline.compare(27, 1, " ") == 0){
            displayHeadline.insert(lineBreakIdx, "\n");
         } else {
             displayHeadline.insert(lineBreakIdx, "-\n");
         }
-        if(displayHeadline.size() > 56){
-            displayHeadline.insert(53, "...");
-            displayHeadline = displayHeadline.substr(0, 56);
+        if(displayHeadline.size() > 62){
+            displayHeadline.insert(59, "...");
+            displayHeadline = displayHeadline.substr(0, 62);
         }
     }
     
@@ -180,10 +181,13 @@ void Display::startRound(ofxJSONElement thisContentObj){
     
     cout << "displayHeadline: "<< displayHeadline <<endl;
     
-    headline.setText(displayHeadline);
+//    headline.setText(displayHeadline);
+//    headline.wrapTextArea(750, 300);
+//    headline.setLineHeight(0.8);
+//    headline.wrapTextForceLines(2);
     
     //Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
-    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_LINEAR);
+    Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, ROUND_TIME, EASE_LINEAR);
     Tweenzor::getTween( &timerPos )->setRepeat( 0, false );
     Tweenzor::addCompleteListener( Tweenzor::getTween(&timerPos), this, &Display::onRoundComplete);
     
@@ -237,8 +241,8 @@ void Display::initFonts(){
     ofTrueTypeFont::setGlobalDpi(72);
     
     headline.init("fonts/Lato-Bold.ttf", 72);
-      headline.wrapTextArea(400, 200);
-//    headline.setColor(255, 255, 255, 255);
+    //headline.wrapTextArea(400, 200);
+    //headline.setColor(255, 255, 255, 255);
   
     
     headlineFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);

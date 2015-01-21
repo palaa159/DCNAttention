@@ -17,7 +17,7 @@
 #define CAM_DEBUG true
 
 //----------------------------------------------------------------------
-//#define SCREEN_SETTING OF_WINDOW
+//#define SCREEN_SETTING OF_WINDOW // window setting on startup
 #define SCREEN_SETTING OF_FULLSCREEN
 
 //----------------------------------------------------------------------
@@ -29,3 +29,4 @@
 
 //----------------------------------------------------------------------
 #define NUM_CATEGORIES 7
+#define ROUND_TIME 5.f

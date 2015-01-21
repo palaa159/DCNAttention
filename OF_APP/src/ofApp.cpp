@@ -31,8 +31,6 @@ void ofApp::setup() {
     // query /api/getcontents, compare with local files
     //***** HERE *****
     dataConnect.pullData();
-    
-    
 }
 
 
@@ -165,9 +163,8 @@ void ofApp::nextRound(){
         
         //********** HERE *********//
         sendRound();
-        //display.startRound(thisPair[0]);
+        //display.startRound(thisPair[0]); // FOR DEBUG
         
-        //display.startRound(thisPair[0]);
         CURR_CAT_URL = CURR_CAT+1;
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
