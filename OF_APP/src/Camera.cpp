@@ -60,7 +60,7 @@ Camera::Camera(){
 #else
     ofSetLogLevel(OF_LOG_VERBOSE);
     grabber.listDevices();
-    grabber.setDeviceID(1); // HD Pro Webcam *** CHANGE to 0 IF YOU DON'T HAVE A WEBCAM ATTACHED ****
+    grabber.setDeviceID(CAM_DEVICE_ID); // HD Pro Webcam *** CHANGE to 0 IF YOU DON'T HAVE A WEBCAM ATTACHED ****
     float vidScaleVal = 0.5f;
     grabber.initGrabber(1920*vidScaleVal, 1080*vidScaleVal);
     ofSetLogLevel(OF_LOG_NOTICE);

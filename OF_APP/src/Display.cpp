@@ -86,14 +86,14 @@ void Display::draw(){
         ofSetColor(payRed);
         labelsFont.drawString("Face Value", valuesRightMargin, topMargin+50);
         //labelsFont.drawString("Faces", valuesRightMargin, topMargin+200);
-        
-        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
-//        headline.setColor(255, 0, 0, 255);
-//        headline.setText("test headline here's a test!! what's that?");
-//        headline.wrapTextX(leftMargin+600);
-//        headline.draw(leftMargin, topMargin+60);
-        
         ofSetColor(255);
+        headline.setColor(255, 255, 255, 255);
+//        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
+//        headline.setColor(255, 0, 0, 255);
+        headline.setText("test headline here's a test!! what's that?");
+//        headline.wrapTextX(leftMargin+600);
+        headline.draw(leftMargin, topMargin+60);
+        
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
 
         valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
@@ -221,7 +221,7 @@ void Display::initFonts(){
     
     headline.init("fonts/Lato-Bold.ttf", 72);
     headline.setColor(255, 255, 255, 255);
-//    headline.wrapTextArea(400, 200);
+    headline.wrapTextArea(400, 200);
     
     headlineFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);
     headlineFont.setLineHeight(80.0f);

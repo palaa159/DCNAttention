@@ -13,10 +13,9 @@
 #define USE_DEBUG_VIDEO //COMMENT OUT TO USE LIVE CAM
 #define CAM_DEVICE_ID 0
 
-#define LEFT_SCREEN_IP  "192.168.1.25" //MASTER (left screen)
-#define RIGHT_SCREEN_IP "192.168.1.26" //SLAVE (right screen)
+#define LEFT_SCREEN_IP  "10.3.82.88" //MASTER (left screen)
+#define RIGHT_SCREEN_IP "10.3.105.38" //SLAVE (right screen)
 
-#define DATABASE_NAME "payattention" //on parse.com
-//#define DATABASE_NAME "content_dummy_new"
+#define DATABASE_NAME "payattention" //on Parse // "content_dummy_new"
 
 #define NUM_CATEGORIES 7

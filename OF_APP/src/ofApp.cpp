@@ -45,7 +45,7 @@ void ofApp::update() {
 
     display.update(cam.getNumFaces());
     
-    while(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
+    if(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
         ofxOscMessage m;
         oscRecvr.getNextMessage(&m);
         cout<< "m.getAddress: "<<m.getAddress()<<endl;
@@ -79,7 +79,7 @@ void ofApp::update() {
     }
     
     if(waitingCallback){
-        ofSleepMillis(1000);
+        ofSleepMillis(100);
         sendRound();
     }
 }

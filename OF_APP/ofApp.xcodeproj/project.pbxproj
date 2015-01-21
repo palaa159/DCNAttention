@@ -1304,7 +1304,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_52)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ ../../../addons/ofxJSON/libs/jsoncpp/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxJSON/libs/jsoncpp/include/ ../../../addons/ofxLinebreaker/libs/linebreak/include/ ../../../addons/ofxOsc/libs/oscpack/src/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1390,7 +1390,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxOsc/libs/oscpack/src/ ../../../addons/ofxJSON/libs/jsoncpp/include/";
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxJSON/libs/jsoncpp/include/ ../../../addons/ofxLinebreaker/libs/linebreak/include/ ../../../addons/ofxOsc/libs/oscpack/src/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
