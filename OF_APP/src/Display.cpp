@@ -130,7 +130,7 @@ void Display::draw(){
         ofSetColor(255);
         payLogo.draw(ofGetWidth()/2-(payLogo.getWidth()*.7f)/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
         ofSetColor(255,255);
-        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+400);
+        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+500);
     }
 }
 

@@ -90,7 +90,7 @@ void ofApp::draw() {
  
     display.draw();
     
-    if(CAM_DEBUG){
+    if(camDebug){
         cam.draw();
     }
 }
@@ -101,7 +101,7 @@ void ofApp::keyPressed(int key){
 
     switch (key) {
         case 'c':
-            CAM_DEBUG = !CAM_DEBUG;
+            camDebug = !camDebug;
             break;
         case 'f':
             ofToggleFullscreen();

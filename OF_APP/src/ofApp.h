@@ -31,7 +31,7 @@ public:
     Data dataConnect;
     Display display;
     Camera cam;
-    bool CAM_DEBUG = true;
+    bool camDebug = CAM_DEBUG;
     
     
     //*** CONTROL STUFF ***//
