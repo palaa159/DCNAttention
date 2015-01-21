@@ -503,7 +503,7 @@ app.main = (function() {
 							return (i == 0) ? ('end') : ('start');
 						})				
 						.text(function(d, i){
-							if(xScale(d.social_val) > gutter.width){
+							if(xScale(d.social_val) > gutter.width * 2){
 								return 'SOCIAL: ' + numToCurrency(d.social_val);	
 							}
 						})

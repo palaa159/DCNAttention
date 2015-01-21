@@ -125,7 +125,7 @@ text.heading4{
   fill: none;
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1100px){
 
 	html{
 	  height: 100%;
