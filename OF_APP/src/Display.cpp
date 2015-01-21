@@ -163,18 +163,32 @@ void Display::startRound(ofxJSONElement thisContentObj){
     float sizeFactor = ofGetWidth()/displayImage.getWidth();
     displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
     
-    int lineBreakIdx = 28;
+    int lineBreakIdx = 35;
+    
     if(displayHeadline.size() > lineBreakIdx){
+
+        int firstLineSpace = displayHeadline.rfind(" ",lineBreakIdx);
+        cout<<"firstLineSpace: "<<firstLineSpace<<endl;
+        displayHeadline.insert(firstLineSpace, "\n");
+        displayHeadline.erase(firstLineSpace+1, 1);
+        
+        if (displayHeadline.size() > lineBreakIdx*2){
+            displayHeadline.insert(lineBreakIdx*2-3, "...");
+            displayHeadline = displayHeadline.substr(0, lineBreakIdx*2);
+//            int secondLineSpace = displayHeadline.rfind(" ",lineBreakIdx*2);
+//            cout<<"secondLineSpace: "<<secondLineSpace<<endl;
+//            displayHeadline.insert(secondLineSpace, "\n");
+        }
         //split the string
-        if(displayHeadline.compare(27, 1, " ") == 0){
-           displayHeadline.insert(lineBreakIdx, "\n");
-        } else {
-            displayHeadline.insert(lineBreakIdx, "-\n");
-        }
-        if(displayHeadline.size() > 62){
-            displayHeadline.insert(59, "...");
-            displayHeadline = displayHeadline.substr(0, 62);
-        }
+//        if(displayHeadline.compare(27, 1, " ") == 0){
+//           displayHeadline.insert(lineBreakIdx, "\n");
+//        } else {
+//            displayHeadline.insert(lineBreakIdx, "-\n");
+//        }
+//        if(displayHeadline.size() > 62){
+//            displayHeadline.insert(59, "...");
+//            displayHeadline = displayHeadline.substr(0, 62);
+//        }
     }
     
 
