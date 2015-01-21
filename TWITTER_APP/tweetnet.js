@@ -45,10 +45,11 @@ twitterStreamClient.on('tweet', function(tweet) {
     //  console.log(tweet); //
     console.log("----------------------------");
     // mail this
-    if (tweet.text.toLowerCase().indexOf('payattention') > -1 && tweet.text.toLowerCase().indexOf('dcn') > -1) {
-        console.log('Match!');
-        sendMail(tweet);
-    }
+    sendMail(tweet);
+    // if (tweet.text.toLowerCase().indexOf('payattention') > -1 && tweet.text.toLowerCase().indexOf('dcn') > -1) {
+    //     console.log('Match!');
+        
+    // }
 });
 
 twitterStreamClient.start(['dcnlive']);

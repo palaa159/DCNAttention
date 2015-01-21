@@ -7,11 +7,17 @@ var kaiseki = new Kaiseki(APP_ID, REST_KEY);
 
 /* RATINGS
  */
-var RATE_FB = 0.01,
-    RATE_TWIT = 0.01,
-    RATE_PIN = 0.01,
-    RATE_LINKED = 0.01,
-    RATE_GOOG = 0.01;
+// var RATE_FB = 0.01,
+//     RATE_TWIT = 0.01,
+//     RATE_PIN = 0.01,
+//     RATE_LINKED = 0.01,
+//     RATE_GOOG = 0.01;
+// http://www.adweek.com/news/advertising-branding/brands-favor-social-shares-over-likes-148256
+var RATE_FB = 4.15,
+    RATE_TWIT = 1.85,
+    RATE_PIN = 1.35,
+    RATE_LINKED = 0.96,
+    RATE_GOOG = 0.60;
 
 
 module.exports = {
@@ -95,12 +101,17 @@ module.exports = {
                     }
                 });
                 // Update to Parse
-                // console.log(tmpArray);
-                kaiseki.updateObjects(classname, tmpArray, function(err, res, body, success) {
-                    // console.log(err);
-                    // console.log(body);
-                    // console.log(success);
-                });
+                // console.log(JSON.stringify(tmpArray));
+
+                var splittedArray = split(tmpArray, 3);
+
+                for (var i = 0; i < splittedArray.length; i++) {
+                    kaiseki.updateObjects(classname, splittedArray[i], function(err, res, body, success) {
+                        // console.log(err);
+                        console.log(body);
+                        // console.log(success);
+                    });
+                }
             }
         });
     },
@@ -126,13 +137,17 @@ module.exports = {
     },
     resetHistory: function(classname, res_s) {
         kaiseki.getObjects(classname, function(err, res, body, success) {
-            if(success) {
+            if (success) {
                 var tmpArray = [];
                 body.forEach(function(item) {
                     tmpArray.push({
                         objectId: item.objectId,
                         data: {
-                            val_history: [],
+                            val_history: [{
+                                ts: new Date().getTime(),
+                                face_val: 0,
+                                social_val: 0
+                            }],
                             face_val: 0,
                             social_val: 0,
                             fb_counts: 0,
@@ -145,9 +160,15 @@ module.exports = {
                     });
                 });
                 // update objects
-                kaiseki.updateObjects(classname, tmpArray, function(err, res, body, success) {
-                    res_s.json(body);
-                });
+                var splittedArray = split(tmpArray, 3);
+
+                for (var i = 0; i < splittedArray.length; i++) {
+                    kaiseki.updateObjects(classname, splittedArray[i], function(err, res, body, success) {
+                        // console.log(err);
+                        console.log(body);
+                        // console.log(success);
+                    });
+                }
             }
         });
     }
@@ -162,7 +183,19 @@ function processValHistory(arraybefore, now_val, social_val) {
         // BELOW IS WRONG
         // SEARCH FOR LAST ARRAY THAT IS NOT 0
         // AND WHY THERE ARE -1s?????
-        social_val: (arraybefore.length != 0) ? (now_val - social_val) : social_val
+        social_val: (arraybefore.length !== 0) ? (now_val - social_val) : now_val
     });
     return arraybefore;
+}
+
+function split(a, n) {
+    var len = a.length,
+        out = [],
+        i = 0;
+    while (i < len) {
+        var size = Math.ceil((len - i) / n--);
+        out.push(a.slice(i, i + size));
+        i += size;
+    }
+    return out;
 }

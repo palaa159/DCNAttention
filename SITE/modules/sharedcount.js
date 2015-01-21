@@ -50,7 +50,7 @@ module.exports = function(http){
             });
             res.on('end', function() {
                 var tmp = JSON.parse(result);
-                console.log(tmp);
+                // console.log(tmp);
                 parse.updateSocVal(CONTENT_DATABASE, tmp);
             });
 

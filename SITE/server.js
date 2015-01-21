@@ -1,4 +1,4 @@
-var CONTENT_DATABASE = 'content_dummy_new';
+var CONTENT_DATABASE = 'payattention';
 var bulk_id = 'e1a160357d5c7b4f30ba3639354c9e1f57360f55';
 
 var http = require('http'),
