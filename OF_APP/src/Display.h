@@ -12,6 +12,7 @@
 #include "ContentModel.h"
 #include "ofxTweenzor.h"
 #include "ofxJSON.h"
+#include "ofxTextBlock.h"
 
 class Display {
     
@@ -31,6 +32,9 @@ private:
     ofTrueTypeFont	valueFont;
     ofTrueTypeFont	labelsFont;
     
+    ofxTextBlock headline;
+    TextBlockAlignment  alignment;
+    
     float displayFaceVal;
     float displaySocialVal;
     float refSocialVal;
@@ -44,6 +48,7 @@ private:
     
     ofImage displayImage;
     ofImage eyeLogo;
+    ofImage payLogo;
     
     int numFaces;
     

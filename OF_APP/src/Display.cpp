@@ -32,6 +32,8 @@ Display::Display(){
     roundOn = false;
     eyeLogo.loadImage("img/eye_white.png");
     eyeLogo.resize(eyeLogo.getWidth()*.45f, eyeLogo.getHeight()*.45f);
+    
+    payLogo.loadImage("img/logo.png");
 }
 
 
@@ -85,15 +87,19 @@ void Display::draw(){
         labelsFont.drawString("Face Value", valuesRightMargin, topMargin+50);
         //labelsFont.drawString("Faces", valuesRightMargin, topMargin+200);
         
+        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
+//        headline.setColor(255, 0, 0, 255);
+//        headline.setText("test headline here's a test!! what's that?");
+//        headline.wrapTextX(leftMargin+600);
+//        headline.draw(leftMargin, topMargin+60);
         
         ofSetColor(255);
         companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
-        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
+
         valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
-        
-        
         eyeLogo.draw(valuesRightMargin, topMargin+170);
         valueFont.drawString(ofToString(numFaces), valuesRightMargin+eyeLogo.getWidth()+40, topMargin+220);
+        
         
         //labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
         //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
@@ -116,6 +122,8 @@ void Display::draw(){
         if(timerVal>9)timerFont.drawString(ofToString(timerVal), timerLoc.x-58, timerLoc.y+32);
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-29, timerLoc.y+32);
     } else {
+        ofSetColor(255);
+        payLogo.draw(ofGetWidth()/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
         ofSetColor(0);
         headlineFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+300);
     }
@@ -211,6 +219,9 @@ void Display::initFonts(){
     
     ofTrueTypeFont::setGlobalDpi(72);
     
+    headline.init("fonts/Lato-Bold.ttf", 72);
+    headline.setColor(255, 255, 255, 255);
+//    headline.wrapTextArea(400, 200);
     
     headlineFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);
     headlineFont.setLineHeight(80.0f);

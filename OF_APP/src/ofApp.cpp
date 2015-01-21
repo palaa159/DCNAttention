@@ -29,7 +29,9 @@ void ofApp::setup() {
     
     //*** immediately init local data files ***//
     // query /api/getcontents, compare with local files
+    //***** HERE ****
     dataConnect.pullData();
+    
     
 }
 
@@ -43,7 +45,7 @@ void ofApp::update() {
 
     display.update(cam.getNumFaces());
     
-    if(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
+    while(oscRecvr.hasWaitingMessages()){ //TODO: check how dangerous this blocking while is
         ofxOscMessage m;
         oscRecvr.getNextMessage(&m);
         cout<< "m.getAddress: "<<m.getAddress()<<endl;
@@ -67,7 +69,7 @@ void ofApp::update() {
             
             display.startRound(thisObj);
         }
-        if(m.getAddress() == "/callback"){
+        else if(m.getAddress() == "/callback"){
             cout << "GOT CALLBACK, STARTING ROUND";
             waitingCallback = false;
             display.startRound(thisPair[0]);
@@ -158,20 +160,17 @@ void ofApp::nextRound(){
         //cout << "\t left screen: "<<thisPair[0]["objectId"].asString()<<endl;
         //cout << "\t right screen: "<<thisPair[1]["objectId"].asString()<<endl;
         // print entire objects
-        //cout<< thisPair[0].getRawString() << endl;
-        //cout<< thisPair[1].getRawString() << endl;
+        cout<< thisPair[0].getRawString() << endl;
+        cout<< thisPair[1].getRawString() << endl;
         
+        //********** HERE *********//
         sendRound();
-//        ofxOscMessage m;
-//        m.setAddress("/round");
-//        m.addStringArg(thisPair[1].getRawString());
-//        oscSender.sendMessage(m);
+        //display.startRound(thisPair[0]);
         
         //display.startRound(thisPair[0]);
         CURR_CAT_URL = CURR_CAT+1;
         CURR_CAT++;
         if(CURR_CAT > NUM_CATEGORIES-1) CURR_CAT = 0;
-        
     }
 }
 //--------------------------------------------------------------

@@ -105,7 +105,7 @@ bool Data::parseData(ofxJSONElement data){
 //--------------------------------------------------------------
 ofxJSONElement Data::getCategory(int cat){
     ofxJSONElement thisCategory;
-//    thisCategory.open("content/cat_"+ofToString(cat+1)+".json");
+    //thisCategory.open("content/cat_"+ofToString(cat+1)+".json");
     thisCategory.openLocal("content/cat_"+ofToString(cat+1)+".json");
     //cout << "\n\n----- GET CATEGORY GOT:::: \n"<<thisCategory.getRawString()<<endl;
     return thisCategory;
