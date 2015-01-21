@@ -33,7 +33,7 @@ Display::Display(){
     eyeLogo.loadImage("img/eye_white.png");
     eyeLogo.resize(eyeLogo.getWidth()*.45f, eyeLogo.getHeight()*.45f);
     
-    payLogo.loadImage("img/logo.png");
+    payLogo.loadImage("img/logo_new.png");
 }
 
 
@@ -129,9 +129,9 @@ void Display::draw(){
     } else {
         ofBackground(0, 0, 0);
         ofSetColor(255);
-        payLogo.draw(ofGetWidth()/2-(payLogo.getWidth()*.7f)/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
+        payLogo.draw(ofGetWidth()/2-(payLogo.getWidth()*1.2f)/2, 0, payLogo.getWidth()*1.2f, payLogo.getHeight()*1.2f);
         ofSetColor(255,255);
-        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-250, ofGetHeight()/2+500);
+        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-250, ofGetHeight()/2+450);
     }
 }
 

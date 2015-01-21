@@ -29,4 +29,4 @@
 
 //----------------------------------------------------------------------
 #define NUM_CATEGORIES 7
-#define ROUND_TIME 5.f
+#define ROUND_TIME 15.f
