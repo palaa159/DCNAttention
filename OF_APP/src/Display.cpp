@@ -86,21 +86,25 @@ void Display::draw(){
         ofSetColor(payRed);
         labelsFont.drawString("Face Value", valuesRightMargin, topMargin+50);
         //labelsFont.drawString("Faces", valuesRightMargin, topMargin+200);
-        ofSetColor(255);
-        headline.setColor(255, 255, 255, 255);
-//        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
-//        headline.setColor(255, 0, 0, 255);
-        headline.setText("test headline here's a test!! what's that?");
-//        headline.wrapTextX(leftMargin+600);
-        headline.draw(leftMargin, topMargin+60);
         
-        companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
+        //headline.setText(displayHeadline);
+        //headline.setText("a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 4 0 2 4 1 - 0 8 3 1 A B C D E F G H I J K L M N O P Q R S T U V");
+//        headline.wrapTextX(leftMargin+600);
+        //headline.wrapTextArea(750, 300);
 
+//        headline.setColor(255, 255, 255, 255);
+//        headline.draw(leftMargin, topMargin+60);
+
+//        headline.draw(leftMargin+40, 950);
+//        headline.wrapTextArea(750, 300);
+
+        ofSetColor(255);
+        companyFont.drawString(displayCompany + " | "+displayCategory, leftMargin, topMargin+50);
         valueFont.drawString("$"+ofToString(displayFaceVal), valuesRightMargin, topMargin+130);
         eyeLogo.draw(valuesRightMargin, topMargin+170);
         valueFont.drawString(ofToString(numFaces), valuesRightMargin+eyeLogo.getWidth()+40, topMargin+220);
         
-        
+        headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
         //labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
         //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
         //valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
@@ -122,10 +126,11 @@ void Display::draw(){
         if(timerVal>9)timerFont.drawString(ofToString(timerVal), timerLoc.x-58, timerLoc.y+32);
         else timerFont.drawString(ofToString(timerVal), timerLoc.x-29, timerLoc.y+32);
     } else {
+        ofBackground(0, 0, 0);
         ofSetColor(255);
-        payLogo.draw(ofGetWidth()/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
-        ofSetColor(0);
-        headlineFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+300);
+        payLogo.draw(ofGetWidth()/2-(payLogo.getWidth()*.7f)/2, ofGetHeight()/2-100, payLogo.getWidth()*.7f, payLogo.getHeight()*.7f);
+        ofSetColor(255,255);
+        companyFont.drawString("waiting for content to initialize...", ofGetWidth()/2-400, ofGetHeight()/2+400);
     }
 }
 
@@ -157,12 +162,25 @@ void Display::startRound(ofxJSONElement thisContentObj){
     float sizeFactor = ofGetWidth()/displayImage.getWidth();
     displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
     
-//    int lineBreakIdx = 28;
-//    if(displayHeadline.size() > lineBreakIdx){
-//        //split the string
-//        displayHeadline.insert(lineBreakIdx, "\n");
-//    }
+    int lineBreakIdx = 28;
+    if(displayHeadline.size() > lineBreakIdx){
+        //split the string
+        if(displayHeadline.compare(28, 1, " ")){
+           displayHeadline.insert(lineBreakIdx, "\n");
+        } else {
+            displayHeadline.insert(lineBreakIdx, "-\n");
+        }
+        if(displayHeadline.size() > 56){
+            displayHeadline.insert(53, "...");
+            displayHeadline = displayHeadline.substr(0, 56);
+        }
+    }
     
+
+    
+    cout << "displayHeadline: "<< displayHeadline <<endl;
+    
+    headline.setText(displayHeadline);
     
     //Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
     Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_LINEAR);
@@ -202,16 +220,15 @@ void Display::onRoundComplete(float* arg) {
     string updateObj = "{\"face_val\":"+ofToString(displayFaceVal)+",\"shown\":"+ofToString(shownCount)+"}";
     string updateObj2 = "{\"val_history\":{\"__op\":\"Add\",\"objects\":[{\"face_val\":"+ofToString(faceDiff)+",\"social_val\":0,\"ts\":"+ofToString(ofGetUnixTime())+"000}]}}";
 
-    string completeUpdate =
-    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
+    string completeUpdate = "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/"+dbName+"/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
     
-//    string completeUpdate =
-//    "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";  
+    //string completeUpdate = "{\"requests\": [{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": "+ updateObj + "},{\"method\": \"PUT\",\"path\": \"/1/classes/content_dummy_new/"+displayObjectId+"\",\"body\": " + updateObj2 + "}]}";
     
     ((ofApp*)ofGetAppPtr())->dataConnect.pushData(displayObjectId, completeUpdate);
-    if(((ofApp*)ofGetAppPtr())->GO_MODE)
+    
+    if(((ofApp*)ofGetAppPtr())->GO_MODE){
         ((ofApp*)ofGetAppPtr())->dataConnect.pullData();
-    //((ofApp*)ofGetAppPtr())->nextRound(); //now down from pullData()
+    }
 }
 
 //--------------------------------------------------------------
@@ -220,8 +237,9 @@ void Display::initFonts(){
     ofTrueTypeFont::setGlobalDpi(72);
     
     headline.init("fonts/Lato-Bold.ttf", 72);
-    headline.setColor(255, 255, 255, 255);
-    headline.wrapTextArea(400, 200);
+      headline.wrapTextArea(400, 200);
+//    headline.setColor(255, 255, 255, 255);
+  
     
     headlineFont.loadFont("fonts/Lato-Bold.ttf", 72, true, true, true);
     headlineFont.setLineHeight(80.0f);

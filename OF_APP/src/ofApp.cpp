@@ -29,7 +29,7 @@ void ofApp::setup() {
     
     //*** immediately init local data files ***//
     // query /api/getcontents, compare with local files
-    //***** HERE ****
+    //***** HERE *****
     dataConnect.pullData();
     
     
