@@ -502,23 +502,52 @@ app.main = (function() {
 								return textOffset;
 							}
 						})
-						.attr('y', 1.65*barHeight)
+						.attr('y', 1.45*barHeight)
 						.attr('text-anchor', function(d, i){
 							return (i == 0) ? ('end') : ('start');
-						})				
-						.text(function(d, i){
-							// Only writes value if there's enough space
-							if(isMobile){
-								if(xScale(d.social_val) > gutter.width * 4){
-									return 'SOCIAL: ' + numToCurrency(d.social_val);
-								}
-							}else if(xScale(d.social_val) > gutter.width * 2){
-								return 'SOCIAL: ' + numToCurrency(d.social_val);	
-							}
 						})
 						.attr('class', function(d, i){
+							return (isMobile) ? ('heading5') : ('heading4');	
+						})
+						.text(function(d, i){
+
+							// Only writes value if there's enough space
+							if(checkFitting(xScale, d.social_val)){
+								return 'Social Value';
+							}
+						})
+						
+				groups.append('text')
+						.attr('x', function(d, i){
+							if(i == 0){
+								return chartWidth - textOffset;
+							}else{
+								return textOffset;
+							}
+						})
+						.attr('y', 1.80 * barHeight)
+						.attr('text-anchor', function(d, i){
+							return (i == 0) ? ('end') : ('start');
+						})						
+						.attr('class', function(d, i){
 							return (isMobile) ? ('heading4') : ('heading3');	
-						})					
+						})						
+						.text(function(d, i){
+							// Only writes value if there's enough space
+							if(checkFitting(xScale, d.social_val)){
+								return numToCurrency(d.social_val);
+							}
+						});
+
+					// title = svg.append('text')
+					// 	  		.attr('x', 0)
+					// 	  		.attr('y', margin.top*0.3)
+					// 			.text('Top by')
+					// 	  		.attr('class', 'heading2')
+					// 	  		.append('tspan')
+					// 	  		.attr('x', 0)
+					// 	  		.attr('y', margin.top*0.6)			  		
+					// 	  		.text('Category');							
 
 				// Face value bar
 				groups.append('rect')
@@ -1465,6 +1494,16 @@ app.main = (function() {
 				txt += '...'
 			}
 			return txt;
+		}
+
+		function checkFitting(scale, val){
+			if(isMobile){
+				if(scale(val) > gutter.width * 4){
+					return true;
+				}
+			}else if(scale(val) > gutter.width * 2){
+				return true;	
+			}
 		}
 
 		function drawLegend(svg, marginTop){

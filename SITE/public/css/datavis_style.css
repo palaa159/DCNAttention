@@ -102,6 +102,10 @@ text.heading4{
 	font-size: 0.6em;
 }
 
+text.heading5{
+	font-size: 0.45em;
+}
+
 .axis path,
 .axis line {
   fill: none;
@@ -198,6 +202,10 @@ text.heading4{
 
 	text.heading4{
 		font-size: 1.8em;
+	}
+
+	text.heading5{
+		font-size: 1.2em;
 	}
 
 	.y.axis text{
