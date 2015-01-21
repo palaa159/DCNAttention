@@ -157,11 +157,11 @@ void Display::startRound(ofxJSONElement thisContentObj){
     float sizeFactor = ofGetWidth()/displayImage.getWidth();
     displayImage.resize(ofGetWidth(), displayImage.getHeight()*sizeFactor);
     
-    int lineBreakIdx = 28;
-    if(displayHeadline.size() > lineBreakIdx){
-        //split the string
-        displayHeadline.insert(lineBreakIdx, "\n");
-    }
+//    int lineBreakIdx = 28;
+//    if(displayHeadline.size() > lineBreakIdx){
+//        //split the string
+//        displayHeadline.insert(lineBreakIdx, "\n");
+//    }
     
     
     //Tweenzor::add(&timerPos, 270.f, 630.f, 0.f, 15.f, EASE_IN_OUT_SINE);
