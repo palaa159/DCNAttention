@@ -70,10 +70,10 @@ svg{
 }
 
 #topByCategory-container{
-	top: 49%;
+	top: 47%;
 	left: 84%;
 	width: 10%;
-	height: 45%;
+	height: 47%;
 }
 
 #socialEngagement-container{
@@ -103,7 +103,7 @@ text.heading4{
 }
 
 text.heading5{
-	font-size: 0.45em;
+	font-size: 0.55em;
 }
 
 .axis path,
@@ -113,12 +113,16 @@ text.heading5{
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
+/*.x.axis path {
   display: none;
-}
+}*/
 
 .y.axis text{
   font-size: 0.6em;
+}
+
+.y.axis line{
+  opacity: 0.2;
 }
 
 .x.axis text {

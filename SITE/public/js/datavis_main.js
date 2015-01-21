@@ -741,11 +741,12 @@ app.main = (function() {
 						    .x(function(d, i) { return xScale(d.ts); })
 						    .y(function(d) { return yScale(d.social_val + d.face_val); });
 
+
 			// X Scale
 			var xAxis = d3.svg.axis()
+								.ticks(5)
 							    .scale(xScale)
-							    .orient("bottom")
-							    .ticks(5);
+							    .orient("bottom");
 
 			// Y Scale
 			var yAxis = d3.svg.axis()
@@ -802,6 +803,17 @@ app.main = (function() {
 					    .attr("dy", ".71em")
 					    .style("text-anchor", "end")
 					    .text("Valuation ($)");
+
+			var longTicks = svg.select('.y.axis')
+								.selectAll('line')
+					 			.attr('x1', width);
+					
+			      // .attr('transform', function(d, i) {
+			      // 	return 'translate(0,' + i * 30 + ')';
+			      // })
+			      // .each(function(d) {
+			      // 	d3.select(this).call(axis.scale(y[d]).orient('right'));
+			      // });						    
 
 			  	// Lines
 				var company = chart.selectAll(".line")
@@ -1496,16 +1508,16 @@ app.main = (function() {
 			return num;
 		}
 
-Number.prototype.formatMoney = function(c, d, t){
-var n = this, 
-    c = isNaN(c = Math.abs(c)) ? 2 : c, 
-    d = d == undefined ? "." : d, 
-    t = t == undefined ? "," : t, 
-    s = n < 0 ? "-" : "", 
-    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
-    j = (j = i.length) > 3 ? j % 3 : 0;
-   return '$' + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
- };
+		Number.prototype.formatMoney = function(c, d, t){
+		var n = this, 
+		    c = isNaN(c = Math.abs(c)) ? 2 : c, 
+		    d = d == undefined ? "." : d, 
+		    t = t == undefined ? "," : t, 
+		    s = n < 0 ? "-" : "", 
+		    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+		    j = (j = i.length) > 3 ? j % 3 : 0;
+		   return '$' + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+		 };
 
 		function parseHsla(color, a){
 			var myHslaColor = 'hsla(' + color.h + ', ' + color.s + '%, ' + color.l + '%, ' + a +')';
@@ -1568,13 +1580,13 @@ var n = this,
 			  		.attr('class', 'heading4');
 
 			legend.append('circle')
-			  		.attr('cx', 15*radius)
+			  		.attr('cx', 16*radius)
 			  		.attr('cy', -radius)
 					.attr('r', radius)
-			  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
+			  		.attr('fill', parseHsla(neutralColor, 0.6));			  		
 
 			legend.append('text')
-			  		.attr('x', 16.5*radius)
+			  		.attr('x', 17.5*radius)
 			  		.attr('y', 0)
 					.text('Face Value')
 			  		.attr('class', 'heading4');		
