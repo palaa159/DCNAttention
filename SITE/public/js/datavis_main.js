@@ -5,6 +5,9 @@ var app = app || {};
 app.main = (function() {
 	
 	var init = function() {
+		console.log('hey');
+		console.log(window.innerWidth);
+		console.log(window.innerHeight);
 
 		// app starts running here
 
@@ -933,38 +936,10 @@ app.main = (function() {
 				svg.append('text')
 				  		.attr('x', 0)
 				  		.attr('y', margin.top/2)
-						.text('Top 5')
+						.text('Top 5 Overall')
 				  		.attr('class', 'heading2');
 
-				// Legend
-				var legend = svg.append('g')
-							    .attr('transform', 'translate(0, ' + margin.top*0.9 + ')');
-
-				var radius = getFontSize('heading4')/2;
-
-				legend.append('circle')
-				  		.attr('cx', radius)
-				  		.attr('cy', -radius)
-						.attr('r', radius)
-				  		.attr('fill', parseHsla(neutralColor, 1));
-
-				legend.append('text')
-				  		.attr('x', 2.5*radius)
-				  		.attr('y', 0)
-						.text('SOCIAL')
-				  		.attr('class', 'heading4');
-
-				legend.append('circle')
-				  		.attr('cx', 12*radius)
-				  		.attr('cy', -radius)
-						.attr('r', radius)
-				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
-
-				legend.append('text')
-				  		.attr('x', 13.5*radius)
-				  		.attr('y', 0)
-						.text('FACE')
-				  		.attr('class', 'heading4');			  					  		
+				 drawLegend(svg, margin.top*0.9);
 
 				// Chart
 			    var chart = svg.append('g')
@@ -1114,34 +1089,7 @@ app.main = (function() {
 						  		.attr('class', 'heading2');					
 				}
 
-				legend = svg.append('g')
-						    .attr('transform', 'translate(0, ' + 0.9*margin.top + ')');
-
-				var radius = getFontSize('heading4')/2;
-
-				legend.append('circle')
-				  		.attr('cx', radius)
-				  		.attr('cy', -radius)
-						.attr('r', radius)
-				  		.attr('fill', parseHsla(neutralColor, 1));
-
-				legend.append('text')
-				  		.attr('x', 2.5*radius)
-				  		.attr('y', 0)
-						.text('SOCIAL')
-				  		.attr('class', 'heading4');
-
-				legend.append('circle')
-				  		.attr('cx', 12*radius)
-				  		.attr('cy', -radius)
-						.attr('r', radius)
-				  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
-
-				legend.append('text')
-				  		.attr('x', 13.5*radius)
-				  		.attr('y', 0)
-						.text('FACE')
-				  		.attr('class', 'heading4');				  					  		
+				drawLegend(svg, margin.top*0.9);			  					  		
 
 				// Chart
 			    var chart = svg.append('g')
@@ -1517,6 +1465,39 @@ app.main = (function() {
 				txt += '...'
 			}
 			return txt;
+		}
+
+		function drawLegend(svg, marginTop){
+
+			// Legend
+			var legend = svg.append('g')
+						    .attr('transform', 'translate(0, ' + marginTop + ')');
+
+			var radius = getFontSize('heading4')/2;
+
+			legend.append('circle')
+			  		.attr('cx', radius)
+			  		.attr('cy', -radius)
+					.attr('r', radius)
+			  		.attr('fill', parseHsla(neutralColor, 1));
+
+			legend.append('text')
+			  		.attr('x', 2.5*radius)
+			  		.attr('y', 0)
+					.text('Social Value')
+			  		.attr('class', 'heading4');
+
+			legend.append('circle')
+			  		.attr('cx', 15*radius)
+			  		.attr('cy', -radius)
+					.attr('r', radius)
+			  		.attr('fill', parseHsla(neutralColor, 0.3));			  		
+
+			legend.append('text')
+			  		.attr('x', 16.5*radius)
+			  		.attr('y', 0)
+					.text('Face Value')
+			  		.attr('class', 'heading4');		
 		}
 
 	};
