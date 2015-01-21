@@ -5,9 +5,6 @@ var app = app || {};
 app.main = (function() {
 	
 	var init = function() {
-		console.log('hey');
-		console.log(window.innerWidth);
-		console.log(window.innerHeight);
 
 		// app starts running here
 
@@ -16,7 +13,8 @@ app.main = (function() {
 		// Design
 		var transitionDuration = 750;
 
-		var isMobile = (window.innerWidth < 1100) ? (true) : (false);
+		var isMobile = (window.innerWidth < 700) ? (true) : (false);
+		var isInstallation = (700 < window.innerWidth && window.innerWidth < 800) ? (true) : (false);
 		// console.log(isMobile);
 
 		var column, gutter;
@@ -61,14 +59,18 @@ app.main = (function() {
 		// Connecting to socket.io
 		var socket = io("http://attention.market:80");
 		socket.on('showing', function(data){
-			console.log(data);
-			left = data.left;
-			right = data.right;
-			cat = data.cat;
-			console.log('connected');
 
-			// update
-			loadAndStart(true);			
+			if(data.cat !=  cat && data.left != left && data.right != right){
+
+				console.log(data);
+				left = data.left;
+				right = data.right;
+				cat = data.cat;
+				console.log('connected');
+
+				// update
+				loadAndStart(true);
+			}
 		});		
 
 		var allCategories;
@@ -102,12 +104,29 @@ app.main = (function() {
 				allCategories = getAllCategories(json);
 				// allCompanies = getAllCompanies(json);
 
-				processTopChart(json, drawTopChart, update);
-				processMainChart(json, drawMainChart, update);
 				processTop5(json , drawTop5, update);
 				processTopByCategory(json, drawTopByCategory, update);
-				processSocialEngagement(json, drawSocialEngagement, update);
+				processSocialEngagement(json, drawSocialEngagement, update);				
 
+				// Filter current category
+				var filteredData = _.filter(json, function(obj){
+					return obj.cat_id == cat;
+				});
+				// console.log(filteredData);
+
+				var newData = mergeCompanies(filteredData);
+				// console.log(newData);
+
+				// Sorting descending
+				var sortedData = _.sortBy(newData, function(obj){
+					return obj.face_val + obj.social_val;
+				});
+				sortedData.reverse();
+
+				currentColors = getCurrentColors(sortedData);				
+
+				processTopChart(sortedData, drawTopChart, update);
+				processMainChart(sortedData, drawMainChart, update);
 			});			
 		}
 
@@ -119,52 +138,17 @@ app.main = (function() {
 
 		function processTopChart(data, callback, update){
 
-			// Filter current category
-			var filteredData = _.filter(data, function(obj){
-				return obj.cat_id == cat;
-			});
-			// console.log(filteredData);
-
-			var newData = mergeCompanies(filteredData);
-			// console.log(newData);
-
-			// Sorting descending
-			var sortedData = _.sortBy(newData, function(obj){
-				return obj.face_val + obj.social_val;
-			});
-			sortedData.reverse();
-
-			currentColors = getCurrentColors(sortedData);
 			// console.log(currentColors);
-
-			callback(sortedData, update);
+			callback(data, update);
 		}
 
 		// CHART: Main (current category)
 		function processMainChart(data, callback, update){
 
-			// Filter current category
-			var filteredData = _.filter(data, function(obj){
-				return obj.cat_id == cat;
-			});
-			console.log(filteredData);
-
-			var newData = mergeCompanies(filteredData);
-			// console.log(newData);
-
-			// Sorting descending
-			var sortedData = _.sortBy(newData, function(obj){
-				return obj.face_val + obj.social_val;
-			});
-			sortedData.reverse();
-
-			currentColors = getCurrentColors(newData);
-			// console.log(currentColors);
-
 			// Some more data processing before drawing the chart
 			// Adding a last element to each val_history array,
 			// with the current timestamp (so all lines extend till the current time)
-			var fullTimeline = _.each(sortedData, function(element, index, list){
+			var fullTimeline = _.each(data, function(element, index, list){
 				var d = new Date();
 				currentTimestamp = d.getTime();
 				var newHistory = {
@@ -636,7 +620,7 @@ app.main = (function() {
 							return (i == 0) ? ('end') : ('start');
 						})
 						.text(function(d, i){
-							return capText(d.company) + ' | ' + numToCurrency(d.face_val + d.social_val);
+							return capText(d.company) + ' | ' + (d.face_val + d.social_val).formatMoney(2);
 						})
 						.attr('class', function(d, i){
 							return (isMobile) ? ('heading4') : ('heading2');
@@ -841,7 +825,7 @@ app.main = (function() {
 					    			if(isMobile){
 					    				return 'translate(' + margin.left + ' ,' + (margin.bottom + 2*gutter.height) + ')';
 					    			}else{
-										return 'translate(' + ((4.5 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
+										return 'translate(' + ((4.75 * gutter.width) + (5 * column.width)) + ',' + margin.top + ')';
 					    			}
 					    		})
 					    		.attr('id', 'labels');
@@ -873,7 +857,7 @@ app.main = (function() {
 							return i * barHeight;
 						})
 						.text(function(d, i){
-							return numToCurrency(d.face_val + d.social_val) + ' | ' + capText(d.company);
+							return (d.face_val + d.social_val).formatMoney(2) + ' | ' + capText(d.company);
 						})
 						.attr('class', function(d, i){
 							if(d.highlight){
@@ -1053,7 +1037,7 @@ app.main = (function() {
 				  		.attr('x', 2)
 				  		.attr('y', 2*barHeight)
 						.text(function(d, i){
-							return numToCurrency(d.social_val + d.face_val);
+							return (d.social_val + d.face_val).formatMoney(2);
 						})
 				  		.attr('class', 'heading4')
 				  		.style('opacity', 0)
@@ -1211,7 +1195,7 @@ app.main = (function() {
 				  		.attr('x', 2)
 				  		.attr('y', 3*barHeight)
 						.text(function(d, i){
-							return numToCurrency(d.social_val + d.face_val);
+							return (d.social_val + d.face_val).formatMoney(2);
 						})
 				  		.attr('class', 'heading4 values');
 
@@ -1256,7 +1240,7 @@ app.main = (function() {
 				var values = groups.select('.heading4.values')
 							  		.data(dataset)
 									.text(function(d, i){
-										return numToCurrency(d.social_val + d.face_val);
+										return (d.social_val + d.face_val).formatMoney(2);
 									});
 			}
 		}
