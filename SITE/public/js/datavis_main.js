@@ -53,7 +53,7 @@ app.main = (function() {
 		var currentColors;
 
 		// Data
-		var cat, left, right;
+		var cat, left, right, leftCompany, rightCompany;
 
 		// Connecting to socket.io
 		var socket = io("http://attention.market:80");
@@ -122,7 +122,10 @@ app.main = (function() {
 				});
 				sortedData.reverse();
 
-				currentColors = getCurrentColors(sortedData);				
+				currentColors = getCurrentColors(sortedData);
+
+				console.log('left: ' + leftCompany);
+				console.log('right: ' + rightCompany);
 
 				processTopChart(sortedData, drawTopChart, update);
 				processMainChart(sortedData, drawMainChart, update);
@@ -136,6 +139,7 @@ app.main = (function() {
 		/*---------- DATA PROCESSING ----------*/
 
 		function processTopChart(data, callback, update){
+			// console.log(data);
 
 			// console.log(currentColors);
 			callback(data, update);
@@ -337,8 +341,12 @@ app.main = (function() {
 					// combinedFace_val += value[i].face_val;
 					// combinedSocial_val += value[i].social_val;
 
-					if(value[i].objectId == left || value[i].objectId == right){
+					if(value[i].objectId == left){
 						highlight = true;
+						leftCompany = value[i].company;
+					}else if(value[i].objectId == right){
+						highlight = true;
+						rightCompany = value[i].company;						
 					}
 				}
 
@@ -410,6 +418,14 @@ app.main = (function() {
 				theseColors.push(currentColors[element]);
 			});
 			// console.log(theseColors);
+
+			console.log(dataset);
+			if(dataset[0].company != leftCompany){
+				console.log('reversing');
+				dataset.reverse();
+				theseColors.reverse();
+				console.log(dataset);
+			}
 
 			/*----- LAYOUT -----*/
 			var svgSize = getCSS('topChart-container');
