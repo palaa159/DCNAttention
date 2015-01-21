@@ -1263,11 +1263,11 @@ app.main = (function() {
 			// console.log(dataset);
 
 				// Fake update
-				_.each(dataset, function(element, index, list){
-					_.each(element.values, function(e, i, l){
-						e.counts = Math.random()*500;
-					});
-				});			
+				// _.each(dataset, function(element, index, list){
+				// 	_.each(element.values, function(e, i, l){
+				// 		e.counts = Math.random()*500;
+				// 	});
+				// });			
 
 			// Canvas attributes
 			var svgSize = getCSS('socialEngagement-container');
@@ -1403,36 +1403,45 @@ app.main = (function() {
 			    // console.log(chart);
 
 			  	var groups = chart.selectAll('g')
+  				  					.attr('n', function(d, i){
+				  						return i;
+				  					})
 			  						.data(dataset);
-			  	// console.log(groups);
 
-				_.each(dataset, function(element, index, list){
+			  	var bars = groups.selectAll('rect')
+		  						.data(function(d, i){
+		  							// console.log(d.values);
+		  							return d.values;
+		  						})
+								.transition()
+								.duration(transitionDuration)
+						  		.attr('width', function(e, j){
 
-					var xScale = d3.scale.linear()
-								   .domain([0, d3.max(element.values, function(d, i){
-								   		return d.counts;
-									})])
-								   .range([0, chartWidth]);			  	
+						  			var i = $(this).parent().attr('n');
+						  			// console.log(dataset[i]);
 
-				//   	var bars = groups.selectAll('rect')
-				//   						.data(function(d, i){
-				//   							return d.values;
-				//   						})
-				// 						.transition()
-				// 						.duration(transitionDuration)
-				// 				  		.attr('width', function(d, i){
-				// 				  			return xScale(d.counts);
-				// 				  		});
+						  			var max = d3.max(dataset[i].values, function(f, h){
+						  								// console.log(f);
+												   		return f.counts;
+													});
+						  			// console.log(max);
 
-					// Values
-					var texts = groups.selectAll('.heading4.values')
-				  						.data(function(d, i){
-				  							return d.values;
-				  						})
-										.text(function(d, i){
-											return Math.round(d.counts);
-										});
-				});
+								  	var xScale = d3.scale.linear()
+												   .domain([0, max])
+												   .range([0, chartWidth]);	
+
+						  			return xScale(e.counts);
+						  		});
+
+				// Values
+				var texts = groups.selectAll('.heading4.values')
+			  						.data(function(d, i){
+			  							return d.values;
+			  						})
+									.text(function(d, i){
+										return Math.round(d.counts);
+									});
+
 			}	
 
 
