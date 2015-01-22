@@ -799,10 +799,16 @@ app.main = (function() {
 					    .call(yAxis)
 					    .append("text")
 					    .attr("transform", "rotate(-90)")
-					    .attr("y", 6)
-					    .attr("dy", ".71em")
-					    .style("text-anchor", "end")
-					    .text("Valuation ($)");
+					    .attr("y", 15)
+					    .attr('x', -50)
+					    // .attr("dy", ".71em")
+					    // .style("text-anchor", "end")
+					    .text("Valuation $")
+				    	.append('tspan')
+				    	.style("text-anchor", "end")
+				    	.attr("y", 25)
+				    	// .attr('x', -20)
+				    	.text('(Face + Social)');
 
 			var longTicks = svg.select('.y.axis')
 								.selectAll('line')
@@ -1365,7 +1371,7 @@ app.main = (function() {
 											.data(dataset[1].values)
 											.enter()
 											.append('text')
-											.attr('x', -5*textOffset)
+											.attr('x', -6*textOffset)
 											// .attr('y', 0)
 											.attr('y', function(d, i){
 												return textOffset + getFontSize('heading4')/3 + yScale(i);
@@ -1374,9 +1380,11 @@ app.main = (function() {
 											.text(function(d, i){
 												return d.category;
 											})
-											.attr('class', function(){
-												return (isMobile) ? ('heading4 labels') : ('heading3 labels');
-											});
+											// .attr('class', function(){
+											// 	return (isMobile) ? ('heading4 labels') : ('heading3 labels');
+											// });
+											.attr('class', 'heading4')
+											.style('font-weight', 'bold');
 					}								   		 
 
 					// Logo
