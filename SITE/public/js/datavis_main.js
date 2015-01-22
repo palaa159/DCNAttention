@@ -1275,7 +1275,7 @@ app.main = (function() {
 			  	var publishers = groups.select('.heading3')
 							  		.data(dataset)
 									.text(function(d, i){
-										return d.company;
+										return capText(d.company);
 									});
 				// console.log('publishers');
 
