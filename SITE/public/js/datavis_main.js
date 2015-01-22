@@ -1365,7 +1365,7 @@ app.main = (function() {
 											.data(dataset[1].values)
 											.enter()
 											.append('text')
-											.attr('x', -5*textOffset)
+											.attr('x', -6*textOffset)
 											// .attr('y', 0)
 											.attr('y', function(d, i){
 												return textOffset + getFontSize('heading4')/3 + yScale(i);
@@ -1374,9 +1374,11 @@ app.main = (function() {
 											.text(function(d, i){
 												return d.category;
 											})
-											.attr('class', function(){
-												return (isMobile) ? ('heading4 labels') : ('heading3 labels');
-											});
+											// .attr('class', function(){
+											// 	return (isMobile) ? ('heading4 labels') : ('heading3 labels');
+											// });
+											.attr('class', 'heading4')
+											.style('font-weight', 'bold');
 					}								   		 
 
 					// Logo
