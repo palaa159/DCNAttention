@@ -1110,6 +1110,8 @@ app.main = (function() {
 
 		// Draws the top publishers by category
 		function drawTopByCategory(dataset, update){
+
+			// console.log(update);
 			
 			// Canvas properties
 			var svgSize = getCSS('topByCategory-container');
@@ -1241,6 +1243,7 @@ app.main = (function() {
 				// 	element.face_val = Math.random()*100;
 				// 	element.social_val = Math.random()*100;
 				// });
+				// dataset = _.shuffle(dataset);
 
 			    var svg = d3.select("#topByCategory");
 
@@ -1268,6 +1271,13 @@ app.main = (function() {
 								  		.attr('width', function(d, i){
 								  			return xScale(d.face_val);
 								  		});
+
+			  	var publishers = groups.select('.heading3')
+							  		.data(dataset)
+									.text(function(d, i){
+										return d.company;
+									});
+				// console.log('publishers');
 
 				var values = groups.select('.heading4.values')
 							  		.data(dataset)
