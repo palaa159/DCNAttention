@@ -145,7 +145,7 @@ void ofApp::nextRound(){
             ofxJSONElement thisObj = category[i];
             cout << "category[i] "<<i<<endl;
             int thisObjShownCt = category[i]["shown"].asInt();
-            if(thisObjShownCt <= lowestShowCt){
+            if(thisObjShownCt <= lowestShowCt && i != objNum){
                 lowestShowCt = thisObjShownCt; //new low
                 objNum = i; //in case we only get one with lowest count later
                 thisPair.push_back(thisObj);
