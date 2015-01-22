@@ -108,7 +108,11 @@ var attachEvents = function() {
             db.set('linkedin_counts', 0);
             db.set('google_counts', 0);
             db.set('pinterest_counts', 0);
-            db.set('val_history', []);
+            db.set('val_history', [{
+                face_val: 0,
+                social_val: 0,
+                ts: new Date().getTime()
+            }]);
             db.set('face_val', 0);
             db.set('social_val', 0);
             // not cumulative
