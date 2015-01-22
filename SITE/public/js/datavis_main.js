@@ -13,8 +13,8 @@ app.main = (function() {
 		// Design
 		var transitionDuration = 750;
 
-		var isMobile = (window.innerWidth < 1000) ? (true) : (false);
-		// console.log(isMobile);
+		var isMobile = (window.innerWidth < window.innerHeight) ? (true) : (false);
+		// alert(isMobile);
 
 		var column, gutter;
 
