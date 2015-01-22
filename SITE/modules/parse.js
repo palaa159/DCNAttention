@@ -49,7 +49,9 @@ module.exports = {
         });
     },
     getObjects: function(classname, cb) {
-        kaiseki.getObjects(classname, function(err, res, body, success) {
+        kaiseki.getObjects(classname, {
+            limit: 1000
+        }, function(err, res, body, success) {
             cb(null, body);
         });
     },
