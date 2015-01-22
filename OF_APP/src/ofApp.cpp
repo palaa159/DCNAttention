@@ -129,35 +129,47 @@ void ofApp::keyPressed(int key){
 void ofApp::nextRound(){
     
     if (GO_MODE){
-        cout << "THIS ROUND CATEGORY INDEX: "<<CURR_CAT<<endl;
-        
-        ofxJSONElement category = dataConnect.getCategory(CURR_CAT);
-        cout << "LENGTH: "<<category.size() << endl;
-        int lowestShowCt = category[0]["shown"].asInt(); //start with shownCt of first obj
-        //objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
-        cout << "first lowestShowCt: "<< lowestShowCt << endl;
         thisPair.clear();
-        int objNum = 0;
-        int addr = int(ofRandom(100));
-        for(int i=0; i<category.size(); i++){
-            i += addr;
-            i = int(ofWrap(i, 0, category.size()-1));
-            ofxJSONElement thisObj = category[i];
-            cout << "category[i] "<<i<<endl;
-            int thisObjShownCt = category[i]["shown"].asInt();
-            if(thisObjShownCt <= lowestShowCt && i != objNum){
-                lowestShowCt = thisObjShownCt; //new low
-                objNum = i; //in case we only get one with lowest count later
-                thisPair.push_back(thisObj);
-                if(thisPair.size()>=2) break;
+            cout << "THIS ROUND CATEGORY INDEX: "<<CURR_CAT<<endl;
+            
+            ofxJSONElement category = dataConnect.getCategory(CURR_CAT);
+            cout << "LENGTH: "<<category.size() << endl;
+            
+            int obj1 = int(ofRandom(category.size()));
+            int obj2 = int(ofRandom(category.size()));
+            
+            while(obj1 == obj2){
+                obj2 = int(ofRandom(category.size()));
             }
-        }
-        cout << "finished first pass"<<endl;
-        if(thisPair.size() < 2){ //we only had one obj with the lowest show ct
-            objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
-            cout<<">> adding objNum: "<<objNum<<endl;
-            thisPair.push_back(category[objNum]);
-        }
+            
+            thisPair.push_back(category[obj1]);
+            thisPair.push_back(category[obj2]);
+//        cout << "LENGTH: "<<category.size() << endl;
+//        int lowestShowCt = category[0]["shown"].asInt(); //start with shownCt of first obj
+//        //objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
+//        cout << "first lowestShowCt: "<< lowestShowCt << endl;
+//        thisPair.clear();
+//        int objNum = 0;
+//        int addr = int(ofRandom(100));
+//        for(int i=0; i<category.size(); i++){
+//            i += addr;
+//            i = int(ofWrap(i, 0, category.size()-1));
+//            ofxJSONElement thisObj = category[i];
+//            cout << "category[i] "<<i<<endl;
+//            int thisObjShownCt = category[i]["shown"].asInt();
+//            if(thisObjShownCt <= lowestShowCt && i != objNum){
+//                lowestShowCt = thisObjShownCt; //new low
+//                objNum = i; //in case we only get one with lowest count later
+//                thisPair.push_back(thisObj);
+//                if(thisPair.size()>=2) break;
+//            }
+//        }
+//        cout << "finished first pass"<<endl;
+//        if(thisPair.size() < 2){ //we only had one obj with the lowest show ct
+//            objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
+//            cout<<">> adding objNum: "<<objNum<<endl;
+//            thisPair.push_back(category[objNum]);
+//        }
         // cout<< "THIS ROUND OBJECTS: "<<endl;
         //cout << "\t left screen: "<<thisPair[0]["objectId"].asString()<<endl;
         //cout << "\t right screen: "<<thisPair[1]["objectId"].asString()<<endl;
