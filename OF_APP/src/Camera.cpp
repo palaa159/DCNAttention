@@ -68,6 +68,8 @@ Camera::Camera(){
     
     sunglasses.loadImage("img/sunglasses.png");
     faceVal = 0.0;
+    finderSizerCounter = 0;
+    lastFinderSize = 0;
 }
 
 
@@ -122,7 +124,33 @@ void Camera::draw(){
 
 //--------------------------------------------------------------
 int Camera::getNumFaces(){
-    return finder.size();
+    
+    
+    int thisFinderSizer = finder.size();
+    
+    finderSize.push_back(thisFinderSizer);
+    
+    int thisSize = finderSize[0];
+    
+    bool sizeChange = false;
+    if(finderSize.size() > 5){
+        for(int i=1; i<finderSize.size(); i++){
+            //cout<<finderSize[i]<<endl;
+            if (thisSize != finderSize[i]) {
+                sizeChange = true;
+            }
+        }
+        if(sizeChange) {
+            cout <<"changing size!!"<<endl;
+        }else {
+            //cout << "same" << endl;
+            lastFinderSize = finderSize[0];
+        }
+        finderSize.clear();
+        //cout<<"-----------------"<<endl;
+    }
+    
+    return lastFinderSize;
 }
 
 //--------------------------------------------------------------

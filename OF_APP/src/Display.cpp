@@ -106,6 +106,7 @@ void Display::draw(){
         valueFont.drawString(ofToString(numFaces), valuesRightMargin+eyeLogo.getWidth()+40, topMargin+220);
         
         headlineFont.drawString(displayHeadline, leftMargin, topMargin+130);
+        
         //labelsFont.drawString("http://attention.market", leftMargin, topMargin-20);
         //labelsFont.drawString("Total Value", valuesLeftMargin+400, topMargin+50);
         //valueFont.drawString(ofToString(diplayTotalValue), valuesLeftMargin+400, topMargin+125);
@@ -193,7 +194,7 @@ void Display::startRound(ofxJSONElement thisContentObj){
     
 
     
-    cout << "displayHeadline: "<< displayHeadline <<endl;
+    //cout << "displayHeadline: "<< displayHeadline <<endl;
     
 //    headline.setText(displayHeadline);
 //    headline.wrapTextArea(750, 300);

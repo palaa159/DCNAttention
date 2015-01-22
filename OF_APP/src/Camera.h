@@ -21,6 +21,10 @@ public:
     float getFaceVal();
     void listDevices();
     int getNumFaces();
+    
+    int lastFinderSize;
+    int finderSizerCounter;
+    vector<int> finderSize;
 
     
 private:
