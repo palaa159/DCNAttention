@@ -799,10 +799,16 @@ app.main = (function() {
 					    .call(yAxis)
 					    .append("text")
 					    .attr("transform", "rotate(-90)")
-					    .attr("y", 6)
-					    .attr("dy", ".71em")
-					    .style("text-anchor", "end")
-					    .text("Valuation ($)");
+					    .attr("y", 15)
+					    .attr('x', -50)
+					    // .attr("dy", ".71em")
+					    // .style("text-anchor", "end")
+					    .text("Valuation $")
+				    	.append('tspan')
+				    	.style("text-anchor", "end")
+				    	.attr("y", 25)
+				    	// .attr('x', -20)
+				    	.text('(Face + Social)');
 
 			var longTicks = svg.select('.y.axis')
 								.selectAll('line')
