@@ -14,7 +14,7 @@ app.main = (function() {
 		var transitionDuration = 750;
 
 		var isMobile = (window.innerWidth < window.innerHeight) ? (true) : (false);
-		alert(isMobile);
+		// alert(isMobile);
 
 		var column, gutter;
 
