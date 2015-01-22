@@ -29,6 +29,7 @@ void ofApp::setup() {
     
     //*** immediately init local data files ***//
     // query /api/getcontents, compare with local files
+
     //***** HERE *****
     dataConnect.pullData();
 }
@@ -133,13 +134,16 @@ void ofApp::nextRound(){
         ofxJSONElement category = dataConnect.getCategory(CURR_CAT);
         cout << "LENGTH: "<<category.size() << endl;
         int lowestShowCt = category[0]["shown"].asInt(); //start with shownCt of first obj
+        //objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
         cout << "first lowestShowCt: "<< lowestShowCt << endl;
         thisPair.clear();
         int objNum = 0;
-        
+        int addr = int(ofRandom(100));
         for(int i=0; i<category.size(); i++){
+            i += addr;
+            i = int(ofWrap(i, 0, category.size()-1));
             ofxJSONElement thisObj = category[i];
-            //cout << "category[i] "<<i<<endl;
+            cout << "category[i] "<<i<<endl;
             int thisObjShownCt = category[i]["shown"].asInt();
             if(thisObjShownCt <= lowestShowCt){
                 lowestShowCt = thisObjShownCt; //new low
@@ -150,7 +154,7 @@ void ofApp::nextRound(){
         }
         cout << "finished first pass"<<endl;
         if(thisPair.size() < 2){ //we only had one obj with the lowest show ct
-            objNum = int(ofWrap(objNum+1, 0, category.size()-1)); //TODO: find a better way to get the next one
+            objNum = int(ofWrap(objNum+ofRandom(5), 0, category.size()-1)); //TODO: find a better way to get the next one
             cout<<">> adding objNum: "<<objNum<<endl;
             thisPair.push_back(category[objNum]);
         }

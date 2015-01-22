@@ -133,7 +133,7 @@ int Camera::getNumFaces(){
     int thisSize = finderSize[0];
     
     bool sizeChange = false;
-    if(finderSize.size() > 5){
+    if(finderSize.size() > 2){
         for(int i=1; i<finderSize.size(); i++){
             //cout<<finderSize[i]<<endl;
             if (thisSize != finderSize[i]) {
