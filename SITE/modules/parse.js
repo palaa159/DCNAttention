@@ -13,11 +13,17 @@ var kaiseki = new Kaiseki(APP_ID, REST_KEY);
 //     RATE_LINKED = 0.01,
 //     RATE_GOOG = 0.01;
 // http://www.adweek.com/news/advertising-branding/brands-favor-social-shares-over-likes-148256
-var RATE_FB = 4.15,
-    RATE_TWIT = 1.85,
-    RATE_PIN = 1.35,
-    RATE_LINKED = 0.96,
-    RATE_GOOG = 0.60;
+// var RATE_FB = 4.15,
+//     RATE_TWIT = 1.85,
+//     RATE_PIN = 1.35,
+//     RATE_LINKED = 0.96,
+//     RATE_GOOG = 0.60;
+
+var RATE_FB = 0.08,
+    RATE_TWIT = 0.036,
+    RATE_PIN = 0.026,
+    RATE_LINKED = 0.018,
+    RATE_GOOG = 0.011;
 
 
 module.exports = {

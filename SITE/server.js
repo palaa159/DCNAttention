@@ -62,7 +62,7 @@ app
     })
     .get('/market', function(req, res) {
         console.log('--> Hitting Mobile stock market');
-        res.render('client/market.ejs');
+        res.redirect('datavis.html');
     })
     // .get('/datavis', function(req, res) {
     //     console.log('--> Hitting Big screen display');
